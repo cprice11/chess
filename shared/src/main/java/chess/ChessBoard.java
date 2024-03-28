@@ -28,13 +28,15 @@ public class ChessBoard {
     public enum Highlight {
         PRIMARY,
         SECONDARY,
+        TERNARY,
         NEGATIVE,
         NONE
     }
 
     private static final String RESET_HIGHLIGHT = "\u001B[0m";
     private static final String PRIMARY_START = "\u001B[44m";
-    private static final String SECONDARY_START = "\u001B[43m";
+    private static final String SECONDARY_START = "\u001B[42m";
+    private static final String TERNARY_START = "\u001B[43m";
     private static final String NEGATIVE_HIGHLIGHT = "\u001B[41m";
 
     public ChessBoard() {
@@ -149,10 +151,12 @@ public class ChessBoard {
                 Highlight highlightColor = highlightedPositions[7 - i][j];
                 if (highlightColor == Highlight.PRIMARY) {
                     row.append(PRIMARY_START);
-//                    row.append('^');
                     currentlyHighlighting = true;
                 } else if (highlightColor == Highlight.SECONDARY) {
                     row.append(SECONDARY_START);
+                    currentlyHighlighting = true;
+                } else if (highlightColor == Highlight.TERNARY) {
+                    row.append(TERNARY_START);
                     currentlyHighlighting = true;
                 } else if (highlightColor == Highlight.NEGATIVE) {
                     row.append(NEGATIVE_HIGHLIGHT);
