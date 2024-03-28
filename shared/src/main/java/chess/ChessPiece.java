@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -26,7 +27,10 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ChessPiece that = (ChessPiece) obj;
+        return (color == that.color && type == that.type);
     }
 
     /**

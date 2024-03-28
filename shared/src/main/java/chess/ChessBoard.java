@@ -17,7 +17,7 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.equals(positions, that.positions);
+        return Arrays.deepEquals(positions, that.positions);
     }
 
     @Override
