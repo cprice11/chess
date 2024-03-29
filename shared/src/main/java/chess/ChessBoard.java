@@ -9,8 +9,33 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    private static final int BOARD_SIZE = 8;
+    private static final String RESET_HIGHLIGHT = "\u001B[0m";
+    private static final String PRIMARY_START = "\u001B[44m";
+    private static final String SECONDARY_START = "\u001B[42m";
+    private static final String TERNARY_START = "\u001B[43m";
+    private static final String NEGATIVE_HIGHLIGHT = "\u001B[41m";
+
     private ChessPiece[][] positions;
     private Highlight[][] highlightedPositions;
+
+    public enum Highlight {
+        PRIMARY,
+        SECONDARY,
+        TERNARY,
+        NEGATIVE,
+        NONE
+    }
+
+
+    public ChessBoard() {
+        highlightedPositions = new Highlight[8][8];
+        for (Highlight[] row : highlightedPositions) {
+            Arrays.fill(row, Highlight.NONE);
+        }
+        positions = new ChessPiece[8][8];
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -25,27 +50,6 @@ public class ChessBoard {
         return Arrays.deepHashCode(positions);
     }
 
-    public enum Highlight {
-        PRIMARY,
-        SECONDARY,
-        TERNARY,
-        NEGATIVE,
-        NONE
-    }
-
-    private static final String RESET_HIGHLIGHT = "\u001B[0m";
-    private static final String PRIMARY_START = "\u001B[44m";
-    private static final String SECONDARY_START = "\u001B[42m";
-    private static final String TERNARY_START = "\u001B[43m";
-    private static final String NEGATIVE_HIGHLIGHT = "\u001B[41m";
-
-    public ChessBoard() {
-        highlightedPositions = new Highlight[8][8];
-        for (Highlight[] row : highlightedPositions) {
-            Arrays.fill(row, Highlight.NONE);
-        }
-        positions = new ChessPiece[8][8];
-    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -55,15 +59,13 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         positions[position.getRank() - 1][position.getFile() - 1] = piece;
-        //printBoard();
     }
 
     /**
      * Gets a chess piece on the chessboard
      *
-     * @param position The position to get the piece from
-     * @return Either the piece at the position, or null if no piece is at that
-     * position
+     * @param position  The position to get the piece from
+     * @return          Either the piece at the position, or null if no piece is at that position
      */
     public ChessPiece getPiece(ChessPosition position) {
         return positions[position.getRank() - 1][position.getFile() - 1];
@@ -72,10 +74,10 @@ public class ChessBoard {
     /**
      * Gets the color of a piece on the chessboard
      *
-     * @param position The position to get the piece from
-     * @return Either the color of the piece at the position, or null if no piece is at that position
+     * @param position  The position to get the piece from
+     * @return          Either the color of the piece at the position, or null if no piece is at that position
      */
-    public ChessGame.TeamColor getColor(ChessPosition position) {
+    public ChessGame.TeamColor getPieceColor(ChessPosition position) {
         if (getPiece(position) == null) return null;
         return positions[position.getRank() - 1][position.getFile() - 1].getTeamColor();
     }
@@ -132,7 +134,6 @@ public class ChessBoard {
 
         // Reset highlights as well
         resetHighlight();
-        printBoard();
     }
 
     /**
@@ -181,42 +182,6 @@ public class ChessBoard {
             System.out.println(row);
         }
         System.out.println("   A B C D E F G H\n");
-//
-//        for (int i = 0; i < positions.length; i++) {
-//            System.out.print(8 - i);
-//            System.out.print(' ');
-//            StringBuilder row = new StringBuilder();
-//            for (int j = 0; j < positions[i].length; j++) {
-//                Highlight h = highlightedPositions[7 - i][j];
-//                row.append('|');
-//                if (h == Highlight.NONE) {
-//                    row.append(' ');
-//                } else if (h == Highlight.PRIMARY) {
-//                    row.append('1');
-//                } else if (h == Highlight.SECONDARY) {
-//                    row.append('2');
-//                } else if (h == Highlight.NEGATIVE){
-//                    row.append('X');
-//                } else System.out.println(h.toString());
-//            }
-//            row.append('|');
-//            System.out.println(row);
-//        }
-//        System.out.println("   A B C D E F G H\n");
-    }
-
-    private static char getPieceAsChar(ChessPiece piece) {
-        ChessGame.TeamColor color = piece.getTeamColor();
-        char pieceChar = switch (piece.getPieceType()) {
-            case ChessPiece.PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? 'P' : 'p';
-            case ChessPiece.PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? 'R' : 'r';
-            case ChessPiece.PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? 'N' : 'n';
-            case ChessPiece.PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? 'B' : 'b';
-            case ChessPiece.PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? 'Q' : 'q';
-            case ChessPiece.PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? 'K' : 'k';
-            default -> ' ';
-        };
-        return pieceChar;
     }
 }
 

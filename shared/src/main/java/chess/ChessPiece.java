@@ -128,7 +128,7 @@ public class ChessPiece {
         int currRank = position.getRank();
         int currFile = position.getFile();
         PieceType [] promotionOptions = { PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN};
-        ChessGame.TeamColor color = board.getColor(position);
+        ChessGame.TeamColor color = board.getPieceColor(position);
         int advanceDirection = (color == ChessGame.TeamColor.WHITE)? 1 : -1;
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         HashSet<ChessPosition> availablePositions = new HashSet<ChessPosition>();
@@ -177,7 +177,7 @@ public class ChessPiece {
     private Collection<ChessMove> getKnightMoves(ChessBoard board, ChessPosition position) {
         int currRank = position.getRank();
         int currFile = position.getFile();
-        ChessGame.TeamColor color = board.getColor(position);
+        ChessGame.TeamColor color = board.getPieceColor(position);
         ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
         ChessPosition[] possPositions = {
                 new ChessPosition(currRank + 2, currFile - 1),
@@ -193,7 +193,7 @@ public class ChessPiece {
             if (nextPosition.getFile() > BOARD_SIZE || nextPosition.getFile() < 1) continue;
             if (nextPosition.getRank() > BOARD_SIZE || nextPosition.getRank() < 1) continue;
 //            board.highlightPosition(nextPosition, ChessBoard.Highlight.PRIMARY);
-            if (board.getColor(nextPosition) == color) continue;
+            if (board.getPieceColor(nextPosition) == color) continue;
             if (board.getPiece(nextPosition) == null) {
                 moves.add(new ChessMove(position, nextPosition, null));
                 board.highlightPosition(nextPosition, ChessBoard.Highlight.PRIMARY);
