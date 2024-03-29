@@ -9,8 +9,8 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    ChessPiece[][] positions = new ChessPiece[8][8];
-    private Highlight[][] highlightedPositions = new Highlight[8][8];
+    private ChessPiece[][] positions;
+    private Highlight[][] highlightedPositions;
 
     @Override
     public boolean equals(Object o) {
@@ -22,7 +22,7 @@ public class ChessBoard {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(positions);
+        return Arrays.deepHashCode(positions);
     }
 
     public enum Highlight {
@@ -40,10 +40,11 @@ public class ChessBoard {
     private static final String NEGATIVE_HIGHLIGHT = "\u001B[41m";
 
     public ChessBoard() {
-        // resetBoard();
+        highlightedPositions = new Highlight[8][8];
         for (Highlight[] row : highlightedPositions) {
             Arrays.fill(row, Highlight.NONE);
         }
+        positions = new ChessPiece[8][8];
     }
 
     /**
@@ -80,13 +81,22 @@ public class ChessBoard {
     }
 
     /**
+     * Gets the color highlighting a position on the chessboard
+     *
+     * @param position  The position to get return the color from
+     * @return          The Highlight object specifying the color
+     */
+    private Highlight getHighlight(ChessPosition position) {
+        return highlightedPositions[position.getRank() - 1][position.getFile() - 1];
+    }
+
+    /**
      * Highlights the desired square on the board when printed.
      *
      * @param position      The position on the board to highlight
      * @param highlightType The color to highlight the square
      */
     public void highlightPosition(ChessPosition position, Highlight highlightType) {
-        // Highlight highlighted = highlightedPositions[position.getColumn() - 1][position.getRow() -1];
         highlightedPositions[position.getRank() - 1][position.getFile() - 1] = highlightType;
     }
 
@@ -122,6 +132,7 @@ public class ChessBoard {
 
         // Reset highlights as well
         resetHighlight();
+        printBoard();
     }
 
     /**
@@ -143,64 +154,32 @@ public class ChessBoard {
             System.out.print(' ');
             StringBuilder row = new StringBuilder();
             for (int j = 0; j < positions[i].length; j++) {
+                ChessPosition position = new ChessPosition(8 - i, j + 1);
+                ChessPiece piece = getPiece(position);
+                Highlight highlightColor = getHighlight(position);
                 if (currentlyHighlighting) row.append(RESET_HIGHLIGHT);
                 row.append('|');
-                ChessPiece piece = positions[7 - i][j];
 
                 // set color according to highlights
-                Highlight highlightColor = highlightedPositions[7 - i][j];
-                if (highlightColor == Highlight.PRIMARY) {
-                    row.append(PRIMARY_START);
+                if (highlightColor != Highlight.NONE) {
+                    String nextHighlightChar = switch (highlightColor) {
+                        case PRIMARY   -> PRIMARY_START;
+                        case SECONDARY -> SECONDARY_START;
+                        case TERNARY   -> TERNARY_START;
+                        case NEGATIVE  -> NEGATIVE_HIGHLIGHT;
+                        default -> "\0";
+                    };
                     currentlyHighlighting = true;
-                } else if (highlightColor == Highlight.SECONDARY) {
-                    row.append(SECONDARY_START);
-                    currentlyHighlighting = true;
-                } else if (highlightColor == Highlight.TERNARY) {
-                    row.append(TERNARY_START);
-                    currentlyHighlighting = true;
-                } else if (highlightColor == Highlight.NEGATIVE) {
-                    row.append(NEGATIVE_HIGHLIGHT);
-                    currentlyHighlighting = true;
+                    row.append(nextHighlightChar);
                 }
 
-
-                if (piece == null) {
-                    row.append(' ');
-                    continue;
-                }
-                ChessGame.TeamColor color = piece.getTeamColor();
-                char nextChar;
-                switch (piece.getPieceType()) {
-                    case ChessPiece.PieceType.PAWN:
-                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'P': 'p';
-                        break;
-                    case ChessPiece.PieceType.ROOK:
-                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'R': 'r';
-                        break;
-                    case ChessPiece.PieceType.KNIGHT:
-                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'N': 'n';
-                        break;
-                    case ChessPiece.PieceType.BISHOP:
-                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'B': 'b';
-                        break;
-                    case ChessPiece.PieceType.QUEEN:
-                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'Q': 'q';
-                        break;
-                    case ChessPiece.PieceType.KING:
-                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'K': 'k';
-                        break;
-                    default:
-                        row.append(' ');
-
-                }
+                char nextChar = (piece == null)? ' ' : piece.getCode();
+                row.append(nextChar);
             }
             if (currentlyHighlighting) row.append(RESET_HIGHLIGHT);
             row.append('|');
             System.out.println(row);
         }
-        ChessPosition a = new ChessPosition(1, 1);
-        ChessPosition b = new ChessPosition(1, 2);
-        System.out.println(getPiece(a) == getPiece(b));
         System.out.println("   A B C D E F G H\n");
 //
 //        for (int i = 0; i < positions.length; i++) {
@@ -224,6 +203,20 @@ public class ChessBoard {
 //            System.out.println(row);
 //        }
 //        System.out.println("   A B C D E F G H\n");
+    }
+
+    private static char getPieceAsChar(ChessPiece piece) {
+        ChessGame.TeamColor color = piece.getTeamColor();
+        char pieceChar = switch (piece.getPieceType()) {
+            case ChessPiece.PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? 'P' : 'p';
+            case ChessPiece.PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? 'R' : 'r';
+            case ChessPiece.PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? 'N' : 'n';
+            case ChessPiece.PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? 'B' : 'b';
+            case ChessPiece.PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? 'Q' : 'q';
+            case ChessPiece.PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? 'K' : 'k';
+            default -> ' ';
+        };
+        return pieceChar;
     }
 }
 

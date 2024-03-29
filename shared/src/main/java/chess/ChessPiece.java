@@ -12,8 +12,8 @@ import java.util.HashSet;
  */
 public class ChessPiece {
     private final int BOARD_SIZE = 8;
-    private static ChessGame.TeamColor color;
-    private static ChessPiece.PieceType type;
+    private final ChessGame.TeamColor color;
+    private final ChessPiece.PieceType type;
 
     /**
      * The various different chess piece options
@@ -45,7 +45,7 @@ public class ChessPiece {
         return (color == that.getTeamColor() && type == that.getPieceType());
     }
 
-
+    // Basic access methods
     /**
      * @return Which team this chess piece belongs to
      */
@@ -60,7 +60,22 @@ public class ChessPiece {
         return type;
     }
 
+    /**
+     * @return The one-character code to represent this piece
+     */
+    public char getCode() {
+        return switch (type) {
+            case PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? 'P' : 'p';
+            case PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? 'R' : 'r';
+            case PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? 'N' : 'n';
+            case PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? 'B' : 'b';
+            case PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? 'Q' : 'q';
+            case PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? 'K' : 'k';
+            default -> ' ';
+        };
+    }
 
+    // Move methods
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -234,7 +249,13 @@ public class ChessPiece {
      * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
      * @return              A collection of ChessMoves available to the position in the given direction.
      */
-    private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist, boolean captures) {
+    private Collection<ChessMove> getSlideMoves(
+            ChessBoard board,
+            ChessPosition position,
+            int rankIteration,
+            int fileIteration,
+            int maxDist,
+            boolean captures) {
         Collection<ChessPosition> availablePositions = getSlidePositions(board, position, rankIteration, fileIteration, maxDist, captures);
         return getMovesFromPositions(position, availablePositions);
     }
@@ -249,7 +270,13 @@ public class ChessPiece {
      * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
      * @return              A collection of ChessMoves available to the position in the given direction.
      */
-    private Collection<ChessPosition> getSlidePositions(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist, boolean captures) {
+    private Collection<ChessPosition> getSlidePositions(
+            ChessBoard board,
+            ChessPosition position,
+            int rankIteration,
+            int fileIteration,
+            int maxDist,
+            boolean captures) {
         int currRank = position.getRank();
         int currFile = position.getFile();
         HashSet<ChessPosition> availablePositions = new HashSet<ChessPosition>();
@@ -294,7 +321,9 @@ public class ChessPiece {
      * @param positions     The collection of positions the piece can move to
      * @return              A collection of ChessMove objects
      */
-    private Collection<ChessMove> getMovesFromPositions(ChessPosition startPosition, Collection<ChessPosition> positions) {
+    private Collection<ChessMove> getMovesFromPositions(
+            ChessPosition startPosition, 
+            Collection<ChessPosition> positions) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         for (ChessPosition endPosition : positions) {
             moves.add(new ChessMove(startPosition, endPosition, null));
