@@ -112,7 +112,6 @@ public class ChessPiece {
             default:
                 throw new RuntimeException("Nonexistent Piece");
         }
-        board.printBoard();
         return moves;
     }
 

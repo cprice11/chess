@@ -15,6 +15,7 @@ public class ChessPosition {
     int col;
     char fileLetter;
 
+
     public ChessPosition(int rank, int file) {
         this.row = this.rank = rank;
         this.col = this.file = file;
@@ -48,12 +49,37 @@ public class ChessPosition {
         }
     }
 
+
+    public String toString() {
+        return getFileLetter() + Integer.toString(getRank());
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPosition position = (ChessPosition) o;
+        return file == position.file && col == position.col;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(file, col);
+    }
+
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
      */
     public int getRow() {
         return row;
+    }
+
+    /**
+     * @return which column this position is in
+     * 1 codes for the left row
+     */
+    public int getColumn() {
+        return col;
     }
 
     /**
@@ -80,27 +106,7 @@ public class ChessPosition {
         return fileLetter;
     }
 
-    /**
-     * @return which column this position is in
-     * 1 codes for the left row
-     */
-    public int getColumn() {
-        return col;
-    }
 
-    public String toString() {
-        return getFileLetter() + Integer.toString(getRank());
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessPosition position = (ChessPosition) o;
-        return file == position.file && col == position.col;
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(file, col);
-    }
+
 }

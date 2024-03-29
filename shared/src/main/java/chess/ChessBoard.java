@@ -29,11 +29,11 @@ public class ChessBoard {
 
 
     public ChessBoard() {
-        highlightedPositions = new Highlight[8][8];
+        highlightedPositions = new Highlight[BOARD_SIZE][BOARD_SIZE];
         for (Highlight[] row : highlightedPositions) {
             Arrays.fill(row, Highlight.NONE);
         }
-        positions = new ChessPiece[8][8];
+        positions = new ChessPiece[BOARD_SIZE][BOARD_SIZE];
     }
 
 
@@ -117,10 +117,10 @@ public class ChessBoard {
         positions[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
         Arrays.fill(positions[6], new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
 
-        positions[5] = new ChessPiece[8];
-        positions[4] = new ChessPiece[8];
-        positions[3] = new ChessPiece[8];
-        positions[2] = new ChessPiece[8];
+        positions[5] = new ChessPiece[BOARD_SIZE];
+        positions[4] = new ChessPiece[BOARD_SIZE];
+        positions[3] = new ChessPiece[BOARD_SIZE];
+        positions[2] = new ChessPiece[BOARD_SIZE];
 
         Arrays.fill(positions[1], new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
         positions[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
@@ -151,11 +151,11 @@ public class ChessBoard {
     public void printBoard() {
         boolean currentlyHighlighting = false;
         for (int i = 0; i < positions.length; i++) {
-            System.out.print(8 - i);
+            System.out.print(BOARD_SIZE - i);
             System.out.print(' ');
             StringBuilder row = new StringBuilder();
             for (int j = 0; j < positions[i].length; j++) {
-                ChessPosition position = new ChessPosition(8 - i, j + 1);
+                ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
                 ChessPiece piece = getPiece(position);
                 Highlight highlightColor = getHighlight(position);
                 if (currentlyHighlighting) row.append(RESET_HIGHLIGHT);
