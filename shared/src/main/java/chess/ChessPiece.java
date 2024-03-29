@@ -322,7 +322,7 @@ public class ChessPiece {
      * @return              A collection of ChessMove objects
      */
     private Collection<ChessMove> getMovesFromPositions(
-            ChessPosition startPosition, 
+            ChessPosition startPosition,
             Collection<ChessPosition> positions) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         for (ChessPosition endPosition : positions) {
