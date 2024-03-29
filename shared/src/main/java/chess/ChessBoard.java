@@ -169,48 +169,25 @@ public class ChessBoard {
                     continue;
                 }
                 ChessGame.TeamColor color = piece.getTeamColor();
+                char nextChar;
                 switch (piece.getPieceType()) {
                     case ChessPiece.PieceType.PAWN:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            row.append('P');
-                        } else {
-                            row.append('p');
-                        }
+                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'P': 'p';
                         break;
                     case ChessPiece.PieceType.ROOK:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            row.append('R');
-                        } else {
-                            row.append('r');
-                        }
+                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'R': 'r';
                         break;
                     case ChessPiece.PieceType.KNIGHT:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            row.append('N');
-                        } else {
-                            row.append('n');
-                        }
+                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'N': 'n';
                         break;
                     case ChessPiece.PieceType.BISHOP:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            row.append('B');
-                        } else {
-                            row.append('b');
-                        }
+                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'B': 'b';
                         break;
                     case ChessPiece.PieceType.QUEEN:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            row.append('Q');
-                        } else {
-                            row.append('q');
-                        }
+                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'Q': 'q';
                         break;
                     case ChessPiece.PieceType.KING:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            row.append('K');
-                        } else {
-                            row.append('k');
-                        }
+                        nextChar = (color == ChessGame.TeamColor.WHITE)? 'K': 'k';
                         break;
                     default:
                         row.append(' ');
@@ -221,6 +198,9 @@ public class ChessBoard {
             row.append('|');
             System.out.println(row);
         }
+        ChessPosition a = new ChessPosition(1, 1);
+        ChessPosition b = new ChessPosition(1, 2);
+        System.out.println(getPiece(a) == getPiece(b));
         System.out.println("   A B C D E F G H\n");
 //
 //        for (int i = 0; i < positions.length; i++) {

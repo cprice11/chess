@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -12,8 +11,21 @@ import java.util.HashSet;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    public ChessGame.TeamColor color;
-    public ChessPiece.PieceType type;
+    private final int BOARD_SIZE = 8;
+    private static ChessGame.TeamColor color;
+    private static ChessPiece.PieceType type;
+
+    /**
+     * The various different chess piece options
+     */
+    public enum PieceType {
+        KING,
+        QUEEN,
+        BISHOP,
+        KNIGHT,
+        ROOK,
+        PAWN
+    }
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType pieceType) {
         color = pieceColor;
@@ -30,20 +42,9 @@ public class ChessPiece {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         ChessPiece that = (ChessPiece) obj;
-        return (color == that.color && type == that.type);
+        return (color == that.getTeamColor() && type == that.getPieceType());
     }
 
-    /**
-     * The various different chess piece options
-     */
-    public enum PieceType {
-        KING,
-        QUEEN,
-        BISHOP,
-        KNIGHT,
-        ROOK,
-        PAWN
-    }
 
     /**
      * @return Which team this chess piece belongs to
@@ -59,11 +60,14 @@ public class ChessPiece {
         return type;
     }
 
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
      *
+     * @param   board       The current board state
+     * @param   myPosition  The position of the piece to calculate moves for
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
@@ -75,17 +79,17 @@ public class ChessPiece {
                 moves.addAll(getDiagonalSlideMoves(board, myPosition, 1));
                 break;
             case QUEEN:
-                moves.addAll(getOrthogonalSlideMoves(board, myPosition, 7));
-                moves.addAll(getDiagonalSlideMoves(board, myPosition, 7));
+                moves.addAll(getOrthogonalSlideMoves(board, myPosition, BOARD_SIZE - 1));
+                moves.addAll(getDiagonalSlideMoves(board, myPosition, BOARD_SIZE - 1));
                 break;
             case BISHOP:
-                moves.addAll(getDiagonalSlideMoves(board, myPosition, 7));
+                moves.addAll(getDiagonalSlideMoves(board, myPosition, BOARD_SIZE - 1));
                 break;
             case KNIGHT:
                 moves.addAll(getKnightMoves(board, myPosition));
                 break;
             case ROOK:
-                moves.addAll(getOrthogonalSlideMoves(board, myPosition, 7));
+                moves.addAll(getOrthogonalSlideMoves(board, myPosition, BOARD_SIZE - 1));
                 break;
             case PAWN:
                 moves.addAll(getPawnMoves(board, myPosition));
@@ -94,9 +98,6 @@ public class ChessPiece {
                 throw new RuntimeException("Nonexistent Piece");
         }
         board.printBoard();
-//        for (ChessMove move : moves) {
-//            System.out.println(move.getEndPosition().toString());
-//        }
         return moves;
     }
 
@@ -131,13 +132,15 @@ public class ChessPiece {
         // starting jump
         if (position.getRank() == 1) {
             availablePositions.addAll(getSlidePositions(board, position, advanceDirection, 0, 2, false));
-        } else {
+        }
+        else {
             availablePositions.addAll(getSlidePositions(board, position, advanceDirection, 0, 1, false));
         }
 
+        // give promotion options
         for (ChessPosition nextPosition : availablePositions) {
             int rank = nextPosition.getRank();
-            if ((color == ChessGame.TeamColor.WHITE && rank == 8) || (color == ChessGame.TeamColor.BLACK && rank == 1)) {
+            if ((color == ChessGame.TeamColor.WHITE && rank == BOARD_SIZE) || (color == ChessGame.TeamColor.BLACK && rank == 1)) {
                 for (PieceType promotion : promotionOptions) {
                     board.highlightPosition(nextPosition, ChessBoard.Highlight.TERNARY);
                     moves.add(new ChessMove(position, nextPosition, promotion));
@@ -172,8 +175,8 @@ public class ChessPiece {
                 new ChessPosition(currRank + 1, currFile - 2)
         };
         for (ChessPosition nextPosition : possPositions) {
-            if (nextPosition.getFile() > 8 || nextPosition.getFile() < 1) continue;
-            if (nextPosition.getRank() > 8 || nextPosition.getRank() < 1) continue;
+            if (nextPosition.getFile() > BOARD_SIZE || nextPosition.getFile() < 1) continue;
+            if (nextPosition.getRank() > BOARD_SIZE || nextPosition.getRank() < 1) continue;
 //            board.highlightPosition(nextPosition, ChessBoard.Highlight.PRIMARY);
             if (board.getColor(nextPosition) == color) continue;
             if (board.getPiece(nextPosition) == null) {
@@ -231,37 +234,9 @@ public class ChessPiece {
      * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
      * @return              A collection of ChessMoves available to the position in the given direction.
      */
-    private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration) {
-        return getSlideMoves(board, position, rankIteration, fileIteration, 7, true);
-    }
-
-    /**
-     * Gets a available sliding moves in one direction
-     * <p>
-     * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
-     * @param board         The current chess board
-     * @param position      The starting position to calculate moves from
-     * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @return              A collection of ChessMoves available to the position in the given direction.
-     */
-    private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist) {
-        return getSlideMoves(board, position, rankIteration, fileIteration, maxDist, true);
-    }
-
-    /**
-     * Gets a available sliding moves in one direction
-     * <p>
-     * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
-     * @param board         The current chess board
-     * @param position      The starting position to calculate moves from
-     * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @return              A collection of ChessMoves available to the position in the given direction.
-     */
     private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist, boolean captures) {
         Collection<ChessPosition> availablePositions = getSlidePositions(board, position, rankIteration, fileIteration, maxDist, captures);
-        return getMovesFromPositions(position, availablePositions, null);
+        return getMovesFromPositions(position, availablePositions);
     }
 
     /**
@@ -283,10 +258,10 @@ public class ChessPiece {
         int distToEdge = maxDist;
 
         if (rankIteration != 0) {
-            ranksToEdge = rankIteration == 1 ? (8 - currRank) : currRank - 1;
+            ranksToEdge = rankIteration == 1 ? (BOARD_SIZE - currRank) : currRank - 1;
         }
         if (fileIteration != 0) {
-            filesToEdge = fileIteration == 1 ? (8 - currFile) : currFile - 1;
+            filesToEdge = fileIteration == 1 ? (BOARD_SIZE - currFile) : currFile - 1;
         }
         distToEdge = Math.min(maxDist, Math.min(ranksToEdge, filesToEdge));
 
@@ -311,10 +286,18 @@ public class ChessPiece {
         return availablePositions;
     }
 
-    private Collection<ChessMove> getMovesFromPositions(ChessPosition startPosition, Collection<ChessPosition> positions, PieceType promotion) {
+    /**
+     * Returns a collection of ChessMoves from a starting position and a collection of ChessPositions
+     * <p>
+     * does not handle promotions
+     * @param startPosition The position the piece will move frome
+     * @param positions     The collection of positions the piece can move to
+     * @return              A collection of ChessMove objects
+     */
+    private Collection<ChessMove> getMovesFromPositions(ChessPosition startPosition, Collection<ChessPosition> positions) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         for (ChessPosition endPosition : positions) {
-            moves.add(new ChessMove(startPosition, endPosition, promotion));
+            moves.add(new ChessMove(startPosition, endPosition, null));
         }
         return moves;
     }
