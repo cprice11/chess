@@ -75,7 +75,7 @@ public class ChessGame {
      *
      * @return the chessboard
      */
-    public ChessBoard board() {
+    public ChessBoard getBoard() {
         return state.board();
     }
 
@@ -84,7 +84,7 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
-    public void board(ChessBoard board) {
+    public void setBoard(ChessBoard board) {
         state.board(board);
     }
 
@@ -95,7 +95,7 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean check(TeamColor teamColor) {
+    public boolean isInCheck(TeamColor teamColor) {
         return state.check(teamColor);
     }
 
@@ -105,7 +105,7 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean checkmate(TeamColor teamColor) {
+    public boolean isInCheckmate(TeamColor teamColor) {
         return state.checkmate(teamColor);
     }
 
@@ -116,7 +116,7 @@ public class ChessGame {
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean stalemate(TeamColor teamColor) {
+    public boolean isInStalemate(TeamColor teamColor) {
         return state.stalemate(teamColor);
     }
 
