@@ -89,7 +89,7 @@ public class ChessBoard {
 
     public Collection<ChessMove> getPieceMoves(ChessPosition position) {
         if (getPiece(position) == null) return null;
-        return getPiece(position).pieceMoves();
+        return getPiece(position).pieceMoves(this, position);
     }
 
     /**

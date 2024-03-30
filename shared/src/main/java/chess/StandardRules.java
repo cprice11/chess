@@ -12,6 +12,7 @@ public class StandardRules implements RuleSet{
     }
 
     public Collection<ChessMove> getValidMoves(GameState state, ChessPosition position) {
+        state.board().printBoard();
         ChessPiece piece= state.board().getPiece(position);
         Collection<ChessMove> possibleMoves =  switch (piece.getPieceType()) {
             case KING   -> getKingMoves(state, position, piece);
@@ -22,6 +23,7 @@ public class StandardRules implements RuleSet{
             case PAWN   -> getPawnMoves(state, position, piece);
             default -> null;
         };
+        piece.setPieceMoves(possibleMoves);
         // TODO: add checks for check and such
         return possibleMoves;
     }
@@ -116,7 +118,7 @@ public class StandardRules implements RuleSet{
 
 
         // pushing
-        if (isOnBoard(advOne) && state.getPiece(advOne) == null) {
+        if (!isOffBoard(advOne) && state.getPiece(advOne) == null) {
             availablePositions.add(advOne);
             if ((advanceDirection == 1 && currRank == 2 || advanceDirection == -1 && currRank == 7) &&
                     state.getPiece(advTwo) == null) {
@@ -219,7 +221,7 @@ public class StandardRules implements RuleSet{
         int i = 1;
         while (i <= maxDist) {
             ChessPosition nextPosition = new ChessPosition(currRank + (i * rankIteration), currFile + (i * fileIteration));
-            if (!isOnBoard(nextPosition)) break;
+            if (isOffBoard(nextPosition)) break;
             // empty squares
             if (state.getPiece(nextPosition) == null){
                 availablePositions.add(nextPosition);
@@ -238,9 +240,9 @@ public class StandardRules implements RuleSet{
         return moves;
     }
 
-    private boolean isOnBoard(ChessPosition position) {
-        return position.getRank() > BOARD_SIZE || position.getRank() < 1 ||
-                position.getFile() > BOARD_SIZE || position.getFile() < 1;
+    private boolean isOffBoard(ChessPosition position) {
+        return (position.getRank() > BOARD_SIZE || position.getRank() < 1) ||
+                (position.getFile() > BOARD_SIZE || position.getFile() < 1);
     }
 
     /**
