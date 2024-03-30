@@ -5,8 +5,10 @@ The class structure for this project is a little odd.
 
 So far some interfaces are set in stone, so what remains is to organize from those end points
 
-## ChessGame
+In a related note, the naming of methods doesn't quite fit the guidelines from the lesson.
 
+## ChessGame
+- TeamColor                     This seems out of place to me, but stays to keep passoff.
 *   Moves   validMoves()
 *   void    makeMove() throws
 *   bool    isInCheck()
