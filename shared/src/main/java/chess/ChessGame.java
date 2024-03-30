@@ -39,8 +39,8 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
-        if (state.getBoard().getPiece(startPosition) == null) return null;
-        return gameRules.getValidMoves(state.getBoard(), startPosition);
+        if (state.board().getPiece(startPosition) == null) return null;
+        return gameRules.getValidMoves(state.board(), startPosition);
     }
 
     /**
@@ -58,7 +58,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return state.getTurn();
+        return state.turn();
     }
 
     /**
@@ -67,7 +67,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        state.setTurn(team);
+        state.turn(team);
     }
 
     /**
@@ -75,8 +75,8 @@ public class ChessGame {
      *
      * @return the chessboard
      */
-    public ChessBoard getBoard() {
-        return state.getBoard();
+    public ChessBoard board() {
+        return state.board();
     }
 
     /**
@@ -84,8 +84,8 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
-    public void setBoard(ChessBoard board) {
-        state.setBoard(board);
+    public void board(ChessBoard board) {
+        state.board(board);
     }
 
     // boolean flags
@@ -95,8 +95,8 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
-        return state.isInCheck(teamColor);
+    public boolean check(TeamColor teamColor) {
+        return state.check(teamColor);
     }
 
     /**
@@ -105,8 +105,8 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        return state.isInCheckmate(teamColor);
+    public boolean checkmate(TeamColor teamColor) {
+        return state.checkmate(teamColor);
     }
 
     /**
@@ -116,8 +116,8 @@ public class ChessGame {
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor) {
-        return state.isInStalemate(teamColor);
+    public boolean stalemate(TeamColor teamColor) {
+        return state.stalemate(teamColor);
     }
 
 }
