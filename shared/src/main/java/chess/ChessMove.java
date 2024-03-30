@@ -34,20 +34,18 @@ public final class ChessMove {
         isCheck = isMate = enPassant = shortCastle = longCastle = offerDraw = isCapture = false;
     }
 
-    public ChessMove(ChessPiece piece, ChessPosition startPosition, ChessPosition endPosition,
-                     ChessPiece.PieceType promotionPiece, boolean isCapture, boolean isCheck, boolean isMate,
-                     boolean enPassant, boolean shortCastle, boolean longCastle, boolean offerDraw) {
-        this.piece = piece;
-        this.startPosition = startPosition;
-        this.endPosition = endPosition;
-        this.promotionPiece = promotionPiece;
-        this.isCapture = isCapture;
-        this.isCheck = isCheck;
-        this.isMate = isMate;
-        this.enPassant = enPassant;
-        this.shortCastle = shortCastle;
-        this.longCastle = longCastle;
-        this.offerDraw = offerDraw;
+    private ChessMove(MoveBuilder builder) {
+        this.piece = builder.piece;
+        this.startPosition = builder.startPosition;
+        this.endPosition = builder.endPosition;
+        this.promotionPiece = builder.promotionPiece;
+        this.isCapture = builder.isCapture;
+        this.isCheck = builder.isCheck;
+        this.isMate = builder.isMate;
+        this.enPassant = builder.enPassant;
+        this.shortCastle = builder.shortCastle;
+        this.longCastle = builder.longCastle;
+        this.offerDraw = builder.offerDraw;
     }
 
     /**
@@ -95,6 +93,67 @@ public final class ChessMove {
                 "startPosition=" + startPosition + ", " +
                 "endPosition=" + endPosition + ", " +
                 "promotionPiece=" + promotionPiece + ']';
+    }
+
+    public static class MoveBuilder{
+        // required
+        public final ChessPiece piece;
+        public final ChessPosition startPosition;
+        public final ChessPosition endPosition;
+
+        // optional
+        public ChessPiece.PieceType promotionPiece;
+        public boolean isCapture;
+        public boolean isCheck;
+        public boolean isMate;
+        public boolean enPassant;
+        public boolean shortCastle;
+        public boolean longCastle;
+        public boolean offerDraw;
+
+        public MoveBuilder(ChessPiece piece, ChessPosition startPosition, ChessPosition endPosition) {
+            this.piece = piece;
+            this.startPosition = startPosition;
+            this.endPosition = endPosition;
+        }
+
+        public MoveBuilder withPromotion(ChessPiece.PieceType promotionPiece) {
+            this.promotionPiece = promotionPiece;
+            return this;
+        }
+
+        public MoveBuilder isCapture() {
+            this.isCapture = true;
+            return this;
+        }
+        public MoveBuilder isCheck() {
+            this.isCheck = true;
+            return this;
+        }
+        public MoveBuilder isMate() {
+            this.isMate = true;
+            return this;
+        }
+        public MoveBuilder enPassant() {
+            this.enPassant = true;
+            return this;
+        }
+        public MoveBuilder shortCastle() {
+            this.shortCastle = true;
+            return this;
+        }
+        public MoveBuilder longCastle() {
+            this.longCastle = true;
+            return this;
+        }
+        public MoveBuilder offerDraw() {
+            this.offerDraw = true;
+            return this;
+        }
+
+        public ChessMove build(){
+            return new ChessMove(this);
+        }
     }
 
 }

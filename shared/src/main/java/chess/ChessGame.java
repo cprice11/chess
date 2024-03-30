@@ -40,7 +40,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         if (state.board().getPiece(startPosition) == null) return null;
-        return gameRules.getValidMoves(state.board(), startPosition);
+        return gameRules.getValidMoves(state, startPosition);
     }
 
     /**

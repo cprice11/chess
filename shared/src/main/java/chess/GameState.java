@@ -49,6 +49,9 @@ public class GameState {
     public ChessPiece removePiece(ChessPosition position) {
         return board.removePiece(position);
     }
+    public ChessPiece getPiece(ChessPosition position) {
+        return board.getPiece(position);
+    }
 
     public Vector<ChessMove> history() {
         return history;
