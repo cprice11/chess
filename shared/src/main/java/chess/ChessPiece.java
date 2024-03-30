@@ -17,18 +17,6 @@ public class ChessPiece {
     private final ChessGame.TeamColor color;
     private final ChessPiece.PieceType type;
 
-//    public ChessPosition getPosition() {
-//        return position;
-//    }
-//
-//    public void setPosition(ChessPosition position) {
-//        this.position = position;
-//    }
-//
-//    private ChessPosition position;
-
-
-
 
     /**
      * The various different chess piece options
@@ -57,7 +45,11 @@ public class ChessPiece {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         ChessPiece that = (ChessPiece) obj;
-        return (color == that.getTeamColor() && type == that.type());
+        return (color == that.getTeamColor() && type == that.getPieceType());
+    }
+
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) { // redundant method for tests
+        return moves;
     }
 
     public Collection<ChessMove> pieceMoves() {
@@ -72,8 +64,16 @@ public class ChessPiece {
         this.moves = moves;
     }
 
-    public void addMove(ChessMove move) {
-        this.moves = moves;
+    public void addPieceMoves(Collection<ChessMove> moves) {
+        this.moves.addAll(moves);
+    }
+
+    public void addPieceMove(ChessMove move) {
+        this.moves.add(move);
+    }
+
+    public void resetPieceMoves() {
+        moves.clear();
     }
 
     // Basic access methods
@@ -87,14 +87,14 @@ public class ChessPiece {
     /**
      * @return which type of chess piece this piece is
      */
-    public PieceType type() {
+    public PieceType getPieceType() {
         return type;
     }
 
     /**
      * @return The one-character code to represent this piece
      */
-    public char code() {
+    public char getCode() {
         return switch (type) {
             case PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? 'P' : 'p';
             case PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? 'R' : 'r';

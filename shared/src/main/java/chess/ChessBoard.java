@@ -1,6 +1,6 @@
 package chess;
 import java.util.Arrays;
-
+import java.util.Collection;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -60,6 +60,11 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         positions[position.getRank() - 1][position.getFile() - 1] = piece;
     }
+    public ChessPiece removePiece(ChessPosition position) {
+        ChessPiece piece = getPiece(position);
+        positions[position.getRank() - 1][position.getFile() - 1] = null;
+        return piece;
+    }
 
     /**
      * Gets a chess piece on the chessboard
@@ -80,6 +85,11 @@ public class ChessBoard {
     public ChessGame.TeamColor getPieceColor(ChessPosition position) {
         if (getPiece(position) == null) return null;
         return positions[position.getRank() - 1][position.getFile() - 1].getTeamColor();
+    }
+
+    public Collection<ChessMove> getPieceMoves(ChessPosition position) {
+        if (getPiece(position) == null) return null;
+        return getPiece(position).pieceMoves();
     }
 
     /**
@@ -182,6 +192,32 @@ public class ChessBoard {
             System.out.println(row);
         }
         System.out.println("   A B C D E F G H\n");
+    }
+
+    // Incomplete FEN needs castleing info and more
+    public String getPositionFen() {
+        int blank = 0;
+        char nextChar;
+        StringBuilder fen = new StringBuilder();
+        for (ChessPiece[] row : positions) {
+            for (ChessPiece piece : row) {
+                if (piece == null) {
+                    blank += 1;
+                    continue;
+                }
+                if (blank > 0) {
+                    fen.append(Integer.toString(blank));
+                    blank = 0;
+                }
+                fen.append(piece.getCode());
+            }
+            if (blank > 0) {
+                fen.append(Integer.toString(blank));
+                blank = 0;
+            }
+            fen.append('/');
+        }
+        return fen.substring(0, fen.length() - 1);
     }
 }
 
