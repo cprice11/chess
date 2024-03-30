@@ -60,7 +60,7 @@ public class ChessPiece {
         return (color == that.getTeamColor() && type == that.type());
     }
 
-    public Collection<ChessMove> PieceMoves() {
+    public Collection<ChessMove> pieceMoves() {
         return moves;
     }
 
