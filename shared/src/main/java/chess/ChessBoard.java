@@ -1,6 +1,7 @@
 package chess;
+
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -16,8 +17,14 @@ public class ChessBoard {
     private static final String TERNARY_START = "\u001B[43m";
     private static final String NEGATIVE_HIGHLIGHT = "\u001B[41m";
 
-    private ChessPiece[][] positions;
-    private Highlight[][] highlightedPositions;
+    private static final String LIGHT_PIECE = "\033[38;5;15m";
+    private static final String DARK_PIECE = "\033[38;5;16m";
+    private static final String DARK_SQUARE = "\033[48;5;22m";
+    private static final String LIGHT_SQUARE = "\033[48;5;65m";
+
+
+    private final ChessPiece[][] positions;
+    private final Highlight[][] highlightedPositions;
 
     public enum Highlight {
         PRIMARY,
@@ -76,6 +83,18 @@ public class ChessBoard {
         return positions[position.getRank() - 1][position.getFile() - 1];
     }
 
+    public HashMap<ChessPosition, ChessPiece> getPieces() {
+        HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
+        for (int i = 0; i < positions.length; i++) {
+            for (int j = 0; j < positions[i].length; j++) {
+                ChessPiece square = positions[7 - i][j];
+                if (square == null) continue;
+                pieces.put(new ChessPosition(8 - i, j + 1), square);
+            }
+        }
+        return pieces;
+    }
+
     /**
      * Gets the color of a piece on the chessboard
      *
@@ -85,11 +104,6 @@ public class ChessBoard {
     public ChessGame.TeamColor getPieceColor(ChessPosition position) {
         if (getPiece(position) == null) return null;
         return positions[position.getRank() - 1][position.getFile() - 1].getTeamColor();
-    }
-
-    public Collection<ChessMove> getPieceMoves(ChessPosition position) {
-        if (getPiece(position) == null) return null;
-        return getPiece(position).pieceMoves(this, position);
     }
 
     /**
@@ -194,10 +208,53 @@ public class ChessBoard {
         System.out.println("   A B C D E F G H\n");
     }
 
+    public void pprintBoard() {
+        pprintBoard(false);
+    }
+    public void pprintBoard(boolean symbol) {
+        for (int i = 0; i < positions.length; i++) {
+            System.out.print(BOARD_SIZE - i);
+            System.out.print(' ');
+            StringBuilder row = new StringBuilder();
+            for (int j = 0; j < positions[i].length; j++) {
+                ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
+                ChessPiece piece = getPiece(position);
+                Highlight highlightColor = getHighlight(position);
+
+                // set color according to highlights
+                String nextHighlight;
+                // Background
+                if (highlightColor != Highlight.NONE) {
+                    nextHighlight = switch (highlightColor) {
+                        case PRIMARY   -> PRIMARY_START;
+                        case SECONDARY -> SECONDARY_START;
+                        case TERNARY   -> TERNARY_START;
+                        case NEGATIVE  -> NEGATIVE_HIGHLIGHT;
+                        default -> "\0";
+                    };
+                } else {
+                    nextHighlight = ((i + j) % 2 == 1)? DARK_SQUARE: LIGHT_SQUARE;
+                }
+                // Foreground
+                if (piece != null) {
+                    nextHighlight += (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? LIGHT_PIECE : DARK_PIECE;
+                }
+                row.append(nextHighlight);
+
+                String pieceSymbol = (piece == null)? " " : piece.getSymbol(symbol, true);
+
+                String nextSquare = " " + pieceSymbol + " ";
+                row.append(nextSquare);
+                row.append(RESET_HIGHLIGHT);
+            }
+            System.out.println(row);
+        }
+        System.out.println("   A  B  C  D  E  F  G  H\n");
+    }
+
     // Incomplete FEN needs castleing info and more
     public String getPositionFen() {
         int blank = 0;
-        char nextChar;
         StringBuilder fen = new StringBuilder();
         for (ChessPiece[] row : positions) {
             for (ChessPiece piece : row) {
@@ -206,13 +263,13 @@ public class ChessBoard {
                     continue;
                 }
                 if (blank > 0) {
-                    fen.append(Integer.toString(blank));
+                    fen.append(blank);
                     blank = 0;
                 }
                 fen.append(piece.getCode());
             }
             if (blank > 0) {
-                fen.append(Integer.toString(blank));
+                fen.append(blank);
                 blank = 0;
             }
             fen.append('/');
