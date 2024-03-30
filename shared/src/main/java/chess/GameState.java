@@ -3,12 +3,17 @@ package chess;
 import java.util.Vector;
 
 public class GameState {
-    ChessGame.TeamColor turn;
-    ChessBoard board;
-    boolean whiteIsInCheck;
-    boolean blackIsInCheck;
-    boolean isCheckmate;
-    boolean isStalemate;
+    private ChessGame.TeamColor turn;
+    private ChessBoard board;
+    private boolean whiteIsInCheck;
+    private boolean blackIsInCheck;
+    private boolean whiteIsInCheckmate;
+    private boolean blackIsInCheckmate;
+    private boolean whiteIsInStalemate;
+    private boolean blackIsInStalemate;
+    private boolean whiteKingHasMoved;
+    private boolean blackKingHasMoved;
+    
     Vector<ChessMove> history;
 
     public GameState() {
@@ -18,8 +23,7 @@ public class GameState {
     }
 
     public GameState(ChessBoard board, ChessGame.TeamColor turn) {
-        turn = ChessGame.TeamColor.WHITE;
-        board = new ChessBoard();
+        this.board = board;
         board.resetBoard();
     }
 
@@ -28,54 +32,62 @@ public class GameState {
         throw new RuntimeException("Not implemented");
     }
 
-    public ChessBoard getBoard() {
+    public ChessBoard board() {
         return board;
     }
 
-    public void setBoard(ChessBoard board) {
+    public void board(ChessBoard board) {
         this.board = board;
     }
 
-    public ChessGame.TeamColor getTurn() {
+    public ChessGame.TeamColor turn() {
         return turn;
     }
-
-    public void setTurn(ChessGame.TeamColor turn) {
+    public void turn(ChessGame.TeamColor turn) {
         this.turn = turn;
     }
 
-    public boolean isInCheck(ChessGame.TeamColor team) {
-        boolean inCheck = (team == ChessGame.TeamColor.WHITE)? whiteIsInCheck : blackIsInCheck;
-        return inCheck;
+    public boolean check() {
+        return whiteIsInCheck || blackIsInCheck;
+    }
+    public boolean check(ChessGame.TeamColor team) {
+        return (team == ChessGame.TeamColor.WHITE)? whiteIsInCheck : blackIsInCheck;
+    }
+    public void check(ChessGame.TeamColor color, boolean check) {
+        if (color == ChessGame.TeamColor.WHITE) whiteIsInCheck = check;
+        else blackIsInCheck = check;
+    }
+    
+    public boolean checkmate() {
+        return whiteIsInCheckmate || blackIsInCheckmate;
+    }
+    public boolean checkmate(ChessGame.TeamColor color) {
+        return  (color == ChessGame.TeamColor.WHITE)? whiteIsInCheckmate : blackIsInCheckmate;
+    }
+    public void checkmate(ChessGame.TeamColor color, boolean checkmate) {
+        if (color == ChessGame.TeamColor.WHITE) whiteIsInCheckmate = checkmate;
+        else blackIsInCheckmate = checkmate;
     }
 
-    public void setInCheck(ChessGame.TeamColor color, boolean inCheck) {
-        if (color == ChessGame.TeamColor.WHITE) whiteIsInCheck = inCheck;
-        else blackIsInCheck = inCheck;
+    public boolean stalemate() {
+        return whiteIsInStalemate || blackIsInStalemate;
+    }
+    public boolean stalemate(ChessGame.TeamColor color) {
+        return  (color == ChessGame.TeamColor.WHITE)? whiteIsInStalemate : blackIsInStalemate;
+    }
+    public void stalemate(ChessGame.TeamColor color, boolean stalemate) {
+        if (color == ChessGame.TeamColor.WHITE) whiteIsInStalemate = stalemate;
+        else blackIsInStalemate = stalemate;
     }
 
-    public boolean isCheckmate() {
-        return isCheckmate;
+    public boolean kingMove() {
+        return whiteKingHasMoved || blackKingHasMoved;
     }
-
-    public void setCheckmate(boolean checkmate) {
-        isCheckmate = checkmate;
+    public boolean kingMove(ChessGame.TeamColor color) {
+        return  (color == ChessGame.TeamColor.WHITE)? whiteKingHasMoved : blackKingHasMoved;
     }
-
-    public boolean isStalemate() {
-        return isStalemate;
+    public void kingMove(ChessGame.TeamColor color, boolean kingMove) {
+        if (color == ChessGame.TeamColor.WHITE) whiteKingHasMoved = kingMove;
+        else blackKingHasMoved = kingMove;
     }
-    public void setStalemate(boolean stalemate) {
-        isStalemate = stalemate;
-    }
-
-    public boolean isInStalemate(ChessGame.TeamColor team) {
-        throw new RuntimeException("Not implemented");
-    }
-
-    public boolean isInCheckmate(ChessGame.TeamColor team) {
-        throw new RuntimeException("Not implemented");
-    }
-
-
 }
