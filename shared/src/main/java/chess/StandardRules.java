@@ -28,27 +28,33 @@ public class StandardRules implements RuleSet{
     public GameState getStartingGameState() {
         return startingState;
     }
-    public boolean isBoardValid(ChessBoard board) {
+    public boolean isBoardValid(GameState state) {
         throw new RuntimeException("Not implemented");
     }
-    public boolean isInCheck(ChessBoard board, ChessGame.TeamColor color) {
+    public boolean isInCheck(GameState state, ChessGame.TeamColor color) {
         throw new RuntimeException("Not implemented");
     }
-    public boolean isInCheckmate(ChessBoard board, ChessGame.TeamColor color) {
-        throw new RuntimeException("Not implemented");
+    public boolean isInCheckmate(GameState state, ChessGame.TeamColor color) {
+        return isInCheck(state, color);
     }
-    public boolean isInStalemate(ChessBoard board, ChessGame.TeamColor color) {
+    public boolean isInStalemate(GameState state, ChessGame.TeamColor color) {
         throw new RuntimeException("Not implemented");
     }
     
     private Collection<ChessMove> getKingMoves(GameState state, ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        HashSet <ChessMove> moves = new HashSet<ChessMove>();
+        moves.addAll(getDiagonalSlidePositions(state, position, 1));
+        moves.addAll(getOrthogonalSlidePositions(state, position, 1));
+        return moves;
     }
     private Collection<ChessMove> getQueenMoves(GameState state, ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        HashSet <ChessMove> moves = new HashSet<ChessMove>();
+        moves.addAll(getDiagonalSlidePositions(state, position, 7));
+        moves.addAll(getOrthogonalSlidePositions(state, position, 7));
+        return moves;
     }
     private Collection<ChessMove> getBishopMoves(GameState state, ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        return getDiagonalSlidePositions(state, position, 7);
     }
     private Collection<ChessMove> getKnightMoves(GameState state, ChessPosition position, ChessPiece piece) {
         int currRank = position.getRank();
@@ -81,7 +87,7 @@ public class StandardRules implements RuleSet{
         return moves;
     }
     private Collection<ChessMove> getRookMoves(GameState state, ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        return getOrthogonalSlidePositions(state, position, 7);
     }
     private Collection<ChessMove> getPawnMoves(GameState state, ChessPosition position, ChessPiece piece) {
         int currRank = position.getRank();

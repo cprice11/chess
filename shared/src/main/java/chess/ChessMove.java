@@ -51,14 +51,14 @@ public final class ChessMove {
     /**
      * @return ChessPosition of starting location
      */
-    public ChessPosition startPosition() {
+    public ChessPosition getStartPosition() {
         return startPosition;
     }
 
     /**
      * @return ChessPosition of ending location
      */
-    public ChessPosition endPosition() {
+    public ChessPosition getEndPosition() {
         return endPosition;
     }
 
@@ -68,7 +68,7 @@ public final class ChessMove {
      *
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
-    public ChessPiece.PieceType promotionPiece() {
+    public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
     }
 

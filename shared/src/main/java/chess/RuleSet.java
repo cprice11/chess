@@ -5,8 +5,8 @@ import java.util.Collection;
 public interface RuleSet {
     GameState getStartingGameState();
     Collection<ChessMove> getValidMoves(GameState state, ChessPosition position);
-    boolean isBoardValid(ChessBoard board);
-    boolean isInCheck(ChessBoard board, ChessGame.TeamColor color);
-    boolean isInCheckmate(ChessBoard board, ChessGame.TeamColor color);
-    boolean isInStalemate(ChessBoard board, ChessGame.TeamColor color);
+    boolean isBoardValid(GameState state);
+    boolean isInCheck(GameState state, ChessGame.TeamColor color);
+    boolean isInCheckmate(GameState state, ChessGame.TeamColor color);
+    boolean isInStalemate(GameState state, ChessGame.TeamColor color);
 }
