@@ -21,28 +21,28 @@ public class ChessPosition {
         this.col = this.file = file;
         switch (this.file) {
             case 1:
-                fileLetter = 'A';
+                fileLetter = 'a';
                 break;
             case 2:
-                fileLetter = 'B';
+                fileLetter = 'b';
                 break;
             case 3:
-                fileLetter = 'C';
+                fileLetter = 'c';
                 break;
             case 4:
-                fileLetter = 'D';
+                fileLetter = 'd';
                 break;
             case 5:
-                fileLetter = 'E';
+                fileLetter = 'e';
                 break;
             case 6:
-                fileLetter = 'F';
+                fileLetter = 'f';
                 break;
             case 7:
-                fileLetter = 'G';
+                fileLetter = 'g';
                 break;
             case 8:
-                fileLetter = 'I';
+                fileLetter = 'h';
                 break;
             default:
                 fileLetter = '-';

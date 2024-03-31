@@ -1,6 +1,10 @@
 # My Notes
 ## Christian Price
 
+## TODOS
+
+clean up tests one by one.
+
 The class structure for this project is a little odd.
 
 So far some interfaces are set in stone, so what remains is to organize from those end points

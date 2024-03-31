@@ -35,6 +35,19 @@ public class ChessPiece {
         type = pieceType;
     }
 
+    public ChessPiece(char symbol) {
+        color = (Character.isUpperCase(symbol))? ChessGame.TeamColor.WHITE: ChessGame.TeamColor.BLACK;
+        type = switch (Character.toUpperCase(symbol)) {
+            case 'K' -> PieceType.KING;
+            case 'Q' -> PieceType.QUEEN;
+            case 'B' -> PieceType.BISHOP;
+            case 'N' -> PieceType.KNIGHT;
+            case 'R' -> PieceType.ROOK;
+            case 'P' -> PieceType.PAWN;
+            default -> throw new RuntimeException("Unexpected symbol for piece");
+        };
+    }
+
     @Override
     public int hashCode() {
         return super.hashCode();
@@ -106,6 +119,44 @@ public class ChessPiece {
         };
     }
 
+    public String getSymbol() {
+        return switch (type) {
+            case PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? "♙" : "♟";
+            case PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? "♖" : "♜";
+            case PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? "♘" : "♞";
+            case PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? "♗" : "♝";
+            case PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? "♕" : "♛";
+            case PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? "♔" : "♚";
+            default -> " ";
+        };
+    }
+
+    public String getSymbol(boolean symbol) {
+        if (!symbol) return String.valueOf(getCode());
+        return switch (type) {
+            case PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? "♟" : "♙";
+            case PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? "♜" : "♖";
+            case PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? "♞" : "♘";
+            case PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? "♝" : "♗";
+            case PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? "♛" : "♕";
+            case PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? "♚" : "♔";
+            default -> " ";
+        };
+    }
+
+    public String getSymbol(boolean symbol, boolean solid) {
+        if (!symbol) return String.valueOf(getCode());
+        return switch (type) {
+            case PieceType.PAWN   -> (solid) ? "♟" : "♙";
+            case PieceType.ROOK   -> (solid) ? "♜" : "♖";
+            case PieceType.KNIGHT -> (solid) ? "♞" : "♘";
+            case PieceType.BISHOP -> (solid) ? "♝" : "♗";
+            case PieceType.QUEEN  -> (solid) ? "♛" : "♕";
+            case PieceType.KING   -> (solid) ? "♚" : "♔";
+            default -> " ";
+        };
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -118,21 +169,21 @@ public class ChessPiece {
         ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
         switch (piece) {
             case KING:
-                moves.addAll(getOrthogonalSlideMoves(board, myPosition, 1));
-                moves.addAll(getDiagonalSlideMoves(board, myPosition, 1));
+                moves.addAll(getOrthogonalSlidePositions(board, myPosition, 1));
+                moves.addAll(getDiagonalSlidePositions(board, myPosition, 1));
                 break;
             case QUEEN:
-                moves.addAll(getOrthogonalSlideMoves(board, myPosition, 7));
-                moves.addAll(getDiagonalSlideMoves(board, myPosition, 7));
+                moves.addAll(getOrthogonalSlidePositions(board, myPosition, 7));
+                moves.addAll(getDiagonalSlidePositions(board, myPosition, 7));
                 break;
             case BISHOP:
-                moves.addAll(getDiagonalSlideMoves(board, myPosition, 7));
+                moves.addAll(getDiagonalSlidePositions(board, myPosition, 7));
                 break;
             case KNIGHT:
                 moves.addAll(getKnightMoves(board, myPosition));
                 break;
             case ROOK:
-                moves.addAll(getOrthogonalSlideMoves(board, myPosition, 7));
+                moves.addAll(getOrthogonalSlidePositions(board, myPosition, 7));
                 break;
             case PAWN:
                 moves.addAll(getPawnMoves(board, myPosition));
@@ -140,14 +191,10 @@ public class ChessPiece {
             default:
                 throw new RuntimeException("Nonexistent Piece");
         }
-        board.printBoard();
-//        for (ChessMove move : moves) {
-//            System.out.println(move.getEndPosition().toString());
-//        }
+        board.pprintBoard();
         return moves;
     }
 
-    // TODO: en pessant
     /**
      * Gets available pawn moves for a position.
      *
@@ -167,8 +214,6 @@ public class ChessPiece {
         // Captures
         availablePositions.addAll(getSlidePositions(board, position, advanceDirection, 1, 1, true));
         availablePositions.addAll(getSlidePositions(board, position, advanceDirection, -1, 1, true));
-        // TODO: en pessant
-        // en passant logic would replace this V
         availablePositions.removeIf(capturePosition -> board.getPiece(capturePosition) == null);
         board.resetHighlight();
         for (ChessPosition nextPosition : availablePositions) {
@@ -176,7 +221,7 @@ public class ChessPiece {
         }
 
         // starting jump
-        if (position.getRank() == 1) {
+        if (position.getRank() == 1) {  // FIXME
             availablePositions.addAll(getSlidePositions(board, position, advanceDirection, 0, 2, false));
         } else {
             availablePositions.addAll(getSlidePositions(board, position, advanceDirection, 0, 1, false));
@@ -242,7 +287,7 @@ public class ChessPiece {
      * @param maxDist       Max number of squares the piece is allowed to move
      * @return              A collection of ChessMoves available to the position in the given direction.
      */
-    private Collection<ChessMove> getOrthogonalSlideMoves(ChessBoard board, ChessPosition position, int maxDist) {
+    private Collection<ChessMove> getOrthogonalSlidePositions(ChessBoard board, ChessPosition position, int maxDist) {
         ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
         moves.addAll(getSlideMoves(board, position, 1, 0, maxDist, true));
         moves.addAll(getSlideMoves(board, position, -1, 0, maxDist, true));
@@ -259,7 +304,7 @@ public class ChessPiece {
      * @param maxDist       Max number of squares the piece is allowed to move
      * @return              A collection of ChessMoves available to the position in the given direction.
      */
-    private Collection<ChessMove> getDiagonalSlideMoves(ChessBoard board, ChessPosition position, int maxDist) {
+    private Collection<ChessMove> getDiagonalSlidePositions(ChessBoard board, ChessPosition position, int maxDist) {
         ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
         moves.addAll(getSlideMoves(board, position, 1, 1, maxDist, true));
         moves.addAll(getSlideMoves(board, position, -1, 1, maxDist, true));
@@ -366,5 +411,7 @@ public class ChessPiece {
         return moves;
     }
 
-
+    public String toString() {
+        return String.valueOf(getCode());
+    }
 }

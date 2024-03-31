@@ -10,7 +10,6 @@ import java.util.HashSet;
  * signature of the existing methods.
  */
 public class ChessGame {
-    RuleSet gameRules;
     GameState state;
 
 
@@ -24,10 +23,28 @@ public class ChessGame {
 
 
     public ChessGame() {
-        gameRules = new StandardRules();
-        state = gameRules.getStartingGameState();
+        state = new GameState();
     }
 
+    public ChessGame(GameState state) {
+        this.state = state;
+    }
+
+
+
+    public GameState state(){
+        return state;
+    }
+
+    public void state(GameState state){
+        this.state = state;
+    }
+
+
+
+//    public void loadFen(String fenString) {
+//        state.board().loadFenPosition(fenString);
+//    }
 
     // moves
     /**
@@ -40,7 +57,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         if (state.board().getPiece(startPosition) == null) return null;
-        return gameRules.getValidMoves(state, startPosition);
+        return state.getValidMoves(startPosition);
     }
 
     /**
@@ -50,6 +67,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        state.makeMove(move);
+    }
+
+    public void makeMove(String move) throws InvalidMoveException {
         state.makeMove(move);
     }
 

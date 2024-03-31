@@ -97,11 +97,11 @@ public final class ChessMove {
 
     public static class MoveBuilder{
         // required
-        public final ChessPiece piece;
         public final ChessPosition startPosition;
         public final ChessPosition endPosition;
 
         // optional
+        public ChessPiece piece;
         public ChessPiece.PieceType promotionPiece;
         public boolean isCapture;
         public boolean isCheck;
@@ -111,10 +111,13 @@ public final class ChessMove {
         public boolean longCastle;
         public boolean offerDraw;
 
-        public MoveBuilder(ChessPiece piece, ChessPosition startPosition, ChessPosition endPosition) {
-            this.piece = piece;
+        public MoveBuilder(ChessPosition startPosition, ChessPosition endPosition) {
             this.startPosition = startPosition;
             this.endPosition = endPosition;
+        }
+        public MoveBuilder withPiece(ChessPiece piece) {
+            this.piece = piece;
+            return this;
         }
 
         public MoveBuilder withPromotion(ChessPiece.PieceType promotionPiece) {

@@ -1,34 +1,38 @@
 package chess;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 public class StandardRules implements RuleSet{
     private final int BOARD_SIZE = 8;
-    GameState startingState = new GameState();
+    private static final String STARTING_LAYOUT = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
     
     public StandardRules() {
         
     }
 
+    public Collection<ChessMove> getAllValidMoves(GameState state) {
+        state.board().printBoard();
+        HashSet<ChessMove> validMoves = new HashSet<>();
+        HashMap<ChessPosition, ChessPiece> piecePositions = state.board().getPieces();
+        for (Map.Entry<ChessPosition, ChessPiece> pair: piecePositions.entrySet()) {
+            ChessPiece piece = pair.getValue();
+            ChessPosition position = pair.getKey();
+            if (piece.getTeamColor() == state.turn()) {
+                validMoves.addAll(getValidMoves(state, position));
+            }
+        }
+        return validMoves;
+    }
+
     public Collection<ChessMove> getValidMoves(GameState state, ChessPosition position) {
         state.board().printBoard();
-        ChessPiece piece= state.board().getPiece(position);
-        Collection<ChessMove> possibleMoves =  switch (piece.getPieceType()) {
-            case KING   -> getKingMoves(state, position, piece);
-            case QUEEN  -> getQueenMoves(state, position, piece);
-            case BISHOP -> getBishopMoves(state, position, piece);
-            case KNIGHT -> getKnightMoves(state, position, piece);
-            case ROOK   -> getRookMoves(state, position, piece);
-            case PAWN   -> getPawnMoves(state, position, piece);
-            default -> null;
-        };
-        piece.setPieceMoves(possibleMoves);
+        ChessPiece piece = state.board().getPiece(position);
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(state.board(), position);
+
         // TODO: add checks for check and such
         return possibleMoves;
     }
-    public GameState getStartingGameState() {
-        return startingState;
+    public final String getStartingGameState() {
+        return STARTING_LAYOUT;
     }
     public boolean isBoardValid(GameState state) {
         throw new RuntimeException("Not implemented");
@@ -41,6 +45,23 @@ public class StandardRules implements RuleSet{
     }
     public boolean isInStalemate(GameState state, ChessGame.TeamColor color) {
         throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessPosition> getThreatenedSquares(GameState state, ChessGame.TeamColor color) {
+        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+        HashSet<ChessPosition> squares = new HashSet<ChessPosition>();
+        for (Map.Entry<ChessPosition, ChessPiece> pair : state.board().getPieces().entrySet()) {
+            if (pair.getValue().getTeamColor() == color) {
+                moves.addAll(pair.getValue().pieceMoves(state.board(), pair.getKey()));
+            }
+        }
+        for (ChessMove move: moves) {
+            ChessPosition threat = move.getEndPosition();
+            state.board().highlightPosition(threat, ChessBoard.Highlight.PRIMARY);
+            squares.add(threat);
+        }
+        state.board().printBoard();
+        return squares;
     }
     
     private Collection<ChessMove> getKingMoves(GameState state, ChessPosition position, ChessPiece piece) {
@@ -110,12 +131,8 @@ public class StandardRules implements RuleSet{
         ChessPosition capLeft  = new ChessPosition(currRank + advanceDirection, currFile - 1);
         ChessPosition epRight = new ChessPosition(currRank, currFile + 1);
         ChessPosition epLeft  = new ChessPosition(currRank, currFile - 1);
-        ChessPosition epPrevRight = new ChessPosition(currRank + (2 * advanceDirection), currFile + 1);
-        ChessPosition epPrevLeft  = new ChessPosition(currRank + (2 * advanceDirection), currFile - 1);
-
         ChessPosition[] captures = {capLeft, capRight};
         ChessPosition[] epcaptures = {epLeft, epRight};
-
 
         // pushing
         if (!isOffBoard(advOne) && state.getPiece(advOne) == null) {
@@ -133,18 +150,25 @@ public class StandardRules implements RuleSet{
         }
 
         for (ChessPosition passedSquare : epcaptures) {
-            if (state.getPiece(passedSquare) != null && state.getPiece(passedSquare).getTeamColor() != color) {
-                ChessMove lastMove = state.getLastMove();
-                if (lastMove.endPosition == passedSquare &&
-                        lastMove.piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                    ChessPosition epPrev = new ChessPosition(currRank + (2 * advanceDirection), passedSquare.getFile());
-                    if (lastMove.startPosition == epPrev) {
-                        ChessMove nextMove = new ChessMove.MoveBuilder(piece, position, passedSquare)
-                                .isCapture().enPassant().build();
-                        moves.add(nextMove);
-                    }
-                }
+            if (state.getPiece(passedSquare) == null || state.getPiece(passedSquare).getTeamColor() == color) {
+                continue;
             }
+            ChessMove lastMove = state.getLastMove();
+            if (lastMove.endPosition != passedSquare ||
+                    lastMove.piece == null ||
+                    lastMove.piece.getPieceType() != ChessPiece.PieceType.PAWN) {
+                continue;
+            }
+            ChessPosition epPrev = new ChessPosition(currRank + (2 * advanceDirection), passedSquare.getFile());
+            if (lastMove.startPosition.equals(epPrev)) {
+                continue;
+            }
+            ChessMove nextMove = new ChessMove.MoveBuilder(position, passedSquare)
+                    .withPiece(piece)
+                    .isCapture()
+                    .enPassant()
+                    .build();
+            moves.add(nextMove);
         }
 
 

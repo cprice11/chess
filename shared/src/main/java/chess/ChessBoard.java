@@ -22,9 +22,28 @@ public class ChessBoard {
     private static final String DARK_SQUARE = "\033[48;5;22m";
     private static final String LIGHT_SQUARE = "\033[48;5;65m";
 
+    public boolean printSymbols = true;
 
     private final ChessPiece[][] positions;
     private final Highlight[][] highlightedPositions;
+
+    public boolean isPrintSymbols() {
+        return printSymbols;
+    }
+
+    public void setPrintSymbols(boolean printSymbols) {
+        this.printSymbols = printSymbols;
+    }
+
+    public ChessPiece[][] getPositions() {
+        return positions;
+    }
+
+    public Highlight[][] getHighlightedPositions() {
+        return highlightedPositions;
+    }
+
+
 
     public enum Highlight {
         PRIMARY,
@@ -160,6 +179,12 @@ public class ChessBoard {
         resetHighlight();
     }
 
+    public void clearBoard() {
+        for (int i = 0; i < positions.length; i++) {
+            positions[i] = new ChessPiece[BOARD_SIZE];
+        }
+    }
+
     /**
      * Removes all highlight marks from board
      */
@@ -173,49 +198,19 @@ public class ChessBoard {
      * Prints board to console with white pieces in capital letters
      */
     public void printBoard() {
-        boolean currentlyHighlighting = false;
-        for (int i = 0; i < positions.length; i++) {
-            System.out.print(BOARD_SIZE - i);
-            System.out.print(' ');
-            StringBuilder row = new StringBuilder();
-            for (int j = 0; j < positions[i].length; j++) {
-                ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
-                ChessPiece piece = getPiece(position);
-                Highlight highlightColor = getHighlight(position);
-                if (currentlyHighlighting) row.append(RESET_HIGHLIGHT);
-                row.append('|');
-
-                // set color according to highlights
-                if (highlightColor != Highlight.NONE) {
-                    String nextHighlightChar = switch (highlightColor) {
-                        case PRIMARY   -> PRIMARY_START;
-                        case SECONDARY -> SECONDARY_START;
-                        case TERNARY   -> TERNARY_START;
-                        case NEGATIVE  -> NEGATIVE_HIGHLIGHT;
-                        default -> "\0";
-                    };
-                    currentlyHighlighting = true;
-                    row.append(nextHighlightChar);
-                }
-
-                char nextChar = (piece == null)? ' ' : piece.getCode();
-                row.append(nextChar);
-            }
-            if (currentlyHighlighting) row.append(RESET_HIGHLIGHT);
-            row.append('|');
-            System.out.println(row);
-        }
-        System.out.println("   A B C D E F G H\n");
+        System.out.println(toString());
     }
 
     public void pprintBoard() {
-        pprintBoard(false);
+        System.out.println(prettyToString());
+
     }
-    public void pprintBoard(boolean symbol) {
+
+    public String prettyToString() {
+        StringBuilder board = new StringBuilder();
         for (int i = 0; i < positions.length; i++) {
-            System.out.print(BOARD_SIZE - i);
-            System.out.print(' ');
-            StringBuilder row = new StringBuilder();
+            board.append(BOARD_SIZE - i);
+            board.append(' ');
             for (int j = 0; j < positions[i].length; j++) {
                 ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
                 ChessPiece piece = getPiece(position);
@@ -239,42 +234,57 @@ public class ChessBoard {
                 if (piece != null) {
                     nextHighlight += (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? LIGHT_PIECE : DARK_PIECE;
                 }
-                row.append(nextHighlight);
+                board.append(nextHighlight);
 
-                String pieceSymbol = (piece == null)? " " : piece.getSymbol(symbol, true);
+                String pieceSymbol = (piece == null)? " " : piece.getSymbol(printSymbols, true);
 
-                String nextSquare = " " + pieceSymbol + " ";
-                row.append(nextSquare);
-                row.append(RESET_HIGHLIGHT);
+                // String nextSquare = " " + pieceSymbol + " ";
+                String nextSquare = pieceSymbol;
+                board.append(nextSquare);
+                board.append(RESET_HIGHLIGHT);
             }
-            System.out.println(row);
+            board.append('\n');
         }
-        System.out.println("   A  B  C  D  E  F  G  H\n");
+        board.append("   A  B  C  D  E  F  G  H\n");
+        return board.toString();
     }
 
-    // Incomplete FEN needs castleing info and more
-    public String getPositionFen() {
-        int blank = 0;
-        StringBuilder fen = new StringBuilder();
-        for (ChessPiece[] row : positions) {
-            for (ChessPiece piece : row) {
-                if (piece == null) {
-                    blank += 1;
-                    continue;
+    public String toString() {
+        StringBuilder board = new StringBuilder();
+        boolean currentlyHighlighting = false;
+        for (int i = 0; i < positions.length; i++) {
+            System.out.print(BOARD_SIZE - i);
+            System.out.print(' ');
+
+            for (int j = 0; j < positions[i].length; j++) {
+                ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
+                ChessPiece piece = getPiece(position);
+                Highlight highlightColor = getHighlight(position);
+                if (currentlyHighlighting) board.append(RESET_HIGHLIGHT);
+                board.append('|');
+
+                // set color according to highlights
+                if (highlightColor != Highlight.NONE) {
+                    String nextHighlightChar = switch (highlightColor) {
+                        case PRIMARY   -> PRIMARY_START;
+                        case SECONDARY -> SECONDARY_START;
+                        case TERNARY   -> TERNARY_START;
+                        case NEGATIVE  -> NEGATIVE_HIGHLIGHT;
+                        default -> "\0";
+                    };
+                    currentlyHighlighting = true;
+                    board.append(nextHighlightChar);
                 }
-                if (blank > 0) {
-                    fen.append(blank);
-                    blank = 0;
-                }
-                fen.append(piece.getCode());
+
+                char nextChar = (piece == null)? ' ' : piece.getCode();
+                board.append(nextChar);
             }
-            if (blank > 0) {
-                fen.append(blank);
-                blank = 0;
-            }
-            fen.append('/');
+            if (currentlyHighlighting) board.append(RESET_HIGHLIGHT);
+            board.append('|');
+            board.append('\n');
         }
-        return fen.substring(0, fen.length() - 1);
+        board.append("   A B C D E F G H\n");
+        return board.toString();
     }
 }
 
