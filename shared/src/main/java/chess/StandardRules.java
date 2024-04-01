@@ -38,8 +38,29 @@ public class StandardRules implements RuleSet{
         throw new RuntimeException("Not implemented");
     }
     public boolean isInCheck(GameState state, ChessGame.TeamColor color) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = getKingPosition(state, color);
+        ChessGame.TeamColor otherTeam  = (color == ChessGame.TeamColor.WHITE)? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        if (getSquaresThreatenedBy(state, otherTeam).contains(kingPosition)) return true;
+        return false;
     }
+
+    private Collection<ChessPosition> getSquaresThreatenedBy(GameState state, ChessGame.TeamColor otherTeam) {
+        throw new RuntimeException("Not Implimented");
+//        ChessPosition[] pieces = getPiecePositions(state, otherTeam).toArray(new ChessPosition[0]);
+//        HashSet<ChessPosition> squares = new HashSet<>();
+//        for (ChessPosition piece : pieces) {
+//            squares.addAll(state.board().getPiece(piece).pieceMoves(state.board(), piece));
+//        }
+    }
+
+    private ChessPosition getAvailableCaptures(GameState state, ChessGame.TeamColor color) {
+        throw new RuntimeException("Not Implimented");
+    }
+
+    private ChessPosition getAvailableCaptures(GameState state) {
+        return getAvailableCaptures(state, state.turn());
+    }
+
     public boolean isInCheckmate(GameState state, ChessGame.TeamColor color) {
         return isInCheck(state, color);
     }
@@ -47,6 +68,25 @@ public class StandardRules implements RuleSet{
         throw new RuntimeException("Not implemented");
     }
 
+    private ChessPosition getKingPosition(GameState state, ChessGame.TeamColor color) {
+        for (ChessPosition position: getPiecePositions(state, color)) {
+            ChessPiece piece = state.getPiece(position);
+            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                return position;
+            }
+        }
+        throw new RuntimeException("NO KING ON BOARD");
+    }
+
+    private Collection<ChessPosition> getPiecePositions(GameState state, ChessGame.TeamColor color) {
+        ArrayList<ChessPosition> piecePositions = new ArrayList<>();
+        for (Map.Entry<ChessPosition, ChessPiece> entry: state.board().getPieces().entrySet()) {
+            if (entry.getValue().getTeamColor() == color) {
+                piecePositions.add(entry.getKey());
+            }
+        }
+        return (piecePositions);
+    }
     private Collection<ChessPosition> getThreatenedSquares(GameState state, ChessGame.TeamColor color) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         HashSet<ChessPosition> squares = new HashSet<ChessPosition>();
@@ -63,7 +103,8 @@ public class StandardRules implements RuleSet{
         state.board().printBoard();
         return squares;
     }
-    
+
+    /*
     private Collection<ChessMove> getKingMoves(GameState state, ChessPosition position, ChessPiece piece) {
         HashSet <ChessMove> moves = new HashSet<ChessMove>();
         moves.addAll(getDiagonalSlidePositions(state, position, 1));
@@ -135,7 +176,7 @@ public class StandardRules implements RuleSet{
         ChessPosition[] epcaptures = {epLeft, epRight};
 
         // pushing
-        if (!isOffBoard(advOne) && state.getPiece(advOne) == null) {
+        if (advOne.isOnBoard() && state.getPiece(advOne) == null) {
             availablePositions.add(advOne);
             if ((advanceDirection == 1 && currRank == 2 || advanceDirection == -1 && currRank == 7) &&
                     state.getPiece(advTwo) == null) {
@@ -166,7 +207,7 @@ public class StandardRules implements RuleSet{
             ChessMove nextMove = new ChessMove.MoveBuilder(position, passedSquare)
                     .withPiece(piece)
                     .isCapture()
-                    .enPassant()
+                    .enPassant(advOne)
                     .build();
             moves.add(nextMove);
         }
@@ -186,107 +227,107 @@ public class StandardRules implements RuleSet{
         }
         return moves;
     }
-
-    /**
-     * Gets available sliding moves in horizontal and vertical directions
-     *
-     * @param state         The current chess board
-     * @param position      The starting position to calculate moves from
-     * @param maxDist       Max number of squares the piece is allowed to move
-     * @return              A collection of ChessMoves available to the position in the given direction.
      */
-    private Collection<ChessMove> getOrthogonalSlidePositions(GameState state, ChessPosition position, int maxDist) {
-        HashSet <ChessMove> moves = new HashSet<ChessMove>();
-        moves.addAll(getSlideMoves(state, position, 1, 0, maxDist));
-        moves.addAll(getSlideMoves(state, position, -1, 0, maxDist));
-        moves.addAll(getSlideMoves(state, position, 0, 1, maxDist));
-        moves.addAll(getSlideMoves(state, position, 0, -1, maxDist));
-        return moves;
-    }
 
-    /**
-     * Gets available sliding moves in diagonal directions
-     *
-     * @param state         The current chess board
-     * @param position      The starting position to calculate moves from
-     * @param maxDist       Max number of squares the piece is allowed to move
-     * @return              A collection of ChessMoves available to the position in the given direction.
-     */
-    private Collection<ChessMove> getDiagonalSlidePositions(GameState state, ChessPosition position, int maxDist) {
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
-        moves.addAll(getSlideMoves(state, position, 1, 1, maxDist));
-        moves.addAll(getSlideMoves(state, position, -1, 1, maxDist));
-        moves.addAll(getSlideMoves(state, position, -1, -1, maxDist));
-        moves.addAll(getSlideMoves(state, position, 1, -1, maxDist));
-        return moves;
-    }
-
-    /**
-     * Gets positions available by sliding in one direction
-     * <p>
-     * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
-     * @param state         The current chess board
-     * @param position      The starting position to calculate moves from
-     * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @return              A collection of ChessMoves available to the position in the given direction.
-     */
-    private Collection<ChessMove> getSlideMoves(
-            GameState state,
-            ChessPosition position,
-            int rankIteration,
-            int fileIteration,
-            int maxDist) {
-        int currRank = position.getRank();
-        int currFile = position.getFile();
-        HashSet<ChessPosition> availablePositions = new HashSet<ChessPosition>();
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
-
-        int i = 1;
-        while (i <= maxDist) {
-            ChessPosition nextPosition = new ChessPosition(currRank + (i * rankIteration), currFile + (i * fileIteration));
-            if (isOffBoard(nextPosition)) break;
-            // empty squares
-            if (state.getPiece(nextPosition) == null){
-                availablePositions.add(nextPosition);
-                state.board().highlightPosition(nextPosition, ChessBoard.Highlight.PRIMARY);
-            }
-            // captures
-            else if (state.getPiece(nextPosition).getTeamColor() != state.getPiece(position).getTeamColor()) {
-                availablePositions.add(nextPosition);
-                state.board().highlightPosition(nextPosition, ChessBoard.Highlight.SECONDARY);
-                break; // Don't search past capture for sliding piece.
-            } else {
-                break;
-            }
-            i++;
-        }
-        return moves;
-    }
-
-    private boolean isOffBoard(ChessPosition position) {
-        return (position.getRank() > BOARD_SIZE || position.getRank() < 1) ||
-                (position.getFile() > BOARD_SIZE || position.getFile() < 1);
-    }
-
-    /**
-     * Returns a collection of ChessMoves with appropriate tags
-     * from a starting position and a collection of ChessPositions
-     * <p>
-     * @param startPosition The position the piece will move from
-     * @param positions     The collection of positions the piece can move to
-     * @return              A collection of ChessMove objects
-     */
-    private Collection<ChessMove> getMovesFromPositions(
-            GameState state,
-            ChessPosition startPosition,
-            Collection<ChessPosition> positions) {
-
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
-        for (ChessPosition endPosition : positions) {
-            moves.add(new ChessMove(startPosition, endPosition, null));
-        }
-        return moves;
-    }
+//
+//    /**
+//     * Gets available sliding moves in horizontal and vertical directions
+//     *
+//     * @param state         The current chess board
+//     * @param position      The starting position to calculate moves from
+//     * @param maxDist       Max number of squares the piece is allowed to move
+//     * @return              A collection of ChessMoves available to the position in the given direction.
+//     */
+//    private Collection<ChessMove> getOrthogonalSlidePositions(GameState state, ChessPosition position, int maxDist) {
+//        HashSet <ChessMove> moves = new HashSet<ChessMove>();
+//        moves.addAll(getSlideMoves(state, position, 1, 0, maxDist));
+//        moves.addAll(getSlideMoves(state, position, -1, 0, maxDist));
+//        moves.addAll(getSlideMoves(state, position, 0, 1, maxDist));
+//        moves.addAll(getSlideMoves(state, position, 0, -1, maxDist));
+//        return moves;
+//    }
+//
+//    /**
+//     * Gets available sliding moves in diagonal directions
+//     *
+//     * @param state         The current chess board
+//     * @param position      The starting position to calculate moves from
+//     * @param maxDist       Max number of squares the piece is allowed to move
+//     * @return              A collection of ChessMoves available to the position in the given direction.
+//     */
+//    private Collection<ChessMove> getDiagonalSlidePositions(GameState state, ChessPosition position, int maxDist) {
+//        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+//        moves.addAll(getSlideMoves(state, position, 1, 1, maxDist));
+//        moves.addAll(getSlideMoves(state, position, -1, 1, maxDist));
+//        moves.addAll(getSlideMoves(state, position, -1, -1, maxDist));
+//        moves.addAll(getSlideMoves(state, position, 1, -1, maxDist));
+//        return moves;
+//    }
+//
+//
+//    /**
+//     * Gets positions available by sliding in one direction
+//     * <p>
+//     * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
+//     * @param state         The current chess board
+//     * @param position      The starting position to calculate moves from
+//     * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
+//     * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
+//     * @return              A collection of ChessMoves available to the position in the given direction.
+//     */
+//    private Collection<ChessMove> getSlideMoves(
+//            GameState state,
+//            ChessPosition position,
+//            int rankIteration,
+//            int fileIteration,
+//            int maxDist) {
+//        int currRank = position.getRank();
+//        int currFile = position.getFile();
+//        HashSet<ChessPosition> availablePositions = new HashSet<ChessPosition>();
+//        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+//
+//        int i = 1;
+//        while (i <= maxDist) {
+//            ChessPosition nextPosition = new ChessPosition(currRank + (i * rankIteration), currFile + (i * fileIteration));
+//            if (nextPosition.isOffBoard()) break;
+//            // empty squares
+//            if (state.getPiece(nextPosition) == null){
+//                availablePositions.add(nextPosition);
+//                state.board().highlightPosition(nextPosition, ChessBoard.Highlight.PRIMARY);
+//            }
+//            // captures
+//            else if (state.getPiece(nextPosition).getTeamColor() != state.getPiece(position).getTeamColor()) {
+//                availablePositions.add(nextPosition);
+//                state.board().highlightPosition(nextPosition, ChessBoard.Highlight.SECONDARY);
+//                break; // Don't search past capture for sliding piece.
+//            } else {
+//                break;
+//            }
+//            i++;
+//        }
+//        return moves;
+//    }
+//
+//
+//
+//    /**
+//     * Returns a collection of ChessMoves with appropriate tags
+//     * from a starting position and a collection of ChessPositions
+//     * <p>
+//     * @param startPosition The position the piece will move from
+//     * @param positions     The collection of positions the piece can move to
+//     * @return              A collection of ChessMove objects
+//     */
+//    private Collection<ChessMove> getMovesFromPositions(
+//            GameState state,
+//            ChessPosition startPosition,
+//            Collection<ChessPosition> positions) {
+//
+//        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+//        for (ChessPosition endPosition : positions) {
+//            moves.add(new ChessMove(startPosition, endPosition, null));
+//        }
+//        return moves;
+//    }
 }
 

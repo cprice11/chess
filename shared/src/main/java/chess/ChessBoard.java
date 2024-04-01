@@ -21,6 +21,14 @@ public class ChessBoard {
     private static final String DARK_PIECE = "\033[38;5;16m";
     private static final String DARK_SQUARE = "\033[48;5;22m";
     private static final String LIGHT_SQUARE = "\033[48;5;65m";
+    private static final String PRIMARY_DARK_SQUARE = "\033[48;5;38m";
+    private static final String PRIMARY_LIGHT_SQUARE = "\033[48;5;44m";
+    private static final String SECONDARY_DARK_SQUARE = "\033[48;5;34m";
+    private static final String SECONDARY_LIGHT_SQUARE = "\033[48;5;40m";
+    private static final String TERNARY_DARK_SQUARE = "\033[48;5;214m";
+    private static final String TERNARY_LIGHT_SQUARE = "\033[48;5;220m";
+    private static final String NEGATIVE_DARK_SQUARE = "\033[48;5;124m";
+    private static final String NEGATIVE_LIGHT_SQUARE = "\033[48;5;160m";
 
     public boolean printSymbols = true;
 
@@ -219,16 +227,24 @@ public class ChessBoard {
                 // set color according to highlights
                 String nextHighlight;
                 // Background
-                if (highlightColor != Highlight.NONE) {
+                if ((i + j) % 2 == 1) {
                     nextHighlight = switch (highlightColor) {
-                        case PRIMARY   -> PRIMARY_START;
-                        case SECONDARY -> SECONDARY_START;
-                        case TERNARY   -> TERNARY_START;
-                        case NEGATIVE  -> NEGATIVE_HIGHLIGHT;
+                        case PRIMARY -> PRIMARY_DARK_SQUARE;
+                        case SECONDARY -> SECONDARY_DARK_SQUARE;
+                        case TERNARY -> TERNARY_DARK_SQUARE;
+                        case NEGATIVE -> NEGATIVE_DARK_SQUARE;
+                        case NONE -> DARK_SQUARE;
                         default -> "\0";
                     };
                 } else {
-                    nextHighlight = ((i + j) % 2 == 1)? DARK_SQUARE: LIGHT_SQUARE;
+                    nextHighlight = switch (highlightColor) {
+                        case PRIMARY -> PRIMARY_LIGHT_SQUARE;
+                        case SECONDARY -> SECONDARY_LIGHT_SQUARE;
+                        case TERNARY -> TERNARY_LIGHT_SQUARE;
+                        case NEGATIVE -> NEGATIVE_LIGHT_SQUARE;
+                        case NONE -> LIGHT_SQUARE;
+                        default -> "\0";
+                    };
                 }
                 // Foreground
                 if (piece != null) {
@@ -238,8 +254,8 @@ public class ChessBoard {
 
                 String pieceSymbol = (piece == null)? " " : piece.getSymbol(printSymbols, true);
 
-                // String nextSquare = " " + pieceSymbol + " ";
-                String nextSquare = pieceSymbol;
+                 String nextSquare = " " + pieceSymbol + " ";
+//                String nextSquare = pieceSymbol;
                 board.append(nextSquare);
                 board.append(RESET_HIGHLIGHT);
             }

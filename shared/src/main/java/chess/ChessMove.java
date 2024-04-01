@@ -18,7 +18,7 @@ public final class ChessMove {
     public final boolean isCapture;
     public final boolean isCheck;
     public final boolean isMate;
-    public final boolean enPassant;
+    public final ChessPosition enPassant;
     public final boolean shortCastle;
     public final boolean longCastle;
     public final boolean offerDraw;
@@ -31,7 +31,8 @@ public final class ChessMove {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
-        isCheck = isMate = enPassant = shortCastle = longCastle = offerDraw = isCapture = false;
+        isCheck = isMate = shortCastle = longCastle = offerDraw = isCapture = false;
+        this.enPassant = null;
     }
 
     private ChessMove(MoveBuilder builder) {
@@ -106,7 +107,7 @@ public final class ChessMove {
         public boolean isCapture;
         public boolean isCheck;
         public boolean isMate;
-        public boolean enPassant;
+        public ChessPosition enPassant;
         public boolean shortCastle;
         public boolean longCastle;
         public boolean offerDraw;
@@ -114,6 +115,20 @@ public final class ChessMove {
         public MoveBuilder(ChessPosition startPosition, ChessPosition endPosition) {
             this.startPosition = startPosition;
             this.endPosition = endPosition;
+        }
+
+        public MoveBuilder(ChessMove move) {
+            this.piece = move.piece;
+            this.startPosition = move.startPosition;
+            this.endPosition = move.endPosition;
+            this.promotionPiece = move.promotionPiece;
+            this.isCapture = move.isCapture;
+            this.isCheck = move.isCheck;
+            this.isMate = move.isMate;
+            this.enPassant = move.enPassant;
+            this.shortCastle = move.shortCastle;
+            this.longCastle = move.longCastle;
+            this.offerDraw = move.offerDraw;
         }
         public MoveBuilder withPiece(ChessPiece piece) {
             this.piece = piece;
@@ -129,16 +144,32 @@ public final class ChessMove {
             this.isCapture = true;
             return this;
         }
+
+        public MoveBuilder isCapture(boolean b) {
+            this.isCapture = b;
+            return this;
+        }
         public MoveBuilder isCheck() {
             this.isCheck = true;
+            return this;
+        }
+
+        public MoveBuilder isCheck(boolean b) {
+            this.isCheck = b;
             return this;
         }
         public MoveBuilder isMate() {
             this.isMate = true;
             return this;
         }
-        public MoveBuilder enPassant() {
-            this.enPassant = true;
+
+        public MoveBuilder isMate(boolean b) {
+            this.isMate = b;
+            return this;
+        }
+
+        public MoveBuilder enPassant(ChessPosition p) {
+            this.enPassant = p;
             return this;
         }
         public MoveBuilder shortCastle() {

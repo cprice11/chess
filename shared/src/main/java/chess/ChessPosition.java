@@ -106,6 +106,14 @@ public class ChessPosition {
         return fileLetter;
     }
 
+    public boolean isOnBoard() {
+        return !isOffBoard();
+    }
+    public boolean isOffBoard() {
+        return (rank > 8 || rank < 1) ||
+                (file > 8 || file < 1);
+    }
+
 
 
 

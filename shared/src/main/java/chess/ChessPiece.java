@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 // moving logic out of here to make this class as straight forward as possible.
 
@@ -27,7 +25,8 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN
+        PAWN,
+        EN_PASSANT
     }
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType pieceType) {
@@ -164,35 +163,42 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        PieceType piece = board.getPiece(myPosition).getPieceType();
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        board.highlightPosition(position, ChessBoard.Highlight.SECONDARY);
+        PieceType piece = board.getPiece(position).getPieceType();
         ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
         switch (piece) {
             case KING:
-                moves.addAll(getOrthogonalSlidePositions(board, myPosition, 1));
-                moves.addAll(getDiagonalSlidePositions(board, myPosition, 1));
+                moves.addAll(getOrthogonalSlidePositions(board, position, 1));
+                moves.addAll(getDiagonalSlidePositions(board, position, 1));
                 break;
             case QUEEN:
-                moves.addAll(getOrthogonalSlidePositions(board, myPosition, 7));
-                moves.addAll(getDiagonalSlidePositions(board, myPosition, 7));
+                moves.addAll(getOrthogonalSlidePositions(board, position, 7));
+                moves.addAll(getDiagonalSlidePositions(board, position, 7));
                 break;
             case BISHOP:
-                moves.addAll(getDiagonalSlidePositions(board, myPosition, 7));
+                moves.addAll(getDiagonalSlidePositions(board, position, 7));
                 break;
             case KNIGHT:
-                moves.addAll(getKnightMoves(board, myPosition));
+                moves.addAll(getKnightMoves(board, position));
                 break;
             case ROOK:
-                moves.addAll(getOrthogonalSlidePositions(board, myPosition, 7));
+                moves.addAll(getOrthogonalSlidePositions(board, position, 7));
                 break;
             case PAWN:
-                moves.addAll(getPawnMoves(board, myPosition));
+                moves.addAll(getPawnMoves(board, position));
                 break;
             default:
                 throw new RuntimeException("Nonexistent Piece");
         }
         board.pprintBoard();
         return moves;
+    }
+
+    public Collection<ChessMove> pieceCaptures(ChessBoard board, ChessPosition position) {
+        Collection<ChessMove> moves = getPieceMoves(board, position);
+        moves.removeIf(move -> !move.isCapture);
+        return  moves;
     }
 
     /**
@@ -207,38 +213,54 @@ public class ChessPiece {
         int currFile = position.getFile();
         PieceType [] promotionOptions = { PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN};
         ChessGame.TeamColor color = board.getPieceColor(position);
+        Vector<ChessPosition> availableCaptures = new Vector<>();
         int advanceDirection = (color == ChessGame.TeamColor.WHITE)? 1 : -1;
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
-        HashSet<ChessPosition> availablePositions = new HashSet<ChessPosition>();
+        ChessPosition enPassant = null;
+        Collection<ChessMove> moves = new HashSet<>();
+        Collection<ChessMove> movesWithPromotion = new HashSet<>();
 
-        // Captures
-        availablePositions.addAll(getSlidePositions(board, position, advanceDirection, 1, 1, true));
-        availablePositions.addAll(getSlidePositions(board, position, advanceDirection, -1, 1, true));
-        availablePositions.removeIf(capturePosition -> board.getPiece(capturePosition) == null);
-        board.resetHighlight();
-        for (ChessPosition nextPosition : availablePositions) {
-            board.highlightPosition(nextPosition, ChessBoard.Highlight.SECONDARY);
-        }
+        ChessPosition adv1 = new ChessPosition(currRank + advanceDirection, currFile);
+        ChessPosition adv2 = new ChessPosition(currRank + (2 * advanceDirection), currFile);
+        availableCaptures.add( new ChessPosition(currRank + advanceDirection, currFile - 1));
+        availableCaptures.add( new ChessPosition(currRank + advanceDirection, currFile + 1));
 
-        // starting jump
-        if (position.getRank() == 1) {  // FIXME
-            availablePositions.addAll(getSlidePositions(board, position, advanceDirection, 0, 2, false));
-        } else {
-            availablePositions.addAll(getSlidePositions(board, position, advanceDirection, 0, 1, false));
-        }
-
-        for (ChessPosition nextPosition : availablePositions) {
-            int rank = nextPosition.getRank();
-            if ((color == ChessGame.TeamColor.WHITE && rank == 8) || (color == ChessGame.TeamColor.BLACK && rank == 1)) {
-                for (PieceType promotion : promotionOptions) {
-                    board.highlightPosition(nextPosition, ChessBoard.Highlight.TERNARY);
-                    moves.add(new ChessMove(position, nextPosition, promotion));
-                }
-            } else {
-                moves.add(new ChessMove(position, nextPosition, null));
+        if (adv1.isOnBoard() && board.getPiece(adv1) == null) {
+            moves.add(new ChessMove(position, adv1, null));
+            board.highlightPosition(adv1, ChessBoard.Highlight.PRIMARY);
+            if ((currRank == 2 && advanceDirection == 1) || (currRank == 7 && advanceDirection == -1) &&
+                    board.getPiece(adv2) == null) {
+                enPassant = adv1;
+                moves.add(new ChessMove.MoveBuilder(position, adv2).enPassant(adv1).build());
+                board.highlightPosition(adv2, ChessBoard.Highlight.PRIMARY);
+                board.highlightPosition(enPassant, ChessBoard.Highlight.TERNARY);
             }
         }
-        return moves;
+
+        availableCaptures.removeIf(
+                p -> p.isOffBoard() || board.getPiece(p) == null || board.getPiece(p).getTeamColor() == color
+        );
+
+        for (ChessPosition capture : availableCaptures) {
+            board.highlightPosition(capture, ChessBoard.Highlight.NEGATIVE);
+            moves.add(new ChessMove.MoveBuilder(position, capture).isCapture().build());
+        }
+
+
+        for (ChessMove move : moves) {
+            int rank = move.getEndPosition().getRank();
+            if ((color == ChessGame.TeamColor.WHITE && rank == 8) ||
+                    (color == ChessGame.TeamColor.BLACK && rank == 1)) {
+                for (PieceType promotion : promotionOptions) {
+                    movesWithPromotion.add(
+                            new ChessMove.MoveBuilder(move).withPromotion(promotion).build()
+                    );
+                }
+            } else {
+                movesWithPromotion.add(move);
+            }
+        }
+
+        return movesWithPromotion;
     }
 
     /**
@@ -274,7 +296,7 @@ public class ChessPiece {
                 continue;
             }
             moves.add(new ChessMove(position, nextPosition, null));
-            board.highlightPosition(nextPosition, ChessBoard.Highlight.SECONDARY);
+            board.highlightPosition(nextPosition, ChessBoard.Highlight.NEGATIVE);
         }
         return moves;
     }
@@ -393,7 +415,7 @@ public class ChessPiece {
             // captures
             else if (captures && board.getPiece(nextPosition).getTeamColor() != color) {
                 availablePositions.add(nextPosition);
-                board.highlightPosition(nextPosition, ChessBoard.Highlight.SECONDARY);
+                board.highlightPosition(nextPosition, ChessBoard.Highlight.NEGATIVE);
                 break; // Don't search past capture for sliding piece.
             } else {
                 break;

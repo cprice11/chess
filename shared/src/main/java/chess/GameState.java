@@ -148,7 +148,7 @@ public class GameState {
     public Vector<ChessMove> history() {
         return history;
     }
-    public void addHistory(ChessMove move) {
+    private void addHistory(ChessMove move) {
         history.add(move);
     }
     public ChessMove getLastMove() {
@@ -227,13 +227,10 @@ public class GameState {
         this.movesSinceCapture = movesSinceCapture;
     }
 
-
-
     public String toString() {
         FENParser fenParser = new FENParser();
         return fenParser.getFen(this);
     }
-
     public String prettyToString() {
         String turn = (turn() == ChessGame.TeamColor.WHITE)? "White to move": "Black to Movee";
         String out = board.prettyToString() +
@@ -241,7 +238,6 @@ public class GameState {
                     "\nFEN: " + toString();
         return out;
     }
-
     public void prettyPrint() {
         System.out.println(prettyToString());
     }
