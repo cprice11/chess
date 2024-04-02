@@ -249,7 +249,8 @@ public class GameState {
 
     public ChessMove confirmMove(ChessMove move) throws InvalidMoveException{
         // FIXME loses decoration and is losing en passant cosequently
-        return confirmMove(move, false);
+        ChessMove confirmed = confirmMove(move, false);
+        return confirmed;
     }
 
     public ChessMove confirmMove(ChessMove move, boolean allowOtherTeamMoves) throws InvalidMoveException{
@@ -261,16 +262,25 @@ public class GameState {
         if (move.getPromotionPiece() != null && piece.getPieceType() != ChessPiece.PieceType.PAWN)  throw new InvalidMoveException("Promotion from non-pawn");
         ChessGame.TeamColor color = piece.getTeamColor();
         if (move.castle) {
-            // FIXME Castling should take in threatned squares so that the king doesn't castle through check
             if (isInCheck(color)) throw new InvalidMoveException("Cannot castle in check");
+            ChessPosition[] whiteShortCastleSquares = {new ChessPosition(1, 6), new ChessPosition(1, 7)};
+            ChessPosition[] blackShortCastleSquares = {new ChessPosition(8, 6), new ChessPosition(8, 7)};
+            ChessPosition[] whiteLongCastleSquares = {new ChessPosition(1, 4), new ChessPosition(1, 3)};
+            ChessPosition[] blackLongCastleSquares = {new ChessPosition(8, 4), new ChessPosition(8, 3)};
+            ChessPosition[] safeSquares;
             if (color == ChessGame.TeamColor.WHITE) {
-                if (move.shortCastle && whiteCanCastleShort) return move;
-                if (move.longCastle && whiteCanCastleLong) return move;
-                throw new InvalidMoveException("White cannot castle that direction");
+                if (move.shortCastle && whiteCanCastleShort) safeSquares = whiteShortCastleSquares;
+                else if (move.longCastle && whiteCanCastleLong) safeSquares = whiteLongCastleSquares;
+                else throw new InvalidMoveException("White cannot castle that direction");
             } else {
-                if (move.shortCastle && blackCanCastleShort) return move;
-                if (move.longCastle && blackCanCastleLong) return move;
-                throw new InvalidMoveException("Black cannot castle that direction");
+                if (move.shortCastle && blackCanCastleShort) safeSquares = blackShortCastleSquares;
+                else if (move.longCastle && blackCanCastleLong) safeSquares = blackLongCastleSquares;
+                else throw new InvalidMoveException("Black cannot castle that direction");
+            }
+            Collection<ChessPosition> threatenedSquares = getThreatenedPositions(color);
+            for (ChessPosition p : safeSquares) {
+                if (getPiece(p) != null) throw new InvalidMoveException("Cannot castle through piece");
+                if (threatenedSquares.contains(p)) throw new InvalidMoveException("Cannot castle through check");
             }
         }
 
@@ -329,7 +339,19 @@ public class GameState {
                 board().highlightPosition(m.endPosition, ChessBoard.Highlight.TERNARY);
             }
         }
-        board().prettyPrint();
+        // board().prettyPrint();
+        return attackedSquares;
+    }
+
+    private Collection<ChessPosition> getThreatenedPositions(ChessGame.TeamColor color) {
+        ChessGame.TeamColor otherTeam = getOtherTeam(color);
+        Collection<ChessPosition> attackedSquares = new HashSet<>();
+        Collection<ChessMove> enemyMoves = getPossibleMovesByColor(otherTeam);
+        for (ChessMove m : enemyMoves) {
+            attackedSquares.add(m.getEndPosition());
+            board().highlightPosition(m.endPosition, ChessBoard.Highlight.TERNARY);
+        }
+        // board().prettyPrint();
         return attackedSquares;
     }
     private Collection<ChessPosition> getPositionsByColor(ChessGame.TeamColor color) {
@@ -352,7 +374,7 @@ public class GameState {
 
     public void makeMove(ChessMove move) throws InvalidMoveException {
         makeMove(move, false);
-        prettyPrint();
+        // prettyPrint();
     }
     public void makeMove(String move) {
         throw new RuntimeException("NOT IMPLEMENTED");
@@ -380,6 +402,7 @@ public class GameState {
         }
         if (move.enPassant != null) {
             enPassant = move.enPassant;
+            addPiece(enPassant, new ChessPiece(piece.getTeamColor(), ChessPiece.PieceType.EN_PASSANT));
         } else enPassant = null;
         if (move.isCapture && board.getPiece(move.endPosition).getPieceType() == ChessPiece.PieceType.EN_PASSANT) {
             int advanceDirection = (move.piece.getTeamColor() == ChessGame.TeamColor.WHITE)? 1 : -1;
@@ -414,8 +437,10 @@ public class GameState {
                 switch (move.getStartPosition().getFile()) {
                     case 1:
                         whiteCanCastleLong = false;
+                        break;
                     case 8:
                         whiteCanCastleShort = false;
+                        break;
                 }
             }
         }
@@ -463,7 +488,7 @@ public class GameState {
     }
     public void board(ChessBoard board) {
         this.board = board;
-        prettyPrint();
+        // prettyPrint();
     }
 
     public ChessGame.TeamColor turn() {

@@ -28,6 +28,7 @@ public class ChessGame {
 
     public ChessGame(GameState state) {
         this.state = state;
+        state.prettyPrint();
     }
 
 
@@ -55,9 +56,11 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+        Collection<ChessMove> moves = new HashSet<ChessMove>();
         if (state.board().getPiece(startPosition) == null) return null;
-        return state.getValidMoves(startPosition);
+        moves = state.getValidMoves(startPosition);
+        state.prettyPrint();
+        return moves;
     }
 
     /**
@@ -68,6 +71,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         state.makeMove(move);
+        state.prettyPrint();
     }
 
     public void makeMove(String move) throws InvalidMoveException {
@@ -108,6 +112,7 @@ public class ChessGame {
     public void setBoard(ChessBoard board) {
         state.board(board);
         state.resetFlags();
+        state.prettyPrint();
     }
 
     // boolean flags
