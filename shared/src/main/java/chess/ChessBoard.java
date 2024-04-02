@@ -2,7 +2,6 @@ package chess;
 
 import java.util.Arrays;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Hashtable;
 
 /**
@@ -40,22 +39,22 @@ public class ChessBoard {
 
     private ChessPosition enPassant = null;
 
-    public boolean isPrintSymbols() {
-        return printSymbols;
-    }
+//    public boolean isPrintSymbols() {
+//        return printSymbols;
+//    }
 
-    public void setPrintSymbols(boolean printSymbols) {
-        this.printSymbols = printSymbols;
-    }
+//    public void setPrintSymbols(boolean printSymbols) {
+//        this.printSymbols = printSymbols;
+//    }
 
 
     public ChessPiece[][] getPositions() {
         return positions;
     }
 
-    public Highlight[][] getHighlightedPositions() {
-        return highlightedPositions;
-    }
+//    public Highlight[][] getHighlightedPositions() {
+//        return highlightedPositions;
+//    }
 
 
 
@@ -297,7 +296,6 @@ public class ChessBoard {
                         case TERNARY -> TERNARY_DARK_SQUARE;
                         case NEGATIVE -> NEGATIVE_DARK_SQUARE;
                         case NONE -> DARK_SQUARE;
-                        default -> "\0";
                     };
                 } else {
                     nextHighlight = switch (highlightColor) {
@@ -306,7 +304,6 @@ public class ChessBoard {
                         case TERNARY -> TERNARY_LIGHT_SQUARE;
                         case NEGATIVE -> NEGATIVE_LIGHT_SQUARE;
                         case NONE -> LIGHT_SQUARE;
-                        default -> "\0";
                     };
                 }
                 // Foreground
