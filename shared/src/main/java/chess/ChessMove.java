@@ -22,6 +22,7 @@ public final class ChessMove {
     public final boolean shortCastle;
     public final boolean longCastle;
     public final boolean offerDraw;
+    public final boolean castle;
 
     /**
      *
@@ -31,7 +32,7 @@ public final class ChessMove {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
-        isCheck = isMate = shortCastle = longCastle = offerDraw = isCapture = false;
+        isCheck = isMate = shortCastle = longCastle = offerDraw = isCapture = castle = false;
         this.enPassant = null;
     }
 
@@ -47,6 +48,7 @@ public final class ChessMove {
         this.shortCastle = builder.shortCastle;
         this.longCastle = builder.longCastle;
         this.offerDraw = builder.offerDraw;
+        this.castle = builder.castle;
     }
 
     /**
@@ -88,12 +90,9 @@ public final class ChessMove {
         return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 
-    @Override
     public String toString() {
-        return "ChessMove[" +
-                "startPosition=" + startPosition + ", " +
-                "endPosition=" + endPosition + ", " +
-                "promotionPiece=" + promotionPiece + ']';
+        if (promotionPiece == null) return startPosition + "-" + endPosition;
+        return startPosition + "-" + endPosition  + "/" + promotionPiece;
     }
 
     public static class MoveBuilder{
@@ -111,6 +110,7 @@ public final class ChessMove {
         public boolean shortCastle;
         public boolean longCastle;
         public boolean offerDraw;
+        public boolean castle;
 
         public MoveBuilder(ChessPosition startPosition, ChessPosition endPosition) {
             this.startPosition = startPosition;
@@ -129,6 +129,7 @@ public final class ChessMove {
             this.shortCastle = move.shortCastle;
             this.longCastle = move.longCastle;
             this.offerDraw = move.offerDraw;
+            this.castle = move.castle;
         }
         public MoveBuilder withPiece(ChessPiece piece) {
             this.piece = piece;
@@ -178,6 +179,17 @@ public final class ChessMove {
         }
         public MoveBuilder longCastle() {
             this.longCastle = true;
+            return this;
+        }
+
+        public MoveBuilder shortCastle(boolean shortCastle) {
+            this.shortCastle = shortCastle;
+            this.castle = shortCastle || castle;
+            return this;
+        }
+        public MoveBuilder longCastle(boolean longCastle) {
+            this.longCastle = longCastle;
+            this.castle = longCastle || castle;
             return this;
         }
         public MoveBuilder offerDraw() {

@@ -69,7 +69,7 @@ public class ChessPiece {
 //    }
 
     public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition position) {
-        return moves;
+        return pieceMoves(board, position);
     }
 
     public void setPieceMoves(Collection<ChessMove> moves) {
@@ -169,8 +169,7 @@ public class ChessPiece {
         ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
         switch (piece) {
             case KING:
-                moves.addAll(getOrthogonalSlidePositions(board, position, 1));
-                moves.addAll(getDiagonalSlidePositions(board, position, 1));
+                moves.addAll(getKingMoves(board, position));
                 break;
             case QUEEN:
                 moves.addAll(getOrthogonalSlidePositions(board, position, 7));
@@ -188,10 +187,12 @@ public class ChessPiece {
             case PAWN:
                 moves.addAll(getPawnMoves(board, position));
                 break;
+            case EN_PASSANT:
+                break;
             default:
                 throw new RuntimeException("Nonexistent Piece");
         }
-        board.pprintBoard();
+        // board.prettyPrint();
         return moves;
     }
 
@@ -199,6 +200,47 @@ public class ChessPiece {
         Collection<ChessMove> moves = getPieceMoves(board, position);
         moves.removeIf(move -> !move.isCapture);
         return  moves;
+    }
+
+    private Collection<ChessMove> getKingMoves(ChessBoard board, ChessPosition position) {
+        int currRank = position.getRank();
+        int currFile = position.getFile();
+        ChessGame.TeamColor color = board.getPiece(position).getTeamColor();
+        boolean onHomeTile = currFile == 5 &&
+                (
+                        (color == ChessGame.TeamColor.WHITE && currRank == 1) ||
+                        (color == ChessGame.TeamColor.BLACK && currRank == 8)
+                );
+        ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
+        moves.addAll(getOrthogonalSlidePositions(board, position, 1));
+        moves.addAll(getDiagonalSlidePositions(board, position, 1));
+        if (onHomeTile) {
+            boolean leftClear = true;
+            boolean rightClear = true;
+            for (int i = 2; i < 4; i++) {
+                if (board.getPiece(new ChessPosition(currRank, i)) != null) leftClear = false;
+            }
+            for (int i = 6; i < 8; i++) {
+                if (board.getPiece(new ChessPosition(currRank, i)) != null) rightClear = false;
+            }
+            ChessPiece leftCorner = board.getPiece(new ChessPosition(currRank, 1));
+            ChessPiece rightCorner = board.getPiece(new ChessPosition(currRank, 1));
+            if (leftClear && leftCorner.getPieceType()==PieceType.ROOK && leftCorner.getTeamColor()==color) {
+                moves.add(
+                        new ChessMove.MoveBuilder(position, new ChessPosition(currRank, 7))
+                                .shortCastle()
+                                .build()
+                );
+            }
+            if (rightClear && rightCorner.getPieceType()==PieceType.ROOK && rightCorner.getTeamColor()==color) {
+                moves.add(
+                        new ChessMove.MoveBuilder(position, new ChessPosition(currRank, 3))
+                                .longCastle()
+                                .build()
+                );
+            }
+        }
+        return moves;
     }
 
     /**
@@ -227,9 +269,16 @@ public class ChessPiece {
         if (adv1.isOnBoard() && board.getPiece(adv1) == null) {
             moves.add(new ChessMove(position, adv1, null));
             board.highlightPosition(adv1, ChessBoard.Highlight.PRIMARY);
-            if ((currRank == 2 && advanceDirection == 1) || (currRank == 7 && advanceDirection == -1) &&
-                    board.getPiece(adv2) == null) {
+            if (
+                    (
+                        (currRank == 2 && advanceDirection == 1) ||
+                        (currRank == 7 && advanceDirection == -1)
+                    )   &&
+                    board.getPiece(adv1) == null &&
+                    board.getPiece(adv2) == null
+            ) {
                 enPassant = adv1;
+                board.addPiece(enPassant, new ChessPiece(color, PieceType.EN_PASSANT));
                 moves.add(new ChessMove.MoveBuilder(position, adv2).enPassant(adv1).build());
                 board.highlightPosition(adv2, ChessBoard.Highlight.PRIMARY);
                 board.highlightPosition(enPassant, ChessBoard.Highlight.TERNARY);

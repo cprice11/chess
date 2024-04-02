@@ -1,7 +1,9 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -35,6 +37,9 @@ public class ChessBoard {
     private final ChessPiece[][] positions;
     private final Highlight[][] highlightedPositions;
 
+
+    private ChessPosition enPassant = null;
+
     public boolean isPrintSymbols() {
         return printSymbols;
     }
@@ -42,6 +47,7 @@ public class ChessBoard {
     public void setPrintSymbols(boolean printSymbols) {
         this.printSymbols = printSymbols;
     }
+
 
     public ChessPiece[][] getPositions() {
         return positions;
@@ -76,11 +82,20 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.deepEquals(positions, that.positions);
+        if (enPassant == null) return Arrays.deepEquals(positions, that.positions);
+
+        // En Passant is handled by placing an extra "Ghost Pawn" on the board
+        // this lets the equivalence work as if it weren't there.
+        ChessPiece ep = getPiece(enPassant);
+        removePiece(enPassant);
+        boolean returnVal = Arrays.deepEquals(positions, that.positions);
+        addPiece(enPassant, ep);
+        return returnVal;
     }
 
     @Override
     public int hashCode() {
+
         return Arrays.deepHashCode(positions);
     }
 
@@ -100,6 +115,19 @@ public class ChessBoard {
         return piece;
     }
 
+    public void setBoard(ChessPiece[][] newPositions) {
+        clearBoard();
+        if (newPositions.length != positions.length) throw new RuntimeException("Wrong size");
+        for (int i = 0; i < positions.length; i++) {
+            if (newPositions[i].length != positions[i].length) throw new RuntimeException("Wrong size");
+            for (int j = 0; j < positions[i].length; j++) {
+                if (newPositions[i][j] == null) continue;
+                positions[i][j] = new ChessPiece(newPositions[i][j].getTeamColor(), newPositions[i][j].getPieceType());
+            }
+        }
+    }
+
+
     /**
      * Gets a chess piece on the chessboard
      *
@@ -110,13 +138,14 @@ public class ChessBoard {
         return positions[position.getRank() - 1][position.getFile() - 1];
     }
 
-    public HashMap<ChessPosition, ChessPiece> getPieces() {
-        HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
+    // FIXME this should be State's responsibility
+    public Dictionary<ChessPosition, ChessPiece> getPieces() {
+        Dictionary<ChessPosition, ChessPiece> pieces = new Hashtable<>() {};
         for (int i = 0; i < positions.length; i++) {
             for (int j = 0; j < positions[i].length; j++) {
-                ChessPiece square = positions[7 - i][j];
+                ChessPiece square = positions[i][j];
                 if (square == null) continue;
-                pieces.put(new ChessPosition(8 - i, j + 1), square);
+                pieces.put(new ChessPosition(i + 1, j + 1), square);
             }
         }
         return pieces;
@@ -205,13 +234,46 @@ public class ChessBoard {
     /**
      * Prints board to console with white pieces in capital letters
      */
-    public void printBoard() {
-        System.out.println(toString());
+    public void print() {
+        StringBuilder board = new StringBuilder();
+        boolean currentlyHighlighting = false;
+        for (int i = 0; i < positions.length; i++) {
+            System.out.print(BOARD_SIZE - i);
+            System.out.print(' ');
+
+            for (int j = 0; j < positions[i].length; j++) {
+                ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
+                ChessPiece piece = getPiece(position);
+                Highlight highlightColor = getHighlight(position);
+                if (currentlyHighlighting) board.append(RESET_HIGHLIGHT);
+                board.append('|');
+
+                // set color according to highlights
+                if (highlightColor != Highlight.NONE) {
+                    String nextHighlightChar = switch (highlightColor) {
+                        case PRIMARY   -> PRIMARY_START;
+                        case SECONDARY -> SECONDARY_START;
+                        case TERNARY   -> TERNARY_START;
+                        case NEGATIVE  -> NEGATIVE_HIGHLIGHT;
+                        default -> "\0";
+                    };
+                    currentlyHighlighting = true;
+                    board.append(nextHighlightChar);
+                }
+
+                char nextChar = (piece == null)? ' ' : piece.getCode();
+                board.append(nextChar);
+            }
+            if (currentlyHighlighting) board.append(RESET_HIGHLIGHT);
+            board.append('|');
+            board.append('\n');
+        }
+        board.append("   A B C D E F G H\n");
+        System.out.println(board);
     }
 
-    public void pprintBoard() {
+    public void prettyPrint() {
         System.out.println(prettyToString());
-
     }
 
     public String prettyToString() {
@@ -254,8 +316,7 @@ public class ChessBoard {
 
                 String pieceSymbol = (piece == null)? " " : piece.getSymbol(printSymbols, true);
 
-                 String nextSquare = " " + pieceSymbol + " ";
-//                String nextSquare = pieceSymbol;
+                String nextSquare = " " + pieceSymbol + " ";
                 board.append(nextSquare);
                 board.append(RESET_HIGHLIGHT);
             }
@@ -267,40 +328,20 @@ public class ChessBoard {
 
     public String toString() {
         StringBuilder board = new StringBuilder();
-        boolean currentlyHighlighting = false;
         for (int i = 0; i < positions.length; i++) {
-            System.out.print(BOARD_SIZE - i);
-            System.out.print(' ');
-
             for (int j = 0; j < positions[i].length; j++) {
                 ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
                 ChessPiece piece = getPiece(position);
-                Highlight highlightColor = getHighlight(position);
-                if (currentlyHighlighting) board.append(RESET_HIGHLIGHT);
                 board.append('|');
-
-                // set color according to highlights
-                if (highlightColor != Highlight.NONE) {
-                    String nextHighlightChar = switch (highlightColor) {
-                        case PRIMARY   -> PRIMARY_START;
-                        case SECONDARY -> SECONDARY_START;
-                        case TERNARY   -> TERNARY_START;
-                        case NEGATIVE  -> NEGATIVE_HIGHLIGHT;
-                        default -> "\0";
-                    };
-                    currentlyHighlighting = true;
-                    board.append(nextHighlightChar);
-                }
-
                 char nextChar = (piece == null)? ' ' : piece.getCode();
                 board.append(nextChar);
             }
-            if (currentlyHighlighting) board.append(RESET_HIGHLIGHT);
             board.append('|');
             board.append('\n');
         }
         board.append("   A B C D E F G H\n");
         return board.toString();
     }
+
 }
 

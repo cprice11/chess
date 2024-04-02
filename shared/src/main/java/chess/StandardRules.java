@@ -10,12 +10,13 @@ public class StandardRules implements RuleSet{
     }
 
     public Collection<ChessMove> getAllValidMoves(GameState state) {
-        state.board().printBoard();
+        state.board().print();
         HashSet<ChessMove> validMoves = new HashSet<>();
-        HashMap<ChessPosition, ChessPiece> piecePositions = state.board().getPieces();
-        for (Map.Entry<ChessPosition, ChessPiece> pair: piecePositions.entrySet()) {
-            ChessPiece piece = pair.getValue();
-            ChessPosition position = pair.getKey();
+        Dictionary<ChessPosition, ChessPiece> piecePositions = state.board().getPieces();
+        Enumeration<ChessPosition> positions = piecePositions.keys();
+        while (positions.hasMoreElements()) {
+            ChessPosition position = positions.nextElement();
+            ChessPiece piece = piecePositions.get(position);
             if (piece.getTeamColor() == state.turn()) {
                 validMoves.addAll(getValidMoves(state, position));
             }
@@ -24,7 +25,7 @@ public class StandardRules implements RuleSet{
     }
 
     public Collection<ChessMove> getValidMoves(GameState state, ChessPosition position) {
-        state.board().printBoard();
+        state.board().print();
         ChessPiece piece = state.board().getPiece(position);
         Collection<ChessMove> possibleMoves = piece.pieceMoves(state.board(), position);
 
@@ -80,9 +81,13 @@ public class StandardRules implements RuleSet{
 
     private Collection<ChessPosition> getPiecePositions(GameState state, ChessGame.TeamColor color) {
         ArrayList<ChessPosition> piecePositions = new ArrayList<>();
-        for (Map.Entry<ChessPosition, ChessPiece> entry: state.board().getPieces().entrySet()) {
-            if (entry.getValue().getTeamColor() == color) {
-                piecePositions.add(entry.getKey());
+        Dictionary<ChessPosition, ChessPiece> allPieces =  state.board().getPieces();
+        Enumeration<ChessPosition> positions = allPieces.keys();
+
+        while (positions.hasMoreElements()) {
+            ChessPosition position = positions.nextElement();
+            if (allPieces.get(position).getTeamColor() == color) {
+                piecePositions.add(position);
             }
         }
         return (piecePositions);
@@ -90,9 +95,14 @@ public class StandardRules implements RuleSet{
     private Collection<ChessPosition> getThreatenedSquares(GameState state, ChessGame.TeamColor color) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         HashSet<ChessPosition> squares = new HashSet<ChessPosition>();
-        for (Map.Entry<ChessPosition, ChessPiece> pair : state.board().getPieces().entrySet()) {
-            if (pair.getValue().getTeamColor() == color) {
-                moves.addAll(pair.getValue().pieceMoves(state.board(), pair.getKey()));
+        Dictionary<ChessPosition, ChessPiece> allPieces =  state.board().getPieces();
+        Enumeration<ChessPosition> positions = allPieces.keys();
+
+        while (positions.hasMoreElements()) {
+            ChessPosition position = positions.nextElement();
+            ChessPiece piece = allPieces.get(position);
+            if (piece.getTeamColor() == color) {
+                moves.addAll(piece.pieceMoves(state.board(), position));
             }
         }
         for (ChessMove move: moves) {
@@ -100,7 +110,7 @@ public class StandardRules implements RuleSet{
             state.board().highlightPosition(threat, ChessBoard.Highlight.PRIMARY);
             squares.add(threat);
         }
-        state.board().printBoard();
+        state.board().print();
         return squares;
     }
 

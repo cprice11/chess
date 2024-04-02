@@ -58,12 +58,12 @@ public class ChessPosition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPosition position = (ChessPosition) o;
-        return file == position.file && col == position.col;
+        return rank == position.rank && file == position.file;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(file, col);
+        return Objects.hash(rank, file);
     }
 
     /**

@@ -107,6 +107,7 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         state.board(board);
+        state.resetFlags();
     }
 
     // boolean flags

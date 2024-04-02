@@ -7,7 +7,7 @@ public class FENParser extends ChessParser{
         GameState state = new GameState();
         //try {
             String[] parts = fen.split(" ");
-            if (parts.length != 6) {
+            if (parts.length < 6) {
                 return state;
             }
 
@@ -30,7 +30,9 @@ public class FENParser extends ChessParser{
                 }
             }
 
-            boolean whiteToMove = parts[1].equals("w");
+            ChessGame.TeamColor teamToMove =
+                    (parts[1].equals("w"))? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            state.turn(teamToMove);
 
             boolean whiteCanCastleLong, whiteCanCastleShort, blackCanCastleLong, blackCanCastleShort = false;
             for (char c : parts[2].toCharArray()) {
@@ -43,10 +45,10 @@ public class FENParser extends ChessParser{
             }
 
             ChessPosition enPassant = (parts[3].equals("-"))? null : parseAlgebraPosition(parts[3]);
-            state.setEnPassant(enPassant);
+            if (enPassant != null) state.setEnPassant(enPassant);
 
-            state.setHalfmoveClock(Integer.parseInt(parts[4]));
-            state.setFullmoveClock(Integer.parseInt(parts[5]));
+            state.setHalfMoveClock(Integer.parseInt(parts[4]));
+            state.setFullMoveClock(Integer.parseInt(parts[5]));
         //} catch (Exception e) {
             return state;
         //}
@@ -89,9 +91,9 @@ public class FENParser extends ChessParser{
         ChessPosition enPassant = state.getEnPassant();
         fenData[3] = (enPassant== null)? "-": enPassant.toString();
 
-        fenData[4] = String.valueOf(state.getHalfmoveClock());
+        fenData[4] = String.valueOf(state.getHalfMoveClock());
 
-        fenData[5] = String.valueOf(state.getFullmoveClock());
+        fenData[5] = String.valueOf(state.getFullMoveClock());
 
         return String.join(" ", fenData);
     }
