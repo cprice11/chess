@@ -110,7 +110,7 @@ Block -> Server: [DELETE] /db
 
 note over Services: Administration
 
-note right of Server:<wordwrap:30>Clears the database. Removes all users, games, and authTokens.
+note over Server:<wordwrap:30>Clears the database. Removes all users, games, and authTokens.
 
 Server --> Services:deleteAll()
 Services --> DataAccess: deleteAll()
