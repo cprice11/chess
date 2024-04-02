@@ -74,17 +74,17 @@ public class ChessGame {
         state.prettyPrint();
     }
 
-    public void makeMove(String move) throws InvalidMoveException {
-        state.makeMove(move);
-    }
-
-    // getter setters
-    /**
-     * @return Which team's turn it is
-     */
-    public TeamColor getTeamTurn() {
-        return state.turn();
-    }
+//    public void makeMove(String move) throws InvalidMoveException {
+//        state.makeMove(move);
+//    }
+//
+//    // getter setters
+//    /**
+//     * @return Which team's turn it is
+//     */
+//    public TeamColor getTeamTurn() {
+//        return state.turn();
+//    }
 
     /**
      * Set's which teams turn it is

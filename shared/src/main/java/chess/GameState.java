@@ -1,23 +1,22 @@
 package chess;
 
-import java.security.KeyPair;
 import java.util.*;
 
 public class GameState {
     private boolean print;
-    private RuleSet rules;
+    // private RuleSet rules;
 
     private ChessBoard board;
 
     private ChessGame.TeamColor turn;
 
-    private int movesSinceCapture = 0;
-    private boolean whiteIsInCheck;
-    private boolean blackIsInCheck;
-    private boolean whiteIsInCheckmate;
-    private boolean blackIsInCheckmate;
-    private boolean whiteIsInStalemate;
-    private boolean blackIsInStalemate;
+//    private int movesSinceCapture = 0;
+//    private boolean whiteIsInCheck;
+//    private boolean blackIsInCheck;
+//    private boolean whiteIsInCheckmate;
+//    private boolean blackIsInCheckmate;
+//    private boolean whiteIsInStalemate;
+//    private boolean blackIsInStalemate;
 
     private boolean whiteCanCastleShort;
     private boolean whiteCanCastleLong;
@@ -30,8 +29,8 @@ public class GameState {
     private int halfMoveClock;
     private int fullMoveClock;
 
-    private Vector<ChessMove> history;
-    private HashMap<ChessBoard, Integer> positionHashMap;
+    private final Vector<ChessMove> history;
+    // private final HashMap<ChessBoard, Integer> positionHashMap;
     public int getHalfMoveClock() {
         return halfMoveClock;
     }
@@ -47,14 +46,14 @@ public class GameState {
     public void setFullMoveClock(int fullMoveClock) {
         this.fullMoveClock = fullMoveClock;
     }
-
-    public void incrementFullmoveClock() {
-        this.fullMoveClock += 1;
-    }
-
-    public void incrementHalfmoveClock() {
-        this.halfMoveClock += 1;
-    }
+//
+//    public void incrementFullmoveClock() {
+//        this.fullMoveClock += 1;
+//    }
+//
+//    public void incrementHalfmoveClock() {
+//        this.halfMoveClock += 1;
+//    }
 
 
     public boolean whiteCanCastleShort() {
@@ -92,68 +91,68 @@ public class GameState {
         board.addPiece(enPassant, new ChessPiece(getOtherTeam(turn), ChessPiece.PieceType.EN_PASSANT));
         this.enPassant = enPassant;
     }
-
-    public void setEnPassant(ChessPosition enPassant, ChessGame.TeamColor color) {
-        board.addPiece(enPassant, new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
-        this.enPassant = enPassant;
-    }
-
+//
+//    public void setEnPassant(ChessPosition enPassant, ChessGame.TeamColor color) {
+//        board.addPiece(enPassant, new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
+//        this.enPassant = enPassant;
+//    }
+//
 
     public GameState() {
         turn = ChessGame.TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
-        history = new Vector<ChessMove>();
-        positionHashMap = new HashMap<ChessBoard, Integer>();
-        rules = new StandardRules();
-        whiteIsInCheck = blackIsInCheck = whiteIsInCheckmate = blackIsInCheckmate = whiteIsInStalemate =
-                blackIsInStalemate = false;
+        history = new Vector<>();
+        // positionHashMap = new HashMap<>();
+        // rules = new StandardRules();
+        // whiteIsInCheck = blackIsInCheck = whiteIsInCheckmate = blackIsInCheckmate = whiteIsInStalemate =
+        //        blackIsInStalemate = false;
         print = blackCanCastleShort = blackCanCastleLong = whiteCanCastleShort = whiteCanCastleLong = true;
     }
 
-    public GameState(GameState state) {
-        this.rules = state.rules;
-
-        this.board = state.board;
-
-        this.turn = state.turn;
-
-        this.movesSinceCapture = state.movesSinceCapture;
-        this.whiteIsInCheck = state.whiteIsInCheck;
-        this.blackIsInCheck = state.blackIsInCheck;
-        this.whiteIsInCheckmate = state.whiteIsInCheckmate;
-        this.blackIsInCheckmate = state.blackIsInCheckmate;
-        this.whiteIsInStalemate = state.whiteIsInStalemate;
-        this.blackIsInStalemate = state.blackIsInStalemate;
-
-        this.whiteCanCastleShort = state.whiteCanCastleShort;
-        this.whiteCanCastleLong = state.whiteCanCastleLong;
-        this.blackCanCastleShort = state.blackCanCastleShort;
-        this.blackCanCastleLong = state.blackCanCastleLong;
-
-
-        this.enPassant = state.enPassant;
-
-        this.halfMoveClock = state.halfMoveClock;
-        this.fullMoveClock = state.fullMoveClock;
-
-        this.history = state.history;
-        this.positionHashMap = state.positionHashMap;
-    }
+//    public GameState(GameState state) {
+//        this.rules = state.rules;
+//
+//        this.board = state.board;
+//
+//        this.turn = state.turn;
+//
+//        this.movesSinceCapture = state.movesSinceCapture;
+//        this.whiteIsInCheck = state.whiteIsInCheck;
+//        this.blackIsInCheck = state.blackIsInCheck;
+//        this.whiteIsInCheckmate = state.whiteIsInCheckmate;
+//        this.blackIsInCheckmate = state.blackIsInCheckmate;
+//        this.whiteIsInStalemate = state.whiteIsInStalemate;
+//        this.blackIsInStalemate = state.blackIsInStalemate;
+//
+//        this.whiteCanCastleShort = state.whiteCanCastleShort;
+//        this.whiteCanCastleLong = state.whiteCanCastleLong;
+//        this.blackCanCastleShort = state.blackCanCastleShort;
+//        this.blackCanCastleLong = state.blackCanCastleLong;
+//
+//
+//        this.enPassant = state.enPassant;
+//
+//        this.halfMoveClock = state.halfMoveClock;
+//        this.fullMoveClock = state.fullMoveClock;
+//
+//        this.history = state.history;
+//        this.positionHashMap = state.positionHashMap;
+//    }
 
 
     public void resetFlags() {
         turn = ChessGame.TeamColor.WHITE;
         history.clear();
-        positionHashMap.clear();
-        whiteIsInCheck = blackIsInCheck = whiteIsInCheckmate = blackIsInCheckmate = whiteIsInStalemate =
-                blackIsInStalemate = false;
+        // positionHashMap.clear();
+//        whiteIsInCheck = blackIsInCheck = whiteIsInCheckmate = blackIsInCheckmate = whiteIsInStalemate =
+//                blackIsInStalemate = false;
         blackCanCastleShort = blackCanCastleLong = whiteCanCastleShort = whiteCanCastleLong = true;
     }
-    public GameState(ChessBoard board, ChessGame.TeamColor turn) {
-        this.board = board;
-        board.resetBoard();
-    }
+//    public GameState(ChessBoard board, ChessGame.TeamColor turn) {
+//        this.board = board;
+//        board.resetBoard();
+//    }
 
     public Collection<ChessMove> getValidMoves(ChessPosition position) {
         Collection<ChessMove> moves = getPossibleMoves(position);
@@ -170,34 +169,33 @@ public class GameState {
 
     public Collection<ChessMove> getPossibleMoves(ChessPosition position) {
         ChessPiece piece = board.getPiece(position);
-        Collection<ChessMove> moves = piece.getPieceMoves(board, position);
-        return moves;
+        return piece.getPieceMoves(board, position);
     }
 
-    public Collection<ChessMove> getValidMoves() {
-        Dictionary<ChessPosition, ChessPiece> pieces = board.getPieces();
-        Enumeration<ChessPosition> piecePositions = pieces.keys();
-        HashSet<ChessMove> moves = new HashSet<>();
-        while (piecePositions.hasMoreElements()) {
-            ChessPosition nextPosition = piecePositions.nextElement();
-            moves.addAll(getValidMoves(nextPosition));
-        }
-        return moves;
-    }
-    public Collection<ChessMove> getValidForEach (Collection<ChessPosition> positions) {
-        Collection<ChessMove> moves = new HashSet<>();
-        for(ChessPosition p : positions) {
-            moves.addAll(getValidMoves(p));
-        }
-        return moves;
-    }
+//    public Collection<ChessMove> getValidMoves() {
+//        Dictionary<ChessPosition, ChessPiece> pieces = board.getPieces();
+//        Enumeration<ChessPosition> piecePositions = pieces.keys();
+//        HashSet<ChessMove> moves = new HashSet<>();
+//        while (piecePositions.hasMoreElements()) {
+//            ChessPosition nextPosition = piecePositions.nextElement();
+//            moves.addAll(getValidMoves(nextPosition));
+//        }
+//        return moves;
+//    }
+//    public Collection<ChessMove> getValidForEach (Collection<ChessPosition> positions) {
+//        Collection<ChessMove> moves = new HashSet<>();
+//        for(ChessPosition p : positions) {
+//            moves.addAll(getValidMoves(p));
+//        }
+//        return moves;
+//    }
     private ChessMove decorateMove(ChessMove move) {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         int startRank = start.getRank();
         int startFile = start.getFile();
         int endRank = end.getRank();
-        int endFile = end.getFile();
+        // int endFile = end.getFile();
         ChessPiece piece = board.getPiece(start);
         ChessPiece.PieceType type = piece.getPieceType();
         ChessGame.TeamColor color = piece.getTeamColor();
@@ -248,8 +246,7 @@ public class GameState {
     }
 
     public ChessMove confirmMove(ChessMove move) throws InvalidMoveException{
-        ChessMove confirmed = confirmMove(move, false);
-        return confirmed;
+        return confirmMove(move, false);
     }
 
     public ChessMove confirmMove(ChessMove move, boolean allowOtherTeamMoves) throws InvalidMoveException{
@@ -263,20 +260,7 @@ public class GameState {
         ChessGame.TeamColor color = piece.getTeamColor();
         if (move.castle) {
             if (isInCheck(color)) throw new InvalidMoveException("Cannot castle in check");
-            ChessPosition[] whiteShortCastleSquares = {new ChessPosition(1, 6), new ChessPosition(1, 7)};
-            ChessPosition[] blackShortCastleSquares = {new ChessPosition(8, 6), new ChessPosition(8, 7)};
-            ChessPosition[] whiteLongCastleSquares = {new ChessPosition(1, 4), new ChessPosition(1, 3)};
-            ChessPosition[] blackLongCastleSquares = {new ChessPosition(8, 4), new ChessPosition(8, 3)};
-            ChessPosition[] safeSquares;
-            if (color == ChessGame.TeamColor.WHITE) {
-                if (move.shortCastle && whiteCanCastleShort) safeSquares = whiteShortCastleSquares;
-                else if (move.longCastle && whiteCanCastleLong) safeSquares = whiteLongCastleSquares;
-                else throw new InvalidMoveException("White cannot castle that direction");
-            } else {
-                if (move.shortCastle && blackCanCastleShort) safeSquares = blackShortCastleSquares;
-                else if (move.longCastle && blackCanCastleLong) safeSquares = blackLongCastleSquares;
-                else throw new InvalidMoveException("Black cannot castle that direction");
-            }
+            ChessPosition[] safeSquares = getNeededCastleSquares(move, color);
             Collection<ChessPosition> threatenedSquares = getThreatenedPositions(color);
             for (ChessPosition p : safeSquares) {
                 if (getPiece(p) != null) throw new InvalidMoveException("Cannot castle through piece");
@@ -292,6 +276,24 @@ public class GameState {
             throw new InvalidMoveException("Moves into check");
         }
         return move;
+    }
+
+    private ChessPosition[] getNeededCastleSquares(ChessMove move, ChessGame.TeamColor color) throws InvalidMoveException {
+        ChessPosition[] whiteShortCastleSquares = {new ChessPosition(1, 6), new ChessPosition(1, 7)};
+        ChessPosition[] blackShortCastleSquares = {new ChessPosition(8, 6), new ChessPosition(8, 7)};
+        ChessPosition[] whiteLongCastleSquares = {new ChessPosition(1, 4), new ChessPosition(1, 3)};
+        ChessPosition[] blackLongCastleSquares = {new ChessPosition(8, 4), new ChessPosition(8, 3)};
+        ChessPosition[] safeSquares;
+        if (color == ChessGame.TeamColor.WHITE) {
+            if (move.shortCastle && whiteCanCastleShort) safeSquares = whiteShortCastleSquares;
+            else if (move.longCastle && whiteCanCastleLong) safeSquares = whiteLongCastleSquares;
+            else throw new InvalidMoveException("White cannot castle that direction");
+        } else {
+            if (move.shortCastle && blackCanCastleShort) safeSquares = blackShortCastleSquares;
+            else if (move.longCastle && blackCanCastleLong) safeSquares = blackLongCastleSquares;
+            else throw new InvalidMoveException("Black cannot castle that direction");
+        }
+        return safeSquares;
     }
 
     public boolean isInCheckmate(ChessGame.TeamColor color) {
@@ -366,7 +368,6 @@ public class GameState {
     private Collection<ChessPosition> getPositionsByColor(ChessGame.TeamColor color) {
         Dictionary<ChessPosition, ChessPiece> positionDictionary = board.getPieces();
         Enumeration<ChessPosition> positions = positionDictionary.keys();
-        HashSet<ChessMove> moves = new HashSet<>();
         Collection<ChessPosition> movesWithColor = new HashSet<>();
         while (positions.hasMoreElements()) {
             ChessPosition nextPosition = positions.nextElement();
@@ -374,20 +375,20 @@ public class GameState {
         }
         return movesWithColor;
     }
-    private Collection<ChessPosition> getWhitePositions(ChessGame.TeamColor color) {
-        return getPositionsByColor(ChessGame.TeamColor.WHITE);
-    }
-    private Collection<ChessPosition> getBlackPositions(ChessGame.TeamColor color) {
-        return getPositionsByColor(ChessGame.TeamColor.BLACK);
-    }
+//    private Collection<ChessPosition> getWhitePositions(ChessGame.TeamColor color) {
+//        return getPositionsByColor(ChessGame.TeamColor.WHITE);
+//    }
+//    private Collection<ChessPosition> getBlackPositions(ChessGame.TeamColor color) {
+//        return getPositionsByColor(ChessGame.TeamColor.BLACK);
+//    }
 
     public void makeMove(ChessMove move) throws InvalidMoveException {
         makeMove(move, false);
         // prettyPrint();
     }
-    public void makeMove(String move) {
-        throw new RuntimeException("NOT IMPLEMENTED");
-    }
+//    public void makeMove(String move) {
+//        throw new RuntimeException("NOT IMPLEMENTED");
+//    }
     private void forceMove(ChessMove move) {
         try {
             makeMove(move, true);
@@ -458,8 +459,8 @@ public class GameState {
             }
         }
         cycleTurn();
-        blackIsInCheck = isInCheck(ChessGame.TeamColor.BLACK);
-        whiteIsInCheck = isInCheck(ChessGame.TeamColor.WHITE);
+//        blackIsInCheck = isInCheck(ChessGame.TeamColor.BLACK);
+//        whiteIsInCheck = isInCheck(ChessGame.TeamColor.WHITE);
 //        if (getMovesByColor(turn()).isEmpty()) {
 //            if (isInCheck(turn())) {
 //                if (turn() == ChessGame.TeamColor.WHITE) whiteIsInCheckmate = true;
@@ -474,11 +475,11 @@ public class GameState {
         board().resetHighlight();
     }
 
-    private void undoMove() {
-        if (history().size() < 1) throw new RuntimeException("No history to undo");
-        ChessMove move = history.removeLast();
-
-    }
+//    private void undoMove() {
+//        if (history().size() < 1) throw new RuntimeException("No history to undo");
+//        ChessMove move = history.removeLast();
+//
+//    }
     public ChessGame.TeamColor getOtherTeam(ChessGame.TeamColor current) {
         return (current == ChessGame.TeamColor.WHITE)? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
     }
@@ -492,22 +493,23 @@ public class GameState {
         return board.getPiece(position);
     }
 
-    public Vector<ChessMove> history() {
-        return history;
-    }
+//    public Vector<ChessMove> history() {
+//        return history;
+//    }
+    
     private void addHistory(ChessMove move) {
         history.add(move);
     }
-    public ChessMove getLastMove() {
-        return history.lastElement();
-    }
-    public int getMaxPositionRepeats() {
-        int repeats = 0;
-        for (int entry : positionHashMap.values()) {
-            repeats = Math.max(repeats, entry);
-        }
-        return repeats;
-    }
+//    public ChessMove getLastMove() {
+//        return history.lastElement();
+//    }
+//    public int getMaxPositionRepeats() {
+//        int repeats = 0;
+//        for (int entry : positionHashMap.values()) {
+//            repeats = Math.max(repeats, entry);
+//        }
+//        return repeats;
+//    }
 
     public ChessBoard board() {
         return board;
@@ -527,45 +529,45 @@ public class GameState {
         turn = getOtherTeam(turn);
     }
 
-    public boolean check() {
-        return whiteIsInCheck || blackIsInCheck;
-    }
-    public boolean check(ChessGame.TeamColor team) {
-        return (team == ChessGame.TeamColor.WHITE)? whiteIsInCheck : blackIsInCheck;
-    }
-    public void check(ChessGame.TeamColor color, boolean check) {
-        if (color == ChessGame.TeamColor.WHITE) whiteIsInCheck = check;
-        else blackIsInCheck = check;
-    }
-    
-    public boolean checkmate() {
-        return whiteIsInCheckmate || blackIsInCheckmate;
-    }
-    public boolean checkmate(ChessGame.TeamColor color) {
-        return  (color == ChessGame.TeamColor.WHITE)? whiteIsInCheckmate : blackIsInCheckmate;
-    }
-    public void checkmate(ChessGame.TeamColor color, boolean checkmate) {
-        if (color == ChessGame.TeamColor.WHITE) whiteIsInCheckmate = checkmate;
-        else blackIsInCheckmate = checkmate;
-    }
-
-    public boolean stalemate() {
-        return whiteIsInStalemate || blackIsInStalemate;
-    }
-    public boolean stalemate(ChessGame.TeamColor color) {
-        return  (color == ChessGame.TeamColor.WHITE)? whiteIsInStalemate : blackIsInStalemate;
-    }
-    public void stalemate(ChessGame.TeamColor color, boolean stalemate) {
-        if (color == ChessGame.TeamColor.WHITE) whiteIsInStalemate = stalemate;
-        else blackIsInStalemate = stalemate;
-    }
-
-    public int movesSinceCapture() {
-        return movesSinceCapture;
-    }
-    public void movesSinceCapture(int movesSinceCapture) {
-        this.movesSinceCapture = movesSinceCapture;
-    }
+//    public boolean check() {
+//        return whiteIsInCheck || blackIsInCheck;
+//    }
+//    public boolean check(ChessGame.TeamColor team) {
+//        return (team == ChessGame.TeamColor.WHITE)? whiteIsInCheck : blackIsInCheck;
+//    }
+//    public void check(ChessGame.TeamColor color, boolean check) {
+//        if (color == ChessGame.TeamColor.WHITE) whiteIsInCheck = check;
+//        else blackIsInCheck = check;
+//    }
+//    
+//    public boolean checkmate() {
+//        return whiteIsInCheckmate || blackIsInCheckmate;
+//    }
+//    public boolean checkmate(ChessGame.TeamColor color) {
+//        return  (color == ChessGame.TeamColor.WHITE)? whiteIsInCheckmate : blackIsInCheckmate;
+//    }
+//    public void checkmate(ChessGame.TeamColor color, boolean checkmate) {
+//        if (color == ChessGame.TeamColor.WHITE) whiteIsInCheckmate = checkmate;
+//        else blackIsInCheckmate = checkmate;
+//    }
+//
+//    public boolean stalemate() {
+//        return whiteIsInStalemate || blackIsInStalemate;
+//    }
+//    public boolean stalemate(ChessGame.TeamColor color) {
+//        return  (color == ChessGame.TeamColor.WHITE)? whiteIsInStalemate : blackIsInStalemate;
+//    }
+//    public void stalemate(ChessGame.TeamColor color, boolean stalemate) {
+//        if (color == ChessGame.TeamColor.WHITE) whiteIsInStalemate = stalemate;
+//        else blackIsInStalemate = stalemate;
+//    }
+//
+//    public int movesSinceCapture() {
+//        return movesSinceCapture;
+//    }
+//    public void movesSinceCapture(int movesSinceCapture) {
+//        this.movesSinceCapture = movesSinceCapture;
+//    }
 
     private String historyToString() {
         StringBuilder historyString = new StringBuilder();
@@ -581,11 +583,10 @@ public class GameState {
     }
     public String prettyToString() {
         String turn = (turn() == ChessGame.TeamColor.WHITE)? "White to move": "Black to Move";
-        String out = board.prettyToString() +
+        return board.prettyToString() +
                     "   " + turn +
-                    "\nFEN: \t\t" + toString() +
+                    "\nFEN: \t\t" + this +
                     "\nHISTORY: \t" + historyToString();
-        return out;
     }
     public void prettyPrint() {
         if (print) System.out.println(prettyToString());
