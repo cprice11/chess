@@ -296,7 +296,7 @@ public class GameState {
     public boolean isInCheck(ChessGame.TeamColor color) {
         ChessPosition kingPosition = getKingPosition(color);
         if (kingPosition == null) return false;
-        return getThreatenedPieces(color).contains(getKingPosition(color));
+        return getThreatenedPieces(color).contains(kingPosition);
     }
 
     private ChessPosition getKingPosition(ChessGame.TeamColor color) {
@@ -331,14 +331,14 @@ public class GameState {
         Collection<ChessMove> enemyMoves = getPossibleMovesByColor(otherTeam);
         for (ChessMove m : enemyMoves) {
 
-            if (m.isCapture)  {
+            if (getPiece(m.getEndPosition()) != null)  {
                 attackedSquares.add(m.getEndPosition());
                 board().highlightPosition(m.endPosition, ChessBoard.Highlight.NEGATIVE );
             } else {
                 board().highlightPosition(m.endPosition, ChessBoard.Highlight.TERNARY);
             }
         }
-        // board().prettyPrint();
+        board().prettyPrint();
         return attackedSquares;
     }
 
@@ -448,6 +448,8 @@ public class GameState {
             }
         }
         cycleTurn();
+        blackIsInCheck = isInCheck(ChessGame.TeamColor.BLACK);
+        whiteIsInCheck = isInCheck(ChessGame.TeamColor.WHITE);
 
         board().resetHighlight();
     }

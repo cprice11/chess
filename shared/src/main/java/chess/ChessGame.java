@@ -123,7 +123,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        return state.check(teamColor);
+        return state.isInCheck(teamColor);
     }
 
     /**
