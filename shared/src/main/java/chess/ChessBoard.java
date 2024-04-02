@@ -107,6 +107,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
+        if (piece != null && piece.getPieceType() == ChessPiece.PieceType.EN_PASSANT) enPassant = position;
         positions[position.getRank() - 1][position.getFile() - 1] = piece;
     }
     public ChessPiece removePiece(ChessPosition position) {
