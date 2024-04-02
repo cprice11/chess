@@ -248,7 +248,6 @@ public class GameState {
     }
 
     public ChessMove confirmMove(ChessMove move) throws InvalidMoveException{
-        // FIXME loses decoration and is losing en passant cosequently
         ChessMove confirmed = confirmMove(move, false);
         return confirmed;
     }
@@ -387,6 +386,7 @@ public class GameState {
         }
     }
     private void makeMove(ChessMove move, boolean force) throws InvalidMoveException{
+
         if (!force) move = confirmMove(move);
         addHistory(move);
         ChessPiece piece = removePiece(move.startPosition);
@@ -400,16 +400,19 @@ public class GameState {
                 board.addPiece(new ChessPosition(rank, 6), rook);
             }
         }
-        if (move.enPassant != null) {
-            enPassant = move.enPassant;
-            addPiece(enPassant, new ChessPiece(piece.getTeamColor(), ChessPiece.PieceType.EN_PASSANT));
-        } else enPassant = null;
+
         if (move.isCapture && board.getPiece(move.endPosition).getPieceType() == ChessPiece.PieceType.EN_PASSANT) {
             int advanceDirection = (move.piece.getTeamColor() == ChessGame.TeamColor.WHITE)? 1 : -1;
             board.removePiece(
                     new ChessPosition(move.endPosition.getRank() - advanceDirection, move.endPosition.getFile())
             );
         }
+        if (enPassant != null) removePiece(enPassant);
+
+        if (move.enPassant != null) {
+            enPassant = move.enPassant;
+            addPiece(enPassant, new ChessPiece(piece.getTeamColor(), ChessPiece.PieceType.EN_PASSANT));
+        } else enPassant = null;
 
         piece = (move.promotionPiece == null)? piece: new ChessPiece(piece.getTeamColor(), move.promotionPiece);
         board.addPiece(move.endPosition, piece);
@@ -445,6 +448,7 @@ public class GameState {
             }
         }
         cycleTurn();
+
         board().resetHighlight();
     }
 
