@@ -258,6 +258,7 @@ public class GameState {
         move = decorateMove(move);
         ChessPiece piece = move.piece;
         if (!allowOtherTeamMoves && piece.getTeamColor() != turn) throw new InvalidMoveException("Cannot move opposing piece");
+        if (!piece.getPieceMoves(board(), move.getStartPosition()).contains(move)) throw new InvalidMoveException("Move doesn't seem possible");
         if (move.getPromotionPiece() != null && piece.getPieceType() != ChessPiece.PieceType.PAWN)  throw new InvalidMoveException("Promotion from non-pawn");
         ChessGame.TeamColor color = piece.getTeamColor();
         if (move.castle) {
@@ -293,6 +294,15 @@ public class GameState {
         return move;
     }
 
+    public boolean isInCheckmate(ChessGame.TeamColor color) {
+        Collection<ChessMove> moves = getMovesByColor(color);
+        return isInCheck(color) && moves.isEmpty();
+    }
+
+    public boolean isInStalemate(ChessGame.TeamColor color) {
+        Collection<ChessMove> moves = getMovesByColor(color);
+        return !isInCheck(color) && moves.isEmpty();
+    }
     public boolean isInCheck(ChessGame.TeamColor color) {
         ChessPosition kingPosition = getKingPosition(color);
         if (kingPosition == null) return false;
@@ -450,6 +460,16 @@ public class GameState {
         cycleTurn();
         blackIsInCheck = isInCheck(ChessGame.TeamColor.BLACK);
         whiteIsInCheck = isInCheck(ChessGame.TeamColor.WHITE);
+//        if (getMovesByColor(turn()).isEmpty()) {
+//            if (isInCheck(turn())) {
+//                if (turn() == ChessGame.TeamColor.WHITE) whiteIsInCheckmate = true;
+//                if (turn() == ChessGame.TeamColor.BLACK) blackIsInCheckmate = true;
+//            } else {
+//                if (turn() == ChessGame.TeamColor.WHITE) whiteIsInStalemate = true;
+//                if (turn() == ChessGame.TeamColor.BLACK) blackIsInStalemate = true;
+//            }
+//        }
+
 
         board().resetHighlight();
     }

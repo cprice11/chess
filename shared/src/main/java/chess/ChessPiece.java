@@ -225,14 +225,14 @@ public class ChessPiece {
             }
             ChessPiece leftCorner = board.getPiece(new ChessPosition(currRank, 1));
             ChessPiece rightCorner = board.getPiece(new ChessPosition(currRank, 1));
-            if (leftClear && leftCorner.getPieceType()==PieceType.ROOK && leftCorner.getTeamColor()==color) {
+            if (leftCorner != null && leftClear && leftCorner.getPieceType()==PieceType.ROOK && leftCorner.getTeamColor()==color) {
                 moves.add(
                         new ChessMove.MoveBuilder(position, new ChessPosition(currRank, 7))
                                 .shortCastle()
                                 .build()
                 );
             }
-            if (rightClear && rightCorner.getPieceType()==PieceType.ROOK && rightCorner.getTeamColor()==color) {
+            if (rightCorner != null && rightClear && rightCorner.getPieceType()==PieceType.ROOK && rightCorner.getTeamColor()==color) {
                 moves.add(
                         new ChessMove.MoveBuilder(position, new ChessPosition(currRank, 3))
                                 .longCastle()
@@ -278,7 +278,6 @@ public class ChessPiece {
                     board.getPiece(adv2) == null
             ) {
                 enPassant = adv1;
-                board.addPiece(enPassant, new ChessPiece(color, PieceType.EN_PASSANT));
                 moves.add(new ChessMove.MoveBuilder(position, adv2).enPassant(adv1).build());
                 board.highlightPosition(adv2, ChessBoard.Highlight.PRIMARY);
                 board.highlightPosition(enPassant, ChessBoard.Highlight.TERNARY);

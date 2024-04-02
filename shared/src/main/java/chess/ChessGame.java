@@ -133,7 +133,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return state.checkmate(teamColor);
+        return state.isInCheckmate(teamColor);
     }
 
     /**
@@ -144,7 +144,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return state.stalemate(teamColor);
+        return state.isInStalemate(teamColor);
     }
 
 }
