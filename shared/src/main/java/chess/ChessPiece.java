@@ -11,7 +11,8 @@ import java.util.*;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private Collection<ChessMove> moves;
+    // private Collection<ChessMove> moves; // If I want to have the test cases pass and use "dumb" pieces this would
+                                            // be useful
     private final ChessGame.TeamColor color;
     private final ChessPiece.PieceType type;
 
@@ -72,21 +73,21 @@ public class ChessPiece {
         return pieceMoves(board, position);
     }
 
-    public void setPieceMoves(Collection<ChessMove> moves) {
-        this.moves = moves;
-    }
-
-    public void addPieceMoves(Collection<ChessMove> moves) {
-        this.moves.addAll(moves);
-    }
-
-    public void addPieceMove(ChessMove move) {
-        this.moves.add(move);
-    }
-
-    public void resetPieceMoves() {
-        moves.clear();
-    }
+//    public void setPieceMoves(Collection<ChessMove> moves) {
+//        this.moves = moves;
+//    }
+//
+//    public void addPieceMoves(Collection<ChessMove> moves) {
+//        this.moves.addAll(moves);
+//    }
+//
+//    public void addPieceMove(ChessMove move) {
+//        this.moves.add(move);
+//    }
+//
+//    public void resetPieceMoves() {
+//        moves.clear();
+//    }
 
     // Basic access methods
     /**
@@ -118,30 +119,30 @@ public class ChessPiece {
         };
     }
 
-    public String getSymbol() {
-        return switch (type) {
-            case PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? "♙" : "♟";
-            case PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? "♖" : "♜";
-            case PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? "♘" : "♞";
-            case PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? "♗" : "♝";
-            case PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? "♕" : "♛";
-            case PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? "♔" : "♚";
-            default -> " ";
-        };
-    }
-
-    public String getSymbol(boolean symbol) {
-        if (!symbol) return String.valueOf(getCode());
-        return switch (type) {
-            case PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? "♟" : "♙";
-            case PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? "♜" : "♖";
-            case PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? "♞" : "♘";
-            case PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? "♝" : "♗";
-            case PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? "♛" : "♕";
-            case PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? "♚" : "♔";
-            default -> " ";
-        };
-    }
+//    public String getSymbol() {
+//        return switch (type) {
+//            case PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? "♙" : "♟";
+//            case PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? "♖" : "♜";
+//            case PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? "♘" : "♞";
+//            case PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? "♗" : "♝";
+//            case PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? "♕" : "♛";
+//            case PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? "♔" : "♚";
+//            default -> " ";
+//        };
+//    }
+//
+//    public String getSymbol(boolean symbol) {
+//        if (!symbol) return String.valueOf(getCode());
+//        return switch (type) {
+//            case PieceType.PAWN   -> (color == ChessGame.TeamColor.WHITE) ? "♟" : "♙";
+//            case PieceType.ROOK   -> (color == ChessGame.TeamColor.WHITE) ? "♜" : "♖";
+//            case PieceType.KNIGHT -> (color == ChessGame.TeamColor.WHITE) ? "♞" : "♘";
+//            case PieceType.BISHOP -> (color == ChessGame.TeamColor.WHITE) ? "♝" : "♗";
+//            case PieceType.QUEEN  -> (color == ChessGame.TeamColor.WHITE) ? "♛" : "♕";
+//            case PieceType.KING   -> (color == ChessGame.TeamColor.WHITE) ? "♚" : "♔";
+//            default -> " ";
+//        };
+//    }
 
     public String getSymbol(boolean symbol, boolean solid) {
         if (!symbol) return String.valueOf(getCode());
@@ -166,7 +167,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         board.highlightPosition(position, ChessBoard.Highlight.SECONDARY);
         PieceType piece = board.getPiece(position).getPieceType();
-        ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
+        ArrayList <ChessMove> moves = new ArrayList<>();
         switch (piece) {
             case KING:
                 moves.addAll(getKingMoves(board, position));
@@ -196,11 +197,11 @@ public class ChessPiece {
         return moves;
     }
 
-    public Collection<ChessMove> pieceCaptures(ChessBoard board, ChessPosition position) {
-        Collection<ChessMove> moves = getPieceMoves(board, position);
-        moves.removeIf(move -> !move.isCapture);
-        return  moves;
-    }
+//    public Collection<ChessMove> pieceCaptures(ChessBoard board, ChessPosition position) {
+//        Collection<ChessMove> moves = getPieceMoves(board, position);
+//        moves.removeIf(move -> !move.isCapture);
+//        return  moves;
+//    }
 
     private Collection<ChessMove> getKingMoves(ChessBoard board, ChessPosition position) {
         int currRank = position.getRank();
@@ -211,7 +212,7 @@ public class ChessPiece {
                         (color == ChessGame.TeamColor.WHITE && currRank == 1) ||
                         (color == ChessGame.TeamColor.BLACK && currRank == 8)
                 );
-        ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
+        ArrayList <ChessMove> moves = new ArrayList<>();
         moves.addAll(getOrthogonalSlidePositions(board, position, 1));
         moves.addAll(getDiagonalSlidePositions(board, position, 1));
         if (onHomeTile) {
@@ -257,7 +258,6 @@ public class ChessPiece {
         ChessGame.TeamColor color = board.getPieceColor(position);
         Vector<ChessPosition> availableCaptures = new Vector<>();
         int advanceDirection = (color == ChessGame.TeamColor.WHITE)? 1 : -1;
-        ChessPosition enPassant = null;
         Collection<ChessMove> moves = new HashSet<>();
         Collection<ChessMove> movesWithPromotion = new HashSet<>();
 
@@ -277,10 +277,9 @@ public class ChessPiece {
                     board.getPiece(adv1) == null &&
                     board.getPiece(adv2) == null
             ) {
-                enPassant = adv1;
                 moves.add(new ChessMove.MoveBuilder(position, adv2).enPassant(adv1).build());
                 board.highlightPosition(adv2, ChessBoard.Highlight.PRIMARY);
-                board.highlightPosition(enPassant, ChessBoard.Highlight.TERNARY);
+                board.highlightPosition(adv1, ChessBoard.Highlight.TERNARY);
             }
         }
 
@@ -322,7 +321,7 @@ public class ChessPiece {
         int currRank = position.getRank();
         int currFile = position.getFile();
         ChessGame.TeamColor color = board.getPieceColor(position);
-        ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
+        ArrayList <ChessMove> moves = new ArrayList<>();
         ChessPosition[] possPositions = {
                 new ChessPosition(currRank + 2, currFile - 1),
                 new ChessPosition(currRank + 2, currFile + 1),
@@ -358,11 +357,11 @@ public class ChessPiece {
      * @return              A collection of ChessMoves available to the position in the given direction.
      */
     private Collection<ChessMove> getOrthogonalSlidePositions(ChessBoard board, ChessPosition position, int maxDist) {
-        ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
-        moves.addAll(getSlideMoves(board, position, 1, 0, maxDist, true));
-        moves.addAll(getSlideMoves(board, position, -1, 0, maxDist, true));
-        moves.addAll(getSlideMoves(board, position, 0, 1, maxDist, true));
-        moves.addAll(getSlideMoves(board, position, 0, -1, maxDist, true));
+        ArrayList <ChessMove> moves = new ArrayList<>();
+        moves.addAll(getSlideMoves(board, position, 1, 0, maxDist));
+        moves.addAll(getSlideMoves(board, position, -1, 0, maxDist));
+        moves.addAll(getSlideMoves(board, position, 0, 1, maxDist));
+        moves.addAll(getSlideMoves(board, position, 0, -1, maxDist));
         return moves;
     }
 
@@ -375,71 +374,73 @@ public class ChessPiece {
      * @return              A collection of ChessMoves available to the position in the given direction.
      */
     private Collection<ChessMove> getDiagonalSlidePositions(ChessBoard board, ChessPosition position, int maxDist) {
-        ArrayList <ChessMove> moves = new ArrayList<ChessMove>();
-        moves.addAll(getSlideMoves(board, position, 1, 1, maxDist, true));
-        moves.addAll(getSlideMoves(board, position, -1, 1, maxDist, true));
-        moves.addAll(getSlideMoves(board, position, -1, -1, maxDist, true));
-        moves.addAll(getSlideMoves(board, position, 1, -1, maxDist, true));
+        ArrayList <ChessMove> moves = new ArrayList<>();
+        moves.addAll(getSlideMoves(board, position, 1, 1, maxDist));
+        moves.addAll(getSlideMoves(board, position, -1, 1, maxDist));
+        moves.addAll(getSlideMoves(board, position, -1, -1, maxDist));
+        moves.addAll(getSlideMoves(board, position, 1, -1, maxDist));
         return moves;
     }
 
-    /**
-     * Gets a available sliding moves in one direction
-     * <p>
-     * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
-     * @param board         The current chess board
-     * @param position      The starting position to calculate moves from
-     * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @return              A collection of ChessMoves available to the position in the given direction.
-     */
-    private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration) {
-        return getSlideMoves(board, position, rankIteration, fileIteration, 7, true);
-    }
+//    /**
+//     * Gets the available sliding moves in one direction
+//     * <p>
+//     * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
+//     * @param board         The current chess board
+//     * @param position      The starting position to calculate moves from
+//     * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
+//     * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
+//     * @return              A collection of ChessMoves available to the position in the given direction.
+//     */
+//    private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration) {
+//        return getSlideMoves(board, position, rankIteration, fileIteration, 7, true);
+//    }
+//
+//    /**
+//     * Gets the available sliding moves in one direction
+//     * <p>
+//     * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
+//     * @param board         The current chess board
+//     * @param position      The starting position to calculate moves from
+//     * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
+//     * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
+//     * @return              A collection of ChessMoves available to the position in the given direction.
+//     */
+//    private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist) {
+//        return getSlideMoves(board, position, rankIteration, fileIteration, maxDist, true);
+//    }
 
     /**
-     * Gets a available sliding moves in one direction
+     * Gets the available sliding moves in one direction
      * <p>
      * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
+     *
      * @param board         The current chess board
      * @param position      The starting position to calculate moves from
      * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
      * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @return              A collection of ChessMoves available to the position in the given direction.
+     * @return A collection of ChessMoves available to the position in the given direction.
      */
     private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist) {
-        return getSlideMoves(board, position, rankIteration, fileIteration, maxDist, true);
-    }
-
-    /**
-     * Gets a available sliding moves in one direction
-     * <p>
-     * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
-     * @param board         The current chess board
-     * @param position      The starting position to calculate moves from
-     * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @return              A collection of ChessMoves available to the position in the given direction.
-     */
-    private Collection<ChessMove> getSlideMoves(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist, boolean captures) {
-        Collection<ChessPosition> availablePositions = getSlidePositions(board, position, rankIteration, fileIteration, maxDist, captures);
-        return getMovesFromPositions(position, availablePositions, null);
+        Collection<ChessPosition> availablePositions = getSlidePositions(board, position, rankIteration, fileIteration, maxDist);
+        return getMovesFromPositions(position, availablePositions);
     }
 
     /**
      * Gets positions available by sliding in one direction
      * <p>
      * to find moves diagonally increasing in rank and decreasing in file, call getSlideMoves(board, position, 1, -1).
+     *
      * @param board         The current chess board
      * @param position      The starting position to calculate moves from
      * @param rankIteration How many ranks over to move at a time (-1, 0, or 1)
      * @param fileIteration How many ranks over to move at a time (-1, 0, or 1)
-     * @return              A collection of ChessMoves available to the position in the given direction.
+     * @return A collection of ChessMoves available to the position in the given direction.
      */
-    private Collection<ChessPosition> getSlidePositions(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist, boolean captures) {
+    private Collection<ChessPosition> getSlidePositions(ChessBoard board, ChessPosition position, int rankIteration, int fileIteration, int maxDist) {
         int currRank = position.getRank();
         int currFile = position.getFile();
-        HashSet<ChessPosition> availablePositions = new HashSet<ChessPosition>();
+        HashSet<ChessPosition> availablePositions = new HashSet<>();
         int ranksToEdge = maxDist;
         int filesToEdge = maxDist;
         int distToEdge = maxDist;
@@ -461,7 +462,7 @@ public class ChessPiece {
                 board.highlightPosition(nextPosition, ChessBoard.Highlight.PRIMARY);
             }
             // captures
-            else if (captures && board.getPiece(nextPosition).getTeamColor() != color) {
+            else if (board.getPiece(nextPosition).getTeamColor() != color) {
                 availablePositions.add(nextPosition);
                 board.highlightPosition(nextPosition, ChessBoard.Highlight.NEGATIVE);
                 break; // Don't search past capture for sliding piece.
@@ -473,10 +474,10 @@ public class ChessPiece {
         return availablePositions;
     }
 
-    private Collection<ChessMove> getMovesFromPositions(ChessPosition startPosition, Collection<ChessPosition> positions, PieceType promotion) {
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+    private Collection<ChessMove> getMovesFromPositions(ChessPosition startPosition, Collection<ChessPosition> positions) {
+        HashSet<ChessMove> moves = new HashSet<>();
         for (ChessPosition endPosition : positions) {
-            moves.add(new ChessMove(startPosition, endPosition, promotion));
+            moves.add(new ChessMove(startPosition, endPosition, null));
         }
         return moves;
     }
