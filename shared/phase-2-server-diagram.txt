@@ -1,0 +1,124 @@
+image data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADKUlEQVR4nNWaXYhNURTHf8ZlJCMlzZAakgiFIg8ezMO4mvAgZXyU4o148CAaoUgoxcM0yuWFFyOfMYzxKskDLyINxmhMjcH4GF8jrpbWqd1u3zvnjDln9vnXqtvea52z/vusj332uZAuzAC2Aw2kGLOAD0AeeEVKMUmdz6vcJ4UoAx4aJD4D80gZRgDNBok+YBkpRINB4g+wiRRiv0FCZB8pxHp9AgGJM3HdaD5wE/iiydc0iAmY1VwISDRrrgw6ZgJfrcee1zFpWP+DucAn45qPtGrFgst6k0agXKVRxy4N4HqHgOPAdOCNQaJd+0dseKs3qjDGJupY1wCu12aU1rxKDzCbmBEQEecHg8hGK0R/AFUkADO0KlQGElrjgJNWdcoD3Ul1bknoXkey90ZI9tVWPpjbj7xWxEQgK3ZDbyxyXStOf5gMXHMQEPkJLAB2AIvidH4t0AKsi2g3ClgM7DVW3JYnqhMrJAcuWjdu0tV1QUrmSuAIcBf4XsD5oFKJXmmcBIbpJq2ngBMyvln10HDoKuK0LfeSKLGVwO2QDkm4TVG7NSH0pXNvA0pIAO0RVjbowoKxRXSeA3XABBLEx4hE3qvdeEdzuwBUGyGYKFojEnmsdnOMsa3a9IYULRGJXFW7GmPMCxyNSGSP2tX5RqQ6IpGFanfLNyIjdfMWhkSbltIxVvPzBodDEtlZYDvuDcqLdPVAOrV3YB2ieUVEsKUfIrX/tGCVY8471BcgcUznRxuvq14TyQCnLSfrNcFLtHO7iHqLDcAD633kRJGwkwXwHmXA+X7yRw7avEWlPplWq3J1Oojk8BQZR5P8ZpykfLPmun0Nr6xj1c8a8+cc80vxEDmHo0uM+SrH/Ck8Q8Y4YQzkmeNl6aml88638Mo6VnuXQ2+37+GVs5z7ZZ39mvuzPl/DK+MIKzn/LYQrvoZX1hEuy4vor/A1vHKWUx3A8CL6Mvfat/DKOMLqQAi7g741x6zlkHzLmBbCbirw26fwylnOyDFRWNzxKbw6CrwRhkGtZSsfdoYMLwxHuiIe/5da+TWkf02qAV7qakpZjQr5TiK2IvI7NvwFA2/011m0MIQAAAAASUVORK5CYII "**Block**\nChess playing knight Antonius Block" as Block
+image data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFMklEQVR4nO2aaYhXVRjGf6NOyyg5ZNmeYGYrLbRaQ6ugGRVmEEUY7evYIjItthgVJZWhFgZlHzI17EN7oVkugx8mtNQ2tKINw4xpG6vJaSZeeC4dDufce+6dmSbCBw6M/3c7773nvOc57xW24/+DA4GJwGPAG8B6YAvwC9AF/Am0Ap8D64DXgSeBJuACYATQr68mfxAwHdioyXZ3/AqsAh4FxgNDezuBo/XUu3p5dAJrgPuBUUD/nkpgJ2CGAnT1wdgCPAdM0FwyLNGbTMIQoKWPEugKjB+BZ4DznX8nYZXj5HfgJeAW4GRgP6AO2EHreiRwvDbxvcAi4BPgr15MrCU1kbeAj4HrgF2ohl2B84DHgQ96OJHn6UPsDzQCS4FtFSbfqlLepTffI9gDuBxYCHwE/KHxIbAAuKygnO4JTNFbL0pgGzBb+3aRfru4uwmcBbyduP5NZzEwpsDnicAc4KeAD1vihzq62RI9rmoCI5VA1TW9RGwgD4O09DaIKZztyWuANvmrr5LEpY6D7p7kl1Ad+8rP5irGTT18IHbKZxWcIR/NZQ1v7MVzwMp6WVwj27lljE6rWCJTh7HjhpKJPCLbO1INdgQ+7cUksrHB41BFeFl2xiCScNe/kEQ27kydFP+cOUemKNeJdRZN4CtdquyMGA4MlO0wbcoHEg+774GdE+bVH2hXsbBYhbi2IPAP2qhGGItgN8ALgS8LfF6Z4Gu4dL8hEe/mBFwnh2UxRAdizK8dtEUYI913UgIOVjUJBftC/KoqbFOvyKlgFjsPjdI1KlOI8ZFAtjYPo/vYXUszFMPofh5mSm9ySqB7IkEeoudwVSSGVco8vCm9c1OCvBAIYLfD3SSvBW4ToWsTfW8Umctgf0+SrE26TbJFReK7QByj/nn4THqHpCTyfsFNbEHkaRqVyTApouP6mR6Qr86ZlyXfoZFSLYNl0phvhtbIJO2pZ4idHbY3MoyOFJMYDpaONfuSENqI1hHMsDwySesuZojR/WVeOfbldgjHcI5zyUpCeyCAWxYbIuV5raOzPlJeT/JKsa9j1+QYJktnVmoiHYEA/pqcGEjG7t4ZmgJJmI1PN/w4xrRjmCMdKyxJ2BoIkFUbvDezQnvGOoEDHJn9PU+y5eqD+aiN3B5jWCqdsSRiU8HSisHe2kpNPJS4j/pAnG9z9L+WzgGpiawNBNgrwe5WR//mBP19AnGs9IdQJ8bbXqapnb1Cd6Q8hTWJ54HbkfHjGKkM4QjJrQWbjIWBAObIcKZ3gruwpzlVNMOSilH6jE8dFYgzP2I3QfJXyiQyIxAga669Koo/ruSXpn5q6q10JjM2EMc+9oRwu+R2X09GRpXdcYNks53f7ivhc4pjNysnzvUR+7mSWwclGeMCAayT7m/oJ0r4fDhQCGbmvHkfzZKfTsluuR/gNclOdX4zSp2KFx27Bo+Su2PviP1mya3LWAo+39qkTT7IOfl/TmwY1Kq50CXbgfLl0/hYC3Sw5FtzCk0UiwNPK+uGr3Z+m1Zyf7yn3w4P+I+RwWMltw58aUwNBMo4zrTAHWO07vK1oidD1aV81usZZx9mbgr4j3UOL5LcvomUxqhAIPt+6D6hKuMYp4z7shMKrt4PVklkgL6YuoF+03qtca6cZcZG2daLrruy1hzqMU869vWrEp4OTOYKye6ukIgtV8PVAdlTOfNokU6IQSfhlJwb3rDIvSU2OmRDpK9lsWJolU7l/9pRo4m7ATuda+/8Eolk3ZERgQ9GywrKanOVjzrbwX8AfwOXutmwbQMRbgAAAABJRU5ErkJggg== "**Death**\nThe inevitable, but perhaps\n distractible, specter of doom." as Death
+materialdesignicons f048b Server
+participant Services
+participant DataAccess
+database db
+
+lifelinestyle Block #cornflowerblue:3:solid
+<background:#gray>
+
+entryspacing 0.8
+note over Block,Death: <wordwrap:40>To save the innocent, Block must distract death by challenging him to a game of chess. Unfortunately, Death doesn't trust block not to cheat and must setup the application that they will play with. \n(Neither of them could find a board ☹️)</wordwrap>
+
+note over Server:Death's personal cloud server
+
+
+
+group #navy Registration #white
+Block -> Server: [POST] /user\n{username, password, email}
+box over Services:Registration
+Server -> Services: register(username, password, email)
+Services -> DataAccess: getUser(username)
+DataAccess -> db: SELECT username from user
+DataAccess --> Services: null
+Services -> DataAccess: createUser(username, password)
+DataAccess -> db: INSERT username, password, email INTO user
+Services -> DataAccess: createAuth(username)
+DataAccess -> db: INSERT username, authToken INTO auth
+DataAccess --> Services: authToken
+Services --> Server: authToken
+Server --> Block: 200\n{authToken}
+end
+
+
+
+group #orange Login #white
+note over Server,Services:<wordwrap:30>Logs in an existing user (returns a new authToken).
+Block --> Server: [POST] /session\n{username, password}
+
+note over Services:Service
+Server -> Services:login(username, #password);
+Services -> DataAccess: getUser(username)
+DataAccess -> db:SELECT username from user
+DataAccess --> Services: UserData()
+Services -> DataAccess: CreateAuth(username)
+DataAccess -> db: INSERT username authToken INTO auth
+DataAccess --> Services: authToken
+Services --> Server:authToken
+
+Server --> Block: 200\n{ username, authToken },
+end
+
+
+
+
+group #green Logout #white
+note over Server,Services:<wordwrap:30>Logs out the user represented by the authToken.
+Block -> Server: [DELETE] /session\nauthToken
+note over Services:Login
+Server -> Services:logout(authToken)
+Services -> DataAccess:deleteAuth(authToken)
+DataAccess -> db: DELETE FROM auth WHERE authToken=authToken
+DataAccess --> Services:
+Services --> Server:
+Server --> Block: 200
+end
+
+
+
+group #red List Games #white
+note over Server,Services:Gives a list of all games.
+Block -> Server: [GET] /game\nauthToken
+note over Services: Games
+Server -> Services:
+Services -> DataAccess: GetUser(AuthToken)
+DataAccess -> db: SELECT username FROM auth WHERE token=authToken
+DataAccess -> Services: User()
+Services -> DataAccess: GetGames(username)
+DataAccess -> db: SELECT games FROM games WHERE name=username
+DataAccess --> Services:games [Game(), ...]
+Services --> Server:games [Game(), ...]
+Server --> Block:200{ games : [{ gameID, whiteUsername, blackUsername, gameName }] }
+end
+
+
+
+group #purple Create Game #white
+note over Server, Services:<wordwrap:30>Creates a new game.
+Block -> Server: [POST] /game\nauthToken\n{gameName}
+
+
+
+Server --> Block: 200\n{ gameId }
+end
+
+
+
+group #yellow Join Game #black
+Block -> Server: [PUT] /game\nauthToken\n{PlayerColor, gameID}
+
+note right of Server:<wordwrap:30>Verifies that the specified game exists, and, if a color is specified, adds the caller as the requested color to the game. If no color is specified the user is joined as an observer. This request is idempotent.
+
+Server --> Block: 200
+end
+
+
+
+group #gray Clear application #white
+Block -> Server: [DELETE] /db
+
+note over Services: Administration
+
+note right of Server:<wordwrap:30>Clears the database. Removes all users, games, and authTokens.
+
+Server --> Services:deleteAll()
+Services --> DataAccess: deleteAll()
+DataAccess --> db: TRUNCATE *
+
+
+
+Server --> Block: 200\n{authToken}
+end
+
+bottomparticipants
