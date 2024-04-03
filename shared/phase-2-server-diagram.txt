@@ -1,8 +1,9 @@
 image data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADKUlEQVR4nNWaXYhNURTHf8ZlJCMlzZAakgiFIg8ezMO4mvAgZXyU4o148CAaoUgoxcM0yuWFFyOfMYzxKskDLyINxmhMjcH4GF8jrpbWqd1u3zvnjDln9vnXqtvea52z/vusj332uZAuzAC2Aw2kGLOAD0AeeEVKMUmdz6vcJ4UoAx4aJD4D80gZRgDNBok+YBkpRINB4g+wiRRiv0FCZB8pxHp9AgGJM3HdaD5wE/iiydc0iAmY1VwISDRrrgw6ZgJfrcee1zFpWP+DucAn45qPtGrFgst6k0agXKVRxy4N4HqHgOPAdOCNQaJd+0dseKs3qjDGJupY1wCu12aU1rxKDzCbmBEQEecHg8hGK0R/AFUkADO0KlQGElrjgJNWdcoD3Ul1bknoXkey90ZI9tVWPpjbj7xWxEQgK3ZDbyxyXStOf5gMXHMQEPkJLAB2AIvidH4t0AKsi2g3ClgM7DVW3JYnqhMrJAcuWjdu0tV1QUrmSuAIcBf4XsD5oFKJXmmcBIbpJq2ngBMyvln10HDoKuK0LfeSKLGVwO2QDkm4TVG7NSH0pXNvA0pIAO0RVjbowoKxRXSeA3XABBLEx4hE3qvdeEdzuwBUGyGYKFojEnmsdnOMsa3a9IYULRGJXFW7GmPMCxyNSGSP2tX5RqQ6IpGFanfLNyIjdfMWhkSbltIxVvPzBodDEtlZYDvuDcqLdPVAOrV3YB2ieUVEsKUfIrX/tGCVY8471BcgcUznRxuvq14TyQCnLSfrNcFLtHO7iHqLDcAD633kRJGwkwXwHmXA+X7yRw7avEWlPplWq3J1Oojk8BQZR5P8ZpykfLPmun0Nr6xj1c8a8+cc80vxEDmHo0uM+SrH/Ck8Q8Y4YQzkmeNl6aml88638Mo6VnuXQ2+37+GVs5z7ZZ39mvuzPl/DK+MIKzn/LYQrvoZX1hEuy4vor/A1vHKWUx3A8CL6Mvfat/DKOMLqQAi7g741x6zlkHzLmBbCbirw26fwylnOyDFRWNzxKbw6CrwRhkGtZSsfdoYMLwxHuiIe/5da+TWkf02qAV7qakpZjQr5TiK2IvI7NvwFA2/011m0MIQAAAAASUVORK5CYII "**A**\nChess playing knight Antonius Block" as A
 materialdesignicons f048b Server
-participant Services
-participant DataAccess
+participant "**Services**\nRegister, Auth, Game" as Services
+participant "**DataAccess**" as DataAccess
 database db
+
 
 lifelinestyle A #cornflowerblue:3:solid
 <background:#gray>
@@ -15,6 +16,7 @@ note over Server:Death's personal cloud server
 
 
 group #navy Registration #white
+rbox over Server,Services:Register a new user.
 A -> Server: [POST] /user\n{username, password, email}
 box over Services:Registration
 Server -> Services: register(username, password, email)
@@ -22,7 +24,7 @@ Services -> DataAccess: getUser(username)
 DataAccess -> db: SELECT username from user
 DataAccess --> Services: null
 Services -> DataAccess: createUser(username, password)
-DataAccess -> db: INSERT username, password, email INTO user
+DataAccess -> db:INSERT username, password, email \nINTO user
 Services -> DataAccess: createAuth(username)
 DataAccess -> db: INSERT username, authToken INTO auth
 DataAccess --> Services: authToken
@@ -42,7 +44,7 @@ Services -> DataAccess: getUser(username)
 DataAccess -> db:SELECT username from user
 DataAccess --> Services: UserData()
 Services -> DataAccess: CreateAuth(username)
-DataAccess -> db: INSERT username authToken INTO auth
+DataAccess -> db:INSERT username authToken \nINTO auth
 DataAccess --> Services: authToken
 Services --> Server:authToken
 
@@ -58,7 +60,7 @@ A -> Server: [DELETE] /session\nauthToken
 note over Services:Auth
 Server -> Services:logout(authToken)
 Services -> DataAccess:deleteAuth(authToken)
-DataAccess -> db: DELETE FROM auth WHERE authToken=authToken
+DataAccess -> db:DELETE FROM auth \nWHERE authToken=authToken
 DataAccess --> Services:
 Services --> Server:
 Server --> A: 200
@@ -72,13 +74,13 @@ A -> Server: [GET] /game\nauthToken
 note over Services:Auth
 Server -> Services:authenticate(authToken)
 Services -> DataAccess: GetUser(AuthToken)
-DataAccess -> db: SELECT username FROM auth WHERE token=authToken
+DataAccess -> db: SELECT username\nFROM auth WHERE token=authToken
 DataAccess --> Services: User()
 Services --> Server: User()
 note over Services:Games
 Server -> Services:getGames(username)
 Services -> DataAccess: GetGames(username)
-DataAccess -> db: SELECT * FROM games WHERE name=username
+DataAccess -> db:SELECT * FROM games \nWHERE name=username
 DataAccess --> Services:games [Game(), ...]
 Services --> Server:games [Game(), ...]
 Server --> A:200\n{ games : \n  [{ \n    gameID, \n    whiteUsername, \n    blackUsername, \n    gameName \n  }] \n}
@@ -92,14 +94,14 @@ A -> Server: [POST] /game\nauthToken\n{gameName}
 note over Services:Auth
 Server -> Services:authenticate(authToken)
 Services -> DataAccess: GetUser(authToken)
-DataAccess -> db: SELECT username FROM auth WHERE token=authToken
+DataAccess -> db:SELECT username FROM auth \nWHERE token=authToken
 DataAccess --> Services: User()
 Services --> Server: User()
 note over Services: Games
 Server -> Services: createGame(user, gameName)
 Services -> DataAccess: createGame(user, gameName)
-DataAccess -> db: SELECT name FROM games WHERE name=gameName
-DataAccess -> db: INSERT INTO games (gameName, username)
+DataAccess -> db:SELECT name FROM games \nWHERE name=gameName
+DataAccess -> db:INSERT INTO games \n(gameName, username)
 DataAccess --> Services: Game()
 Services --> Server: gameID
 Server --> A: 200\n{ gameId }
@@ -113,7 +115,7 @@ A -> Server: [PUT] /game\nauthToken\n{PlayerColor, gameID}
 box over Services: Auth
 Server -> Services: authenticate(authToken)
 Services -> DataAccess: GetUser(authToken)
-DataAccess -> db: SELECT username FROM auth WHERE token=authToken
+DataAccess -> db:SELECT username FROM auth \nWHERE token=authToken
 DataAccess --> Services: User()
 Services --> Server: User()
 box over Services: Games
@@ -124,7 +126,7 @@ DataAccess --> Services: Game()
 note over Services: IF game users are unset
 # Services-->Server:false
 Services -> DataAccess: updateGame(gameID, user, color)
-DataAccess -> db: UPDATE games SET user=userName, color=userName WHERE id=GAMEID
+DataAccess -> db:UPDATE games \nSET user=userName, color=userName \nWHERE id=GAMEID
 DataAccess --> Services: true
 Services --> Server:true
 Server --> A: 200
@@ -134,7 +136,7 @@ end
 
 group #gray Clear application #white
 
-note over Server,Services:<wordwrap:30>Clears the database. Removes all users, games, and authTokens.
+rbox over Server,Services:<wordwrap:30>Clears the database. Removes all users, games, and authTokens.
 A -> Server: [DELETE] /db
 note over Services: Administration
 Server -> Services:deleteAll()
