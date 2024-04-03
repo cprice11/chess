@@ -1,7 +1,7 @@
-package model;
+package server;
 
-public record UserData (
+public record CreateGameResult(
         String username,
         String password,
         String email
-){}
+) {}

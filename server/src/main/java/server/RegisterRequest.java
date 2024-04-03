@@ -1,7 +1,7 @@
-package model;
+package server;
 
-public record UserData (
+record RegisterRequest(
         String username,
         String password,
         String email
-){}
+) {}

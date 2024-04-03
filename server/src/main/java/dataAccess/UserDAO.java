@@ -1,4 +1,4 @@
 package dataAccess;
 
-public class UserDAO extends DAO{
+public interface UserDAO extends DAO{
 }
