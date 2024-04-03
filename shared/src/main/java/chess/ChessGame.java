@@ -39,9 +39,6 @@ public class ChessGame {
 //    public void state(GameState state){
 //        this.state = state;
 //    }
-
-
-
 //    public void loadFen(String fenString) {
 //        state.board().loadFenPosition(fenString);
 //    }

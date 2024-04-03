@@ -5,7 +5,6 @@ import java.util.Vector;
 public class FENParser extends ChessParser{
     public GameState parseFEN(String fen) {
         GameState state = new GameState();
-        //try {
             String[] parts = fen.split(" ");
             if (parts.length < 6) {
                 return state;
@@ -34,14 +33,13 @@ public class FENParser extends ChessParser{
                     (parts[1].equals("w"))? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
             state.turn(teamToMove);
 
-            boolean whiteCanCastleLong, whiteCanCastleShort, blackCanCastleLong, blackCanCastleShort = false;
             for (char c : parts[2].toCharArray()) {
                 switch (c) {
                     case 'K' -> state.whiteCanCastleShort(true);
                     case 'Q' -> state.whiteCanCastleLong(true);
                     case 'k' -> state.blackCanCastleShort(true);
                     case 'q' -> state.blackCanCastleLong(true);
-                };
+                }
             }
 
             ChessPosition enPassant = (parts[3].equals("-"))? null : parseAlgebraPosition(parts[3]);
@@ -49,9 +47,7 @@ public class FENParser extends ChessParser{
 
             state.setHalfMoveClock(Integer.parseInt(parts[4]));
             state.setFullMoveClock(Integer.parseInt(parts[5]));
-        //} catch (Exception e) {
             return state;
-        //}
     }
 
     public String getFen(GameState state) {
