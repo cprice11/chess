@@ -2,8 +2,15 @@
 ## Christian Price
 
 ## TODOS
-
-clean up tests one by one.
+- [ ] Create DAO templates C\*R\*U\*D
+- [ ] Create Parent classes for Services, DataAccess Interface, Request, Result, Serialization, and Handler
+- [ ] set up the browser interface (see docs) (What is Spark?)
+- [ ] for a break, refactor the Board class to not use empty arrays.
+- [ ] define Unit tests before coding
+- [ ] start with clear service access method
+- [ ] next setup a handler for an endpoint.
+- [ ] phase-1 also needs cleaned up in general
+- [ ] read Rubric for code quality 
 
 The class structure for this project is a little odd.
 
@@ -11,9 +18,10 @@ So far some interfaces are set in stone, so what remains is to organize from tho
 
 In a related note, the naming of methods doesn't quite fit the guidelines from the lesson.
 
-for phase 3+ be very consistent with naming.
+ [ ] for phase 3+ be very consistent with naming.
 
-Don't duplicate!
+ * **Don't duplicate!**
+
 
 A DOA method that verifies tokens without having to check is pretty neat.
 
