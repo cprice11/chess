@@ -11,6 +11,12 @@ So far some interfaces are set in stone, so what remains is to organize from tho
 
 In a related note, the naming of methods doesn't quite fit the guidelines from the lesson.
 
+for phase 3+ be very consistent with naming.
+
+Don't duplicate!
+
+A DOA method that verifies tokens without having to check is pretty neat.
+
 ## ChessGame
 - TeamColor                     This seems out of place to me, but stays to keep passoff.
 *   Moves   validMoves()

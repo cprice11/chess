@@ -1,7 +1,7 @@
 image data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADKUlEQVR4nNWaXYhNURTHf8ZlJCMlzZAakgiFIg8ezMO4mvAgZXyU4o148CAaoUgoxcM0yuWFFyOfMYzxKskDLyINxmhMjcH4GF8jrpbWqd1u3zvnjDln9vnXqtvea52z/vusj332uZAuzAC2Aw2kGLOAD0AeeEVKMUmdz6vcJ4UoAx4aJD4D80gZRgDNBok+YBkpRINB4g+wiRRiv0FCZB8pxHp9AgGJM3HdaD5wE/iiydc0iAmY1VwISDRrrgw6ZgJfrcee1zFpWP+DucAn45qPtGrFgst6k0agXKVRxy4N4HqHgOPAdOCNQaJd+0dseKs3qjDGJupY1wCu12aU1rxKDzCbmBEQEecHg8hGK0R/AFUkADO0KlQGElrjgJNWdcoD3Ul1bknoXkey90ZI9tVWPpjbj7xWxEQgK3ZDbyxyXStOf5gMXHMQEPkJLAB2AIvidH4t0AKsi2g3ClgM7DVW3JYnqhMrJAcuWjdu0tV1QUrmSuAIcBf4XsD5oFKJXmmcBIbpJq2ngBMyvln10HDoKuK0LfeSKLGVwO2QDkm4TVG7NSH0pXNvA0pIAO0RVjbowoKxRXSeA3XABBLEx4hE3qvdeEdzuwBUGyGYKFojEnmsdnOMsa3a9IYULRGJXFW7GmPMCxyNSGSP2tX5RqQ6IpGFanfLNyIjdfMWhkSbltIxVvPzBodDEtlZYDvuDcqLdPVAOrV3YB2ieUVEsKUfIrX/tGCVY8471BcgcUznRxuvq14TyQCnLSfrNcFLtHO7iHqLDcAD633kRJGwkwXwHmXA+X7yRw7avEWlPplWq3J1Oojk8BQZR5P8ZpykfLPmun0Nr6xj1c8a8+cc80vxEDmHo0uM+SrH/Ck8Q8Y4YQzkmeNl6aml88638Mo6VnuXQ2+37+GVs5z7ZZ39mvuzPl/DK+MIKzn/LYQrvoZX1hEuy4vor/A1vHKWUx3A8CL6Mvfat/DKOMLqQAi7g741x6zlkHzLmBbCbirw26fwylnOyDFRWNzxKbw6CrwRhkGtZSsfdoYMLwxHuiIe/5da+TWkf02qAV7qakpZjQr5TiK2IvI7NvwFA2/011m0MIQAAAAASUVORK5CYII "**A**\nChess playing knight Antonius Block" as A
 materialdesignicons f048b Server
 participant "**Services**\nRegister, Auth, Game, Admin" as Services
-participant "**DataAccess**" as DataAccess
+participant "**DataAccessException**" as DataAccessException
 database db
 
 
@@ -20,17 +20,17 @@ rbox over Server,Services:Register a new user.
 A -> Server: [POST] /user\n{username, password, email}
 box over Services:Registration
 Server -> Services: register(username, password, email)
-Services -> DataAccess: getUser(username)
-DataAccess -> db: SELECT username From Users\nWHERE username=<username>
-note left of DataAccess:403 if taken
-DataAccess --> Services:UserData
-Services -> DataAccess:createUser(username, password, email)
-DataAccess -> db:INSERT <username>, <password>,\n<email> INTO Users
+Services -> DataAccessException: getUser(username)
+DataAccessException -> db: SELECT username From Users\nWHERE username=<username>
+note left of DataAccessException:403 if taken
+DataAccessException --> Services:UserData
+Services -> DataAccessException:createUser(username, password, email)
+DataAccessException -> db:INSERT <username>, <password>,\n<email> INTO Users
 box over Services:Auth
 activate Services #b6dbb7
-Services -> DataAccess: createAuth(username)
-DataAccess -> db:INSERT <authToken>, <username>\nINTO Auth
-DataAccess --> Services: authToken
+Services -> DataAccessException: createAuth(username)
+DataAccessException -> db:INSERT <authToken>, <username>\nINTO Auth
+DataAccessException --> Services: authToken
 Services --> Server: authToken
 deactivate Services
 Server --> A:**[200]**\n{authToken}
@@ -45,13 +45,13 @@ box over Services:Auth
 activate Services #b6dbb7
 Server -> Services:login(username, #password*)
 note right of Server: *Ideally the password\nis hashed locally
-Services -> DataAccess:getUser(username)
-DataAccess -> db:SELECT username FROM Users\nWHERE username=<username>
-note left of DataAccess:401 on fail
-DataAccess --> Services:UserData
-Services -> DataAccess:createAuth(username)
-DataAccess -> db:INSERT <username>, <authToken> \nINTO Auth
-DataAccess --> Services:AuthData
+Services -> DataAccessException:getUser(username)
+DataAccessException -> db:SELECT username FROM Users\nWHERE username=<username>
+note left of DataAccessException:401 on fail
+DataAccessException --> Services:UserData
+Services -> DataAccessException:createAuth(username)
+DataAccessException -> db:INSERT <username>, <authToken> \nINTO Auth
+DataAccessException --> Services:AuthData
 Services --> Server:AuthData
 deactivate Services
 
@@ -67,13 +67,13 @@ A -> Server: [DELETE] /session\nauthToken
 box over Services:Auth
 activate Services #b6dbb7
 Server -> Services:logout(authToken)
-Services -> DataAccess: verify(authToken)
-DataAccess -> db:SELECT * FROM auth \nWHERE token=authToken
-note left of DataAccess:401 on fail
-DataAccess --> Services:UserData
-Services -> DataAccess: deleteAuth(authToken)
-DataAccess -> db:DELETE FROM Auth \nWHERE authToken=<authToken>
-DataAccess --> Services:
+Services -> DataAccessException: verify(authToken)
+DataAccessException -> db:SELECT * FROM auth \nWHERE token=authToken
+note left of DataAccessException:401 on fail
+DataAccessException --> Services:UserData
+Services -> DataAccessException: deleteAuth(authToken)
+DataAccessException -> db:DELETE FROM Auth \nWHERE authToken=<authToken>
+DataAccessException --> Services:
 Services --> Server:
 deactivate Services
 Server --> A:**[200]**
@@ -90,20 +90,20 @@ activate Services #pink
 box over Services:Auth
 deactivate Services
 activate Services #b6dbb7
-Services -> DataAccess: verify(authToken)
-DataAccess -> db:SELECT * FROM Auth \nWHERE token=authToken
-note left of DataAccess:401 on fail
-DataAccess --> Services:UserData
+Services -> DataAccessException: verify(authToken)
+DataAccessException -> db:SELECT * FROM Auth \nWHERE token=authToken
+note left of DataAccessException:401 on fail
+DataAccessException --> Services:UserData
 
 
 
 
 deactivate Services
 activate Services #pink
-Services -> DataAccess:getGameSummaries()
-DataAccess -> db:SELECT gameID, whiteUserName, \nblackUserName, gameName FROM Games
-DataAccess --> Services:List<Summary>
-note left of DataAccess:Summary:\n--\ngameID\nwhiteUsername\nblackUsername\ngameName
+Services -> DataAccessException:getGameSummaries()
+DataAccessException -> db:SELECT gameID, whiteUserName, \nblackUserName, gameName FROM Games
+DataAccessException --> Services:List<Summary>
+note left of DataAccessException:Summary:\n--\ngameID\nwhiteUsername\nblackUsername\ngameName
 Services --> Server:List<Summary>
 deactivate Services
 Server --> A:**[200]**\nJSON List of summaries
@@ -117,16 +117,16 @@ A -> Server: [POST] /game\nauthToken\n{gameName}
 box over Services:Auth
 activate Services #b6dbb7
 Server -> Services:authenticate(authToken)
-Services -> DataAccess:verify(authToken)
-DataAccess -> db:SELECT username FROM Auth \nWHERE authToken=authToken
-note left of DataAccess:401 on fail
-DataAccess --> Services:User
+Services -> DataAccessException:verify(authToken)
+DataAccessException -> db:SELECT username FROM Auth \nWHERE authToken=authToken
+note left of DataAccessException:401 on fail
+DataAccessException --> Services:User
 box over Services: Games
 deactivate Services
 activate Services #pink
-Services -> DataAccess:createGame(gameName)
-DataAccess -> db:INSERT INTO Games \n(<gameName>)
-DataAccess --> Services:gameID
+Services -> DataAccessException:createGame(gameName)
+DataAccessException -> db:INSERT INTO Games \n(<gameName>)
+DataAccessException --> Services:gameID
 Services --> Server: gameID
 deactivate Services
 Server --> A:**[200]**\n{ gameId }
@@ -143,21 +143,21 @@ Server -> Services:joinGame(authToken, playerColor, gameID)
 box over Services: Auth
 deactivate Services
 activate Services #b6dbb7
-Services -> DataAccess:verify(authToken)
-DataAccess -> db:SELECT username FROM Auth \nWHERE authToken=<authToken>
-note left of DataAccess:401 on fail
-DataAccess --> Services:User
+Services -> DataAccessException:verify(authToken)
+DataAccessException -> db:SELECT username FROM Auth \nWHERE authToken=<authToken>
+note left of DataAccessException:401 on fail
+DataAccessException --> Services:User
 box over Services: Games
 deactivate Services
 activate Services #pink
-Services -> DataAccess: getGame(gameID)
-DataAccess -> db:SELECT * FROM Games WHERE gameID=<gameID>
-DataAccess --> Services:Game
+Services -> DataAccessException: getGame(gameID)
+DataAccessException -> db:SELECT * FROM Games WHERE gameID=<gameID>
+DataAccessException --> Services:Game
 note left of Services:403 if taken
 # Services-->Server:false
-Services -> DataAccess:updateGame(gameID, username, color)
-DataAccess -> db:UPDATE Games \nSET whiteUsername*=<username>,\nWHERE gameID=<gameID>
-DataAccess --> Services:
+Services -> DataAccessException:updateGame(gameID, username, color)
+DataAccessException -> db:UPDATE Games \nSET whiteUsername*=<username>,\nWHERE gameID=<gameID>
+DataAccessException --> Services:
 Services --> Server:
 deactivate Services
 Server --> A:**[200]**
@@ -171,13 +171,13 @@ rbox over Server,Services:<wordwrap:30>Clears the database. Removes all users, g
 A -> Server: [DELETE] /db
 box over Services:Admin
 Server -> Services:deleteAll()
-Services -> DataAccess:deleteUsers()
-DataAccess->db:TRUNCATE TABLE Users
-Services->DataAccess:deleteGames()
-DataAccess->db:TRUNCATE TABLE Games
-Services->DataAccess:deleteAuth()
-DataAccess -> db:TRUNCATE TABLE Auth
-DataAccess --> Services:
+Services -> DataAccessException:deleteUsers()
+DataAccessException->db:TRUNCATE TABLE Users
+Services->DataAccessException:deleteGames()
+DataAccessException->db:TRUNCATE TABLE Games
+Services->DataAccessException:deleteAuth()
+DataAccessException -> db:TRUNCATE TABLE Auth
+DataAccessException --> Services:
 Services --> Server:
 Server --> A:**[200]**
 end
