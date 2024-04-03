@@ -144,7 +144,7 @@ history
 
 You can create and test your code in whatever order you would like. However, if you are trying to figure out how to get started, you might consider the following order.
 
-- [ ] Use your sequence diagrams to guide the decision for what classes you need for your server, service, and data access objects.
+- [x] Use your sequence diagrams to guide the decision for what classes you need for your server, service, and data access objects.
 - [ ] Implement your services
     - [ ] Create the classes you need to implement the `clear` service method.
     - [ ] Write a service test for `clear` to make sure the service and data access parts of your code are working properly.
