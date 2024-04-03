@@ -1,4 +1,4 @@
-package serviceTests;
+package service;
 
 public class ServiceTest {
 //    In addition to the HTTP server pass off tests provided in the starter code, you need to write tests that execute

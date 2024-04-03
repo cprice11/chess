@@ -1,6 +1,6 @@
 package server;
 
-record CreateGameRequest(
+public record CreateGameRequest(
     String authorization,
     String gameName
-){}
+) {}
