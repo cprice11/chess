@@ -70,8 +70,11 @@ activate Services #b6dbb7
 Services -> DataAccessException: verify(authToken)
 DataAccessException -> db:SELECT * FROM auth \nWHERE token=authToken
 note left of DataAccessException:401 on fail
-DataAccessException --> Services:UserData
+space
+DataAccessException --> Services:AuthData
 deactivate Services
+entryspacing 0.5
+space
 activate Services #b6dbb7
 Services -> DataAccessException: deleteAuth(authToken)
 DataAccessException -> db:DELETE FROM Auth \nWHERE authToken=<authToken>
@@ -96,7 +99,7 @@ activate Services #b6dbb7
 Services -> DataAccessException: verify(authToken)
 DataAccessException -> db:SELECT * FROM Auth \nWHERE token=authToken
 note left of DataAccessException:401 on fail
-DataAccessException --> Services:UserData
+DataAccessException --> Services:AuthData
 deactivate Services
 Services -> DataAccessException:getGameSummaries()
 DataAccessException -> db:SELECT gameID, whiteUserName, \nblackUserName, gameName FROM Games
@@ -120,7 +123,7 @@ activate Services #b6dbb7
 Services -> DataAccessException:verify(authToken)
 DataAccessException -> db:SELECT username FROM Auth \nWHERE authToken=authToken
 note left of DataAccessException:401 on fail
-DataAccessException --> Services:User
+DataAccessException --> Services:AuthData
 deactivate Services
 
 Services -> DataAccessException:createGame(gameName)
@@ -144,13 +147,13 @@ activate Services #b6dbb7
 Services -> DataAccessException:verify(authToken)
 DataAccessException -> db:SELECT username FROM Auth \nWHERE authToken=<authToken>
 note left of DataAccessException:401 on fail
-DataAccessException --> Services:User
+DataAccessException --> Services:AuthData
 deactivate Services
 Services -> DataAccessException: getGame(gameID)
 DataAccessException -> db:SELECT * FROM Games WHERE gameID=<gameID>
 DataAccessException --> Services:Game
 note left of Services:403 if taken
-Services -> DataAccessException:updateGame(gameID, username, color)
+Services -> DataAccessException:startGame(gameID, username, color)
 DataAccessException -> db:UPDATE Games \nSET whiteUsername*=<username>,\nWHERE gameID=<gameID>
 DataAccessException --> Services:
 Services --> Server:
