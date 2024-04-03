@@ -5,12 +5,17 @@ import model.UserData;
 import java.util.Collection;
 
 public class MemoryUserDAO implements UserDAO{
+    MemoryDatabase db;
+
+    public MemoryUserDAO(MemoryDatabase db) {
+        this.db = db;
+    }
     /**
      * Returns all objects in the database
      */
     @Override
     public Collection<UserData> getAll() {
-        return UserDAO.super.getAll();
+        return db.getUsers();
     }
 
     /**
