@@ -53,9 +53,13 @@ public class MemoryUserDAOTest extends DataAccessVars {
     @Test
     @Order(4)
     void update() {
-        userDAO.update(u0, u1);
-        Collection<UserData> allUsers = userDAO.getAll();
-        Assertions.assertEquals(allUsers, List.of(new UserData[]{u1, u1, u2}));
+        UserData newGuy = new UserData("jeff", "1234", "not.an@email");
+        HashSet<UserData> withNewGuy = new HashSet<>();
+        withNewGuy.add(newGuy);
+        withNewGuy.add(u1);
+        withNewGuy.add(u2);
+        userDAO.update(u0, newGuy);
+        Assertions.assertEquals(withNewGuy, userDAO.getAll());
     }
 
     @Test
