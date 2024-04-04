@@ -38,8 +38,8 @@ public class MemoryUserDAO implements UserDAO {
      * @param target The existing object in the database
      * @param value  The object to replace the target object
      */
-    @Override
-    public void update(UserData target, UserData value) {
+    public void update(UserData target, UserData value) throws DataAccessException{
+        verify(target);
         MemoryDatabase.users.remove(target);
         MemoryDatabase.users.add(value);
     }
@@ -60,7 +60,8 @@ public class MemoryUserDAO implements UserDAO {
      * @param entry The object to add
      */
     @Override
-    public void add(UserData entry) {
+    public void add(UserData entry) throws DataAccessException{
+        if (MemoryDatabase.getUsers().contains(entry)) throw new DataAccessException("User already exists; adding failed");
         MemoryDatabase.users.add(entry);
     }
 
@@ -68,12 +69,11 @@ public class MemoryUserDAO implements UserDAO {
      * @param username
      * @return
      */
-    @Override
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws DataAccessException{
         for (UserData u : MemoryDatabase.getUsers()) {
             if (u.username().equals(username)) return u;
         }
-        return null;
+        throw new DataAccessException("Username not found; failed to get user");
     }
 
     /**
@@ -81,15 +81,11 @@ public class MemoryUserDAO implements UserDAO {
      * @param password
      */
     @Override
-    public void editUserPassword(String username, String password) {
-        for (UserData u : MemoryDatabase.getUsers()) {
-            if (u.username().equals(username)) {
-                MemoryDatabase.users.remove(u);
-                UserData updated = new UserData(username, password, u.email());
-                MemoryDatabase.users.add(updated);
-                return;
-            }
-        }
+    public void editUserPassword(String username, String password) throws DataAccessException {
+        UserData u = getUser(username);
+        MemoryDatabase.users.remove(u);
+        UserData updated = new UserData(username, password, u.email());
+        MemoryDatabase.users.add(updated);
     }
 
     /**
@@ -97,14 +93,10 @@ public class MemoryUserDAO implements UserDAO {
      * @param email
      */
     @Override
-    public void editUserEmail(String username, String email) {
-        for (UserData u : MemoryDatabase.getUsers()) {
-            if (u.username().equals(username)) {
-                MemoryDatabase.users.remove(u);
-                UserData updated = new UserData(username, u.password(), email);
-                MemoryDatabase.users.add(updated);
-                return;
-            }
-        }
+    public void editUserEmail(String username, String email) throws DataAccessException{
+        UserData u = getUser(username);
+        MemoryDatabase.users.remove(u);
+        UserData updated = new UserData(username, u.password(), email);
+        MemoryDatabase.users.add(updated);
     }
 }

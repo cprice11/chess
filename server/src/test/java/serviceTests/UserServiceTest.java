@@ -1,10 +1,12 @@
 package serviceTests;
 
+import dataAccess.DataAccessException;
 import dataAccess.MemoryDatabase;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import model.UserData;
+import org.junit.jupiter.api.*;
+import server.request.LogoutRequest;
+import server.result.LoginResult;
+import service.AuthService;
 import service.UserService;
 
 import java.util.stream.IntStream;
@@ -12,7 +14,8 @@ import java.util.stream.IntStream;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceTest extends ServiceVars {
 
-    private static final UserService userService = new UserService();
+    private static final UserService userService = new UserService(users);
+    private static final AuthService authService = new AuthService(auth);
     private static final MemoryDatabase db = new MemoryDatabase();
 
 
@@ -23,17 +26,28 @@ class UserServiceTest extends ServiceVars {
         MemoryDatabase.setUsers(userData);
     }
 
+
     @Test
     void testRegister() {
+        Assertions.assertDoesNotThrow(() -> userService.register(goodRegisterRequest), "Threw exception on valid register request");
+        Assertions.assertTrue(users.getAll().contains(uNew));
+        Assertions.assertThrows(DataAccessException.class, () -> userService.register(badRegisterRequest));
+        Assertions.assertFalse(users.getAll().contains(
+                new UserData(
+                        badRegisterRequest.username(),
+                        badRegisterRequest.password(),
+                        badRegisterRequest.email())
+                )
+        );
     }
 
-    @Test
-    void getUserByUsername() {
-    }
-
-    @Test
-    void getUserByEmail() {
-    }
+//    @Test
+//    void getUserByUsername() {
+//    }
+//
+//    @Test
+//    void getUserByEmail() {
+//    }
 
     @Test
     @Order(5)
@@ -47,7 +61,6 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertThrows(DataAccessException.class, () -> userService.login(badLoginRequest), "No Exception thrown on invalid request");
     }
 
-     */
     @Test
     @Order(6)
     void testLogout() {
@@ -74,8 +87,8 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
         Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
         Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(firstResult.authToken())), "Threw error on valid logout request");
-        Assertions.assertThrows(DataAccessException.class, () -> userService.verify(t0), "Verified invalid authToken");
-        Assertions.assertThrows(DataAccessException.class, () -> userService.verify(goodLoginRequest.username()), "Verified logged out user");
+        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authToken");
+        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(goodLoginRequest.username()), "Verified logged out user");
         Assertions.assertThrows(DataAccessException.class, () -> userService.logout(new LogoutRequest(secondResult.authToken())), "Verified invalid logout request");
     }
 
@@ -90,8 +103,8 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
         Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
         Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(secondResult.authToken())), "Threw error on valid logout request");
-        Assertions.assertThrows(DataAccessException.class, () -> userService.verify(t0), "Verified invalid authToken");
-        Assertions.assertThrows(DataAccessException.class, () -> userService.verify(goodLoginRequest.username()), "Verified logged out user");
+        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authToken");
+        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(goodLoginRequest.username()), "Verified logged out user");
         Assertions.assertThrows(DataAccessException.class, () -> userService.logout(new LogoutRequest(firstResult.authToken())), "Verified invalid logout request");
     }
 }
