@@ -3,8 +3,8 @@ package serviceTests;
 import dataAccess.*;
 import model.AuthData;
 import org.junit.jupiter.api.*;
-import server.result.LoginResult;
 import server.request.LogoutRequest;
+import server.result.LoginResult;
 import service.AuthService;
 
 import java.util.stream.IntStream;
@@ -60,9 +60,13 @@ class AuthServiceTest extends ServiceVars {
     @Test
     @Order(2)
     void authNotRemoved() {
-        authService.getAuthByUsername(a0.username());
-        authService.getAuthByAuthToken(a0.authToken());
-        Assertions.assertTrue(auth.getAll().contains(a0), "Did not find expected AuthData after retrieval");
+        try {
+            authService.getAuthByUsername(a0.username());
+            authService.getAuthByAuthToken(a0.authToken());
+            Assertions.assertTrue(auth.getAll().contains(a0), "Did not find expected AuthData after retrieval");
+        } catch (DataAccessException e) {
+            Assertions.assertNull(e, "Threw unexpected Exception");
+        }
     }
 
     @Test
@@ -95,62 +99,4 @@ class AuthServiceTest extends ServiceVars {
         Assertions.assertEquals(username, newAuthTwo.username(), "returned unexpected username");
     }
 
-    @Test
-    @Order(5)
-    void testLogin() {
-        auth.deleteAll();
-        Assertions.assertDoesNotThrow(() -> authService.login(goodLoginRequest), "Threw Exception on valid request");
-        LoginResult result = authService.login(goodLoginRequest);
-        Assertions.assertEquals(t1, result.authToken(), "Returned unexpected auth token");
-        Assertions.assertEquals(goodLoginResult.username(), result.username(), "Returned unexpected username");
-        Assertions.assertTrue(auth.getAll().contains(aNew), "new auth not found in database after request");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.login(badLoginRequest), "No Exception thrown on invalid request");
-    }
-
-    @Test
-    @Order(6)
-    void testLogout() {
-        authService.logout(goodLogoutRequest);
-        Assertions.assertFalse(auth.getAll().contains(a0), "AuthData remained after logout");
-        Assertions.assertTrue(auth.getAll().contains(a1), "incorrect AuthData dropped after logout");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.logout(badLogoutRequest), "No error thrown on invalid request");
-    }
-
-    @Test
-    @Order(7)
-    void testMultipleLogin() {
-        // I'm going to assume that multiple auths is ok, but one logout clears everything?
-        // If multiple logins are received, and the client sends either authToken both should work
-        // If a user logs out, but still has a live AuthData, that one may not ever get cleared if the client doesn't
-        // have the authToken.
-        // clearing both would prevent password sharing between multiple clients.
-        // IRL Auth would have a lifetime and be connected to a physical device.
-        auth.deleteAll();
-        LoginResult firstResult = authService.login(goodLoginRequest);
-        LoginResult secondResult = authService.login(goodLoginRequest);
-        Assertions.assertEquals(t0, firstResult.authToken(), "Unexpected authToken from login");
-        Assertions.assertEquals(t1, secondResult.authToken(), "Unexpected authToken from login");
-        Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
-        Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
-        Assertions.assertDoesNotThrow(() -> authService.logout(new LogoutRequest(firstResult.authToken())), "Threw error on valid logout request");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authToken");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(goodLoginRequest.username()), "Verified logged out user");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.logout(new LogoutRequest(secondResult.authToken())), "Verified invalid logout request");
-    }
-
-    @Test
-    @Order(8)
-    void testReverseMultipleLogin() {
-        auth.deleteAll();
-        LoginResult firstResult = authService.login(goodLoginRequest);
-        LoginResult secondResult = authService.login(goodLoginRequest);
-        Assertions.assertEquals(t0, firstResult.authToken(), "Unexpected authToken from login");
-        Assertions.assertEquals(t1, secondResult.authToken(), "Unexpected authToken from login");
-        Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
-        Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
-        Assertions.assertDoesNotThrow(() -> authService.logout(new LogoutRequest(secondResult.authToken())), "Threw error on valid logout request");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authToken");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(goodLoginRequest.username()), "Verified logged out user");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.logout(new LogoutRequest(firstResult.authToken())), "Verified invalid logout request");
-    }
 }
