@@ -28,9 +28,9 @@ public class DataAccessVars {
     static final HashSet<GameData> gameData = new HashSet<>(Arrays.asList(g0, g1, g2));
     static final HashSet<UserData> userData = new HashSet<>(Arrays.asList(u0, u1, u2));
 
-    static final Collection<GameSummary> gameSummaries = List.of(new GameSummary[]{
+    static final HashSet<GameSummary> gameSummaries = new HashSet<>(Arrays.asList(
             new GameSummary(g0.gameID(), g0.whiteUsername(), g0.blackUsername(), g0.gameName()),
             new GameSummary(g1.gameID(), g1.whiteUsername(), g1.blackUsername(), g1.gameName()),
             new GameSummary(g2.gameID(), g2.whiteUsername(), g2.blackUsername(), g2.gameName())
-    });
+    ));
 }
