@@ -114,7 +114,7 @@ public class MemoryGameDAO implements GameDAO {
         for (GameData g : MemoryDatabase.getGames()) {
             if (g.gameID() == gameID) {
                 delete(g);
-                GameData updated = new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), game);
+                add(new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), game));
                 return;
             }
         }
