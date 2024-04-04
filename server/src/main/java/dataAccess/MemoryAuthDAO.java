@@ -96,7 +96,10 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public String getUsername(String authToken) {
-        throw new RuntimeException("Not yet implemented");
+        for (AuthData a : MemoryDatabase.auth) {
+            if (a.authToken().equals(authToken)) return a.username();
+        }
+        return null;
     }
 
     /**
