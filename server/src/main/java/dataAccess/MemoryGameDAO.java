@@ -84,7 +84,7 @@ public class MemoryGameDAO implements GameDAO {
      * @throws DataAccessException if the ID is not found
      */
     @Override
-    public GameData validate(int gameID) throws DataAccessException {
+    public GameData verify(int gameID) throws DataAccessException {
         throw new RuntimeException("Not yet implemented");
     }
 
@@ -96,6 +96,11 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void setGameState(int gameID, ChessGame game) {
+        throw new RuntimeException("Not yet implemented");
+    }
+
+    @Override
+    public void setGameState(GameData gameData) {
         throw new RuntimeException("Not yet implemented");
     }
 

@@ -15,8 +15,8 @@ public class DataAccessVars {
     static final AuthData a2 = new AuthData("2hu2^7T@YXtJhDuQ2%dg", "death");
 
     static final GameData g0 = new GameData(1, "myname123", "Antonius", "firstmatch", new ChessGame());
-    static final GameData g1 = new GameData(1, "antonius", "death", "firstmatch", new ChessGame());
-    static final GameData g2 = new GameData(1, "death", "myname123", "firstmatch", new ChessGame());
+    static final GameData g1 = new GameData(1, "antonius", "death", "chessgame", new ChessGame());
+    static final GameData g2 = new GameData(1, "death", "myname123", "chessgame", new ChessGame());
 
     static final UserData u0 = new UserData("myname123", "p@ssword", "email@email.com");
     static final UserData u1 = new UserData("antonius", "G00dK!ght", "email@email.com");

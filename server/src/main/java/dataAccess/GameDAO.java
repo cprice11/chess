@@ -79,7 +79,7 @@ public interface GameDAO extends DAO<GameData> {
      * @param gameID The ID of the game to confirm
      * @throws DataAccessException if the ID is not found
      */
-    GameData validate(int gameID) throws DataAccessException;
+    GameData verify(int gameID) throws DataAccessException;
 
     /**
      * Updates a game to a new game state
@@ -88,4 +88,11 @@ public interface GameDAO extends DAO<GameData> {
      * @param game   The value to set the game state to
      */
     void setGameState(int gameID, ChessGame game);
+
+    /**
+     * Updates a game to a new game state
+     *
+     * @param gameData the game object to replace the existing one
+     */
+    void setGameState(GameData gameData);
 }
