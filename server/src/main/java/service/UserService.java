@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
+import model.AuthData;
 import model.UserData;
 import server.request.LoginRequest;
 import server.request.LogoutRequest;
@@ -11,21 +12,36 @@ import server.result.RegisterResult;
 
 public class UserService extends Service {
     private final UserDAO dao;
+    private final AuthService auth;
 
-    public UserService(UserDAO dao) {
+    public UserService(UserDAO dao, AuthService auth) {
         this.dao = dao;
+        this.auth = auth;
     }
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException {
-        dao.getUser(request.username())
+        String username = request.username();
+        try {
+            UserData user = dao.getUser(username);
+            throw new DataAccessException("Username already in use; registration failed.");
+        } catch (DataAccessException e) {
+            dao.add(new UserData(username, request.password(), request.email()));
+            return new RegisterResult(auth.createAuth(username).authToken(), username);
+        }
     }
 
-    public LoginResult login(LoginRequest request) {
-        throw new RuntimeException("Not implemented yet");
+    public LoginResult login(LoginRequest request) throws DataAccessException{
+        String username = request.username();
+        UserData existingUser = dao.getUser(username);
+        if (existingUser.password().equals(username)) {
+            return new LoginResult(auth.createAuth(username).authToken(), username);
+        }
+        throw new DataAccessException("Credentials do not match; login failed.");
     }
 
-    public void logout(LogoutRequest request) {
-        throw new RuntimeException("Not implemented yet");
+    public void logout(LogoutRequest request) throws DataAccessException{
+        AuthData authData = auth.verify(request.authorization());
+        auth.delete(authData);
     }
 
     // FIXME: I assume that these will be useful later.

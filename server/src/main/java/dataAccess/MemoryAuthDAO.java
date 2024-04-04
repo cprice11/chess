@@ -2,10 +2,7 @@ package dataAccess;
 
 import model.AuthData;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class MemoryAuthDAO implements AuthDAO {
@@ -82,13 +79,16 @@ public class MemoryAuthDAO implements AuthDAO {
     /**
      * @param username
      * @return
+     * @throws DataAccessException
      */
     @Override
-    public String getAuthToken(String username) {
-        for (AuthData a : MemoryDatabase.auth) {
-            if (a.username().equals(username)) return a.authToken();
+    public Collection<AuthData> getAuthFromUser(String username) throws DataAccessException {
+        Collection<AuthData> allResults = new ArrayList<>();
+        for (AuthData authData : MemoryDatabase.getAuth()) {
+            if (authData.username().equals(username)) allResults.add(authData);
         }
-        return null;
+        if (allResults.isEmpty()) throw new DataAccessException("No auth data found for user");
+        return allResults;
     }
 
     /**
@@ -112,6 +112,16 @@ public class MemoryAuthDAO implements AuthDAO {
         AuthData newAuth = new AuthData(pseudoRandomToken(), username);
         add(newAuth);
         return newAuth;
+    }
+
+    /**
+     * @param authToken
+     * @return
+     * @throws DataAccessException
+     */
+    @Override
+    public AuthData getAuthFromToken(String authToken) throws DataAccessException {
+        return null;
     }
 
 

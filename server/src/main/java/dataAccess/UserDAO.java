@@ -43,7 +43,7 @@ public interface UserDAO extends DAO<UserData> {
      * @param entry The object to add
      */
     @Override
-    void add(UserData entry);
+    void add(UserData entry) throws DataAccessException;
 
     UserData getUser(String username) throws DataAccessException;
 

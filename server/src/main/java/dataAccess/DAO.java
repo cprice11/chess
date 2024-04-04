@@ -22,7 +22,7 @@ public interface DAO<T> {
      * @param target The existing object in the database
      * @param value  The object to replace the target object
      */
-    void update(T target, T value);
+    void update(T target, T value) throws DataAccessException;
 
     /**
      * @param target the object to search for in the database
@@ -35,5 +35,5 @@ public interface DAO<T> {
      *
      * @param entry The object to add
      */
-    void add(T entry);
+    void add(T entry) throws DataAccessException;
 }

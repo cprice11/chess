@@ -51,9 +51,11 @@ public interface AuthDAO extends DAO<AuthData> {
     @Override
     void add(AuthData entry);
 
-    String getAuthToken(String username);
+    Collection<AuthData> getAuthFromUser(String username) throws DataAccessException;
 
-    String getUsername(String authToken);
+    String getUsername(String authToken) throws DataAccessException;
 
     AuthData createAuth(String username);
+
+    AuthData getAuthFromToken(String authToken) throws DataAccessException;
 }

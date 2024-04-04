@@ -20,16 +20,19 @@ public class AuthService extends Service {
 //    public Result logout(LogoutRequest request) {
 //        throw new RuntimeException("Not implemented yet");
 //    }
+    public void delete(AuthData target) {
+        dao.delete(target);
+    }
 
     public AuthData verify(String authToken) throws DataAccessException {
         return dao.verify(authToken);
     }
 
     public AuthData getAuthByUsername(String username) throws DataAccessException{
-        return dao.getAuthToken(username);
+        return dao.verify(username);
     }
 
-    public AuthData getAuthByAuthToken(String authToken) {
-        throw new RuntimeException("Not implemented yet");
+    public AuthData getAuthByAuthToken(String authToken) throws DataAccessException{
+        return dao.verify(authToken);
     }
 }

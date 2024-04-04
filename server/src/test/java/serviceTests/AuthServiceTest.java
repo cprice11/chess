@@ -49,22 +49,22 @@ class AuthServiceTest extends ServiceVars {
     @Test
     @Order(1)
     void getAuthByAuthToken() {
-        Assertions.assertEquals(a0, authService.getAuthByAuthToken(a0.authToken()), "Did not return expected AuthData");
-        Assertions.assertEquals(a1, authService.getAuthByAuthToken(a1.authToken()), "Did not return expected AuthData");
-        Assertions.assertEquals(a2, authService.getAuthByAuthToken(a2.authToken()), "Did not return expected AuthData");
-        Assertions.assertThrows(DataAccessException.class, () -> authService.getAuthByUsername(a2.username()), "Did not throw exception on incorrect token");
+        Assertions.assertDoesNotThrow(() -> {
+            Assertions.assertEquals(a0, authService.getAuthByAuthToken(a0.authToken()), "Did not return expected AuthData");
+            Assertions.assertEquals(a1, authService.getAuthByAuthToken(a1.authToken()), "Did not return expected AuthData");
+            Assertions.assertEquals(a2, authService.getAuthByAuthToken(a2.authToken()), "Did not return expected AuthData");
+            Assertions.assertThrows(DataAccessException.class, () -> authService.getAuthByUsername(a2.username()), "Did not throw exception on incorrect token");
+        }, "Threw unexpected exception");
     }
 
     @Test
     @Order(2)
     void authNotRemoved() {
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             authService.getAuthByUsername(a0.username());
             authService.getAuthByAuthToken(a0.authToken());
             Assertions.assertTrue(auth.getAll().contains(a0), "Did not find expected AuthData after retrieval");
-        } catch (DataAccessException e) {
-            Assertions.assertNull(e, "Threw unexpected Exception");
-        }
+        }, "Threw unexpected Exception");
     }
 
     @Test
