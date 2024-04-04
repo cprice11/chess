@@ -1,6 +1,7 @@
 package dataAccess;
 
 import chess.ChessGame;
+import model.AuthData;
 import model.GameData;
 import model.GameSummary;
 
@@ -48,7 +49,23 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void verify(GameData target) throws DataAccessException {
-        throw new RuntimeException("Not yet implemented");
+        if (MemoryDatabase.getGames().contains(target)) return;
+        throw new DataAccessException(target.toString() + " Does not exist in database");
+    }
+
+    /**
+     * Confirms that a game is the database
+     *
+     * @param gameID The ID of the game to confirm
+     * @throws DataAccessException if the ID is not found
+     */
+    @Override
+    public GameData verify(int gameID) throws DataAccessException {
+        HashSet<GameData> gameData = MemoryDatabase.getGames();
+        for (GameData g : gameData) {
+            if (g.gameID() == gameID) return g;
+        }
+        throw new DataAccessException(gameID + " Does not exist in database");
     }
 
     /**
@@ -58,7 +75,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void add(GameData entry) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.games.add(entry);
     }
 
     /**
@@ -66,7 +83,11 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public HashSet<GameSummary> getGameSummaries() {
-        throw new RuntimeException("Not yet implemented");
+        HashSet<GameSummary> summaries = new HashSet<>();
+        for (GameData g : MemoryDatabase.games) {
+            summaries.add(new GameSummary(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName()));
+        }
+        return summaries;
     }
 
     /**
@@ -79,16 +100,6 @@ public class MemoryGameDAO implements GameDAO {
         throw new RuntimeException("Not yet implemented");
     }
 
-    /**
-     * Confirms that a game is the database
-     *
-     * @param gameID The ID of the game to confirm
-     * @throws DataAccessException if the ID is not found
-     */
-    @Override
-    public GameData verify(int gameID) throws DataAccessException {
-        throw new RuntimeException("Not yet implemented");
-    }
 
     /**
      * Updates a game to a new game state
