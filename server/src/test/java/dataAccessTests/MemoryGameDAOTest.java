@@ -77,4 +77,20 @@ public class MemoryGameDAOTest extends DataAccessVars{
     void getGame() {
         Assertions.assertEquals(gameDAO.getGame(g0.gameID()), g0);
     }
+
+    @Test
+    void getGameSummaries() {
+    }
+
+    @Test
+    void createGame() {
+    }
+
+    @Test
+    void validate() {
+    }
+
+    @Test
+    void setGameState() {
+    }
 }

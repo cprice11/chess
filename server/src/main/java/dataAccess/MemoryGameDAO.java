@@ -98,4 +98,16 @@ public class MemoryGameDAO implements GameDAO{
     public void setGameState(int gameID, ChessGame game) {
 
     }
+
+    GameData getGame(int gameID) {
+        throw new RuntimeException("Not yet implemented");
+    }
+
+    Collection<GameData> getGamesByPlayer(String username) {
+        throw new RuntimeException("Not yet implemented");
+    }
+
+    Collection<GameData> getGamesByName(String name) {
+        throw new RuntimeException("Not yet implemented");
+    }
 }
