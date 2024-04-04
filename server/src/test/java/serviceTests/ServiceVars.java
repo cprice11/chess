@@ -5,7 +5,8 @@ import model.AuthData;
 import model.GameData;
 import model.GameSummary;
 import model.UserData;
-import server.*;
+import server.request.*;
+import server.result.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,7 +45,7 @@ public class ServiceVars {
     // register
     static final RegisterRequest goodRegisterRequest = new RegisterRequest(uNew.username(), uNew.password(), uNew.email());
     static final RegisterRequest badRegisterRequest = new RegisterRequest(u2.username(), uNew.password(), uNew.email());
-    static final RegisterResult goodRegisterResult = new RegisterResult(uNew.username(), null); // authToken shouldn't be created here
+    // static final RegisterResult goodRegisterResult = new RegisterResult(null, uNew.username()); // authToken shouldn't be created here
     // static final RegisterResult badRegisterResult = new RegisterResult();
     // login
     static final LoginRequest goodLoginRequest = new LoginRequest(u0.username(), u0.password());

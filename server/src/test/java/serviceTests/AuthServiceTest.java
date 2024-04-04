@@ -3,8 +3,8 @@ package serviceTests;
 import dataAccess.*;
 import model.AuthData;
 import org.junit.jupiter.api.*;
-import server.LoginResult;
-import server.LogoutRequest;
+import server.result.LoginResult;
+import server.request.LogoutRequest;
 import service.AuthService;
 
 import java.util.stream.IntStream;
@@ -14,7 +14,7 @@ class AuthServiceTest extends ServiceVars {
     private static final AuthDAO auth = new MemoryAuthDAO();
     private static final GameDAO games = new MemoryGameDAO();
     private static final UserDAO users = new MemoryUserDAO();
-    private static final AuthService authService = new AuthService();
+    private static final AuthService authService = new AuthService(auth);
     private static final MemoryDatabase db = new MemoryDatabase();
 
 
@@ -37,9 +37,13 @@ class AuthServiceTest extends ServiceVars {
     @Test
     @Order(1)
     void getAuthByUsername() {
-        Assertions.assertEquals(a0, authService.getAuthByUsername(a0.username()), "Did not return expected AuthData");
-        Assertions.assertEquals(a1, authService.getAuthByUsername(a1.username()), "Did not return expected AuthData");
-        Assertions.assertEquals(a2, authService.getAuthByUsername(a2.username()), "Did not return expected AuthData");
+        try {
+            Assertions.assertEquals(a0, authService.getAuthByUsername(a0.username()), "Did not return expected AuthData");
+            Assertions.assertEquals(a1, authService.getAuthByUsername(a1.username()), "Did not return expected AuthData");
+            Assertions.assertEquals(a2, authService.getAuthByUsername(a2.username()), "Did not return expected AuthData");
+        } catch (DataAccessException e) {
+            Assertions.assertNull(e, "Threw unexpected Exception");
+        }
         Assertions.assertThrows(DataAccessException.class, () -> authService.getAuthByUsername(a2.username()), "Did not throw exception on incorrect username");
     }
 

@@ -1,8 +1,8 @@
 package service;
 
 import model.UserData;
-import server.RegisterRequest;
-import server.RegisterResult;
+import server.request.RegisterRequest;
+import server.result.RegisterResult;
 
 public class UserService extends Service {
     public RegisterResult register(RegisterRequest request) {

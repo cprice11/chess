@@ -1,4 +1,4 @@
-package server;
+package server.result;
 
 import model.GameSummary;
 

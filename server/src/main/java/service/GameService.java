@@ -3,9 +3,9 @@ package service;
 import model.GameData;
 import model.GameSummary;
 import server.Authorization;
-import server.CreateGameRequest;
-import server.CreateGameResult;
-import server.JoinGameRequest;
+import server.request.CreateGameRequest;
+import server.result.CreateGameResult;
+import server.request.JoinGameRequest;
 
 import java.util.Collection;
 
