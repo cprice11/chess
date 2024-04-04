@@ -96,4 +96,12 @@ public class MemoryGameDAOTest extends DataAccessVars {
     @Test
     void setGameState() {
     }
+
+    @Test
+    void getGamesByPlayer() {
+    }
+
+    @Test
+    void getGamesByName() {
+    }
 }
