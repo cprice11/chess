@@ -5,14 +5,15 @@ import model.GameData;
 import model.GameSummary;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 public class MemoryGameDAO implements GameDAO {
     /**
      * Returns all objects in the database
      */
     @Override
-    public Collection<GameData> getAll() {
-        throw new RuntimeException("Not yet implemented");
+    public HashSet<GameData> getAll() {
+        return MemoryDatabase.getGames();
     }
 
     /**
@@ -20,7 +21,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void delete(GameData target) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.getGames().remove(target);
     }
 
     /**
@@ -28,7 +29,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void deleteAll() {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.clearGames();
     }
 
     /**
@@ -37,7 +38,8 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void update(GameData target, GameData value) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.games.remove(target);
+        MemoryDatabase.games.add(value);
     }
 
     /**
@@ -63,7 +65,7 @@ public class MemoryGameDAO implements GameDAO {
      * Gets a list of the summaries of every game in the database
      */
     @Override
-    public Collection<GameSummary> getGameSummaries() {
+    public HashSet<GameSummary> getGameSummaries() {
         throw new RuntimeException("Not yet implemented");
     }
 
@@ -108,11 +110,11 @@ public class MemoryGameDAO implements GameDAO {
         throw new RuntimeException("Not yet implemented");
     }
 
-    public Collection<GameData> getGamesByPlayer(String username) {
+    public HashSet<GameData> getGamesByPlayer(String username) {
         throw new RuntimeException("Not yet implemented");
     }
 
-    public Collection<GameData> getGamesByName(String name) {
+    public HashSet<GameData> getGamesByName(String name) {
         throw new RuntimeException("Not yet implemented");
     }
 }

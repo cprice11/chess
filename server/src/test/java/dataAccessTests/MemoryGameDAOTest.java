@@ -11,7 +11,9 @@ import dataAccess.MemoryGameDAO;
 import model.GameData;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -40,8 +42,10 @@ public class MemoryGameDAOTest extends DataAccessVars {
     @Order(2)
     void delete() {
         gameDAO.delete(g0);
-        Collection<GameData> allGames = gameDAO.getAll();
-        Assertions.assertEquals(allGames, List.of(new GameData[]{g1, g2}));
+        HashSet<GameData> shortList = new HashSet<>();
+        shortList.add(g1);
+        shortList.add(g2);
+        Assertions.assertEquals(shortList, gameDAO.getAll());
     }
 
     @Test
@@ -55,9 +59,13 @@ public class MemoryGameDAOTest extends DataAccessVars {
     @Test
     @Order(4)
     void update() {
-        gameDAO.update(g0, g1);
-        Collection<GameData> allGames = gameDAO.getAll();
-        Assertions.assertEquals(allGames, List.of(new GameData[]{g1, g1, g2}));
+        GameData updated = new GameData(5000, "white", "black", "updated", new ChessGame());
+        gameDAO.update(g0, updated);
+        HashSet<GameData> allGames = new HashSet<>();
+        allGames.add(updated);
+        allGames.add(g1);
+        allGames.add(g2);
+        Assertions.assertEquals(allGames, gameDAO.getAll());
     }
 
     @Test
@@ -83,7 +91,9 @@ public class MemoryGameDAOTest extends DataAccessVars {
     void add() {
         gameDAO.deleteAll();
         gameDAO.add(g0);
-        Assertions.assertEquals(gameDAO.getAll(), List.of(new GameData[]{g1}));
+        HashSet<GameData> justOne = new HashSet<>();
+        justOne.add(g0);
+        Assertions.assertEquals(justOne, gameDAO.getAll());
     }
 
     @Test
@@ -124,7 +134,7 @@ public class MemoryGameDAOTest extends DataAccessVars {
 
     @Test
     void getGamesByPlayer() {
-        Collection<GameData> games = gameDAO.getGamesByPlayer("death");
+        HashSet<GameData> games = gameDAO.getGamesByPlayer("death");
         Assertions.assertNotNull(games);
         Assertions.assertEquals(2, games.size());
         Assertions.assertFalse(games.contains(g0));
@@ -134,7 +144,7 @@ public class MemoryGameDAOTest extends DataAccessVars {
 
     @Test
     void getGamesByName() {
-        Collection<GameData> games = gameDAO.getGamesByName("chessgame");
+        HashSet<GameData> games = gameDAO.getGamesByName("chessgame");
         Assertions.assertNotNull(games);
         Assertions.assertEquals(2, games.size());
         Assertions.assertFalse(games.contains(g0));
