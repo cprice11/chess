@@ -22,7 +22,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void delete(UserData target) {
-        UserDAO.super.delete(target);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -30,7 +30,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void deleteAll() {
-        UserDAO.super.deleteAll();
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -39,7 +39,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void update(UserData target, UserData value) {
-        UserDAO.super.update(target, value);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -48,7 +48,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void verify(UserData target) throws DataAccessException {
-        UserDAO.super.verify(target);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -58,7 +58,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void add(UserData entry) {
-        UserDAO.super.add(entry);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -67,7 +67,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public UserData getUser(String username) {
-        throw new RuntimeException("Not yet implimented");
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**

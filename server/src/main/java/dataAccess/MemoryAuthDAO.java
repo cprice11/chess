@@ -53,8 +53,8 @@ public class MemoryAuthDAO implements AuthDAO {
      * @throws DataAccessException if the object is not found
      */
     @Override
-    public void verify(String authToken) throws DataAccessException {
-
+    public AuthData verify(String authToken) throws DataAccessException {
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -64,7 +64,7 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public void add(AuthData entry) {
-
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**

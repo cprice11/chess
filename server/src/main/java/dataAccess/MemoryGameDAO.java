@@ -12,7 +12,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public Collection<GameData> getAll() {
-        return GameDAO.super.getAll();
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -20,7 +20,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void delete(GameData target) {
-        GameDAO.super.delete(target);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -28,7 +28,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void deleteAll() {
-        GameDAO.super.deleteAll();
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -37,7 +37,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void update(GameData target, GameData value) {
-        GameDAO.super.update(target, value);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -46,7 +46,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void verify(GameData target) throws DataAccessException {
-        GameDAO.super.verify(target);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -56,7 +56,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void add(GameData entry) {
-        GameDAO.super.add(entry);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -64,7 +64,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public Collection<GameSummary> getGameSummaries() {
-        return null;
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -85,7 +85,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public GameData validate(int gameID) throws DataAccessException {
-        return null;
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -96,7 +96,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void setGameState(int gameID, ChessGame game) {
-
+        throw new RuntimeException("Not yet implemented");
     }
 
     public GameData getGame(int gameID) {
