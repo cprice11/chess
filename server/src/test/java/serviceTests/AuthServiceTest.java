@@ -2,10 +2,7 @@ package serviceTests;
 
 import dataAccess.*;
 import model.AuthData;
-import org.eclipse.jetty.client.api.Authentication;
 import org.junit.jupiter.api.*;
-import server.Authorization;
-import server.LoginRequest;
 import server.LoginResult;
 import server.LogoutRequest;
 import service.AuthService;
@@ -55,6 +52,7 @@ class AuthServiceTest extends ServiceVars {
         Assertions.assertEquals(a2, authService.getAuthByAuthToken(a2.authToken()), "Did not return expected AuthData");
         Assertions.assertThrows(DataAccessException.class, () -> authService.getAuthByUsername(a2.username()), "Did not throw exception on incorrect token");
     }
+
     @Test
     @Order(2)
     void authNotRemoved() {
@@ -99,7 +97,7 @@ class AuthServiceTest extends ServiceVars {
         auth.deleteAll();
         Assertions.assertDoesNotThrow(() -> authService.login(goodLoginRequest), "Threw Exception on valid request");
         LoginResult result = authService.login(goodLoginRequest);
-        Assertions.assertEquals(t1, result.authToken(),"Returned unexpected auth token");
+        Assertions.assertEquals(t1, result.authToken(), "Returned unexpected auth token");
         Assertions.assertEquals(goodLoginResult.username(), result.username(), "Returned unexpected username");
         Assertions.assertTrue(auth.getAll().contains(aNew), "new auth not found in database after request");
         Assertions.assertThrows(DataAccessException.class, () -> authService.login(badLoginRequest), "No Exception thrown on invalid request");
