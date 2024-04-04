@@ -60,7 +60,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void add(UserData entry) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.users.add(entry);
     }
 
     /**
