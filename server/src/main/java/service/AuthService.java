@@ -8,7 +8,7 @@ import server.LoginResult;
 import server.LogoutRequest;
 
 public class AuthService extends Service {
-    public Authorization createAuth(String username) {
+    public AuthData createAuth(String username) {
         throw new RuntimeException("Not implemented yet");
     }
 

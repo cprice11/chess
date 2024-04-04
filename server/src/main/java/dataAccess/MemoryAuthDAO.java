@@ -4,10 +4,13 @@ import model.AuthData;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 public class MemoryAuthDAO implements AuthDAO {
     public MemoryDatabase db;
+    private Random randomTokenGenerator = new Random(111);
 
     /**
      * Returns all objects in the database
@@ -106,8 +109,19 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public AuthData createAuth(String username) {
-        AuthData newAuth = new AuthData(UUID.randomUUID().toString(), username);
+        AuthData newAuth = new AuthData(pseudoRandomToken(), username);
         add(newAuth);
         return newAuth;
+    }
+
+
+    public String pseudoRandomToken() {
+        StringBuilder id = new StringBuilder();
+        for (int i = 0; i < 20; i++ ){
+            int myInt = randomTokenGenerator.nextInt(94) + 33;
+            char myChar = (char) myInt;
+            id.append(myChar);
+        }
+        return id.toString();
     }
 }

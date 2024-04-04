@@ -5,18 +5,26 @@ import model.AuthData;
 import org.eclipse.jetty.client.api.Authentication;
 import org.junit.jupiter.api.*;
 import server.Authorization;
+import server.LoginRequest;
+import server.LoginResult;
+import server.LogoutRequest;
 import service.AuthService;
+
+import java.util.stream.IntStream;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthServiceTest extends ServiceVars {
-    private static final AuthDAO auth = new MemoryAuthDAO();
+    private AuthDAO auth = new MemoryAuthDAO();
     private static final GameDAO games = new MemoryGameDAO();
     private static final UserDAO users = new MemoryUserDAO();
     private static final AuthService authService = new AuthService();
     private static final MemoryDatabase db = new MemoryDatabase();
 
+
     @BeforeEach
     void buildDatabase() {
+        IntStream.range(0, 10).forEach(n -> System.out.println("Auth Token = " + auth.createAuth("").authToken()));
+        IntStream.range(0, 10).forEach(n -> System.out.println("Auth Token = " + games.createGame("")));
         MemoryDatabase.setAuth(authData);
         MemoryDatabase.setGames(gameData);
         MemoryDatabase.setUsers(userData);
@@ -49,33 +57,61 @@ class AuthServiceTest extends ServiceVars {
     @Test
     @Order(3)
     void testCreateAuth() {
-        AuthService service = new AuthService();
-        Authorization newAuth = service.createAuth("brand-new-user");
-        Assertions.assertNotNull(newAuth.authorizationToken());
-        Assertions.assertNotEquals(a0.authToken(), newAuth.authorizationToken());
-        Assertions.assertDoesNotThrow(() -> auth.verify(newAuth.authorizationToken()));
-        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authorizationToken(), "brand-new-user")));
+        // AuthTokens are pseudo-random and will generate the same tokens in order after every test init.
+        AuthData newAuth = authService.createAuth("brand-new-user");
+        Assertions.assertNotNull(newAuth.authToken());
+        Assertions.assertNotEquals(a0.authToken(), newAuth.authToken());
+        Assertions.assertDoesNotThrow(() -> auth.verify(newAuth.authToken()));
+        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authToken(), "brand-new-user")));
     }
 
     @Test
     @Order(4)
     void CreateTwoAuths() {
-        AuthService service = new AuthService();
-        Authorization newAuth = service.createAuth("brand-new-user");
-        Authorization newAuthTwo = service.createAuth("brand-new-user");
+        String username = "brand-new-user";
+        AuthData newAuth = authService.createAuth(username);
+        AuthData newAuthTwo = authService.createAuth(username);
         Assertions.assertNotEquals(newAuth, newAuthTwo);
-        Assertions.assertDoesNotThrow(() -> auth.verify(newAuth.authorizationToken()));
-        Assertions.assertDoesNotThrow(() -> auth.verify(newAuthTwo.authorizationToken()));
-        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authorizationToken(), "brand-new-user")));
-        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuthTwo.authorizationToken(), "brand-new-user")));
+        Assertions.assertDoesNotThrow(() -> auth.verify(newAuth.authToken()));
+        Assertions.assertDoesNotThrow(() -> auth.verify(newAuthTwo.authToken()));
+        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authToken(), "brand-new-user")));
+        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuthTwo.authToken(), "brand-new-user")));
+        Assertions.assertEquals(t0, newAuth.authToken());
+        Assertions.assertEquals(username, newAuth.username());
+        Assertions.assertEquals(t1, newAuthTwo.authToken());
+        Assertions.assertEquals(username, newAuthTwo.username());
     }
 
     @Test
+    @Order(5)
     void testLogin() {
+        LoginResult result = authService.login(goodLoginRequest);
+        Assertions.assertEquals(t0, result.authToken());
+        Assertions.assertEquals(goodLoginResult.username(), result.username());
+
+//        goodLoginRequest = new LoginRequest(u0.username(), u0.password());
+//        badLoginRequest = new LoginRequest(u0.username(), u2.password());
+//        goodLoginResult = new LoginResult(u0.username(), null); // authToken shouldn't be created here
+//    static final LoginResult badLoginResult = new LoginResult();
     }
 
     @Test
+    @Order(6)
     void testLogout() {
+        authService.logout(goodLogoutRequest);
+        Assertions.assertFalse(auth.getAll().contains(a0));
+        Assertions.assertFalse(auth.getAll().contains(a1));
+    }
+
+    @Test
+    @Order(7)
+    void testMultipleLogin() {
+        LoginResult firstResult = authService.login(goodLoginRequest);
+        LoginResult secondResult = authService.login(goodLoginRequest);
+        Assertions.assertEquals(t0, firstResult.authToken());
+        Assertions.assertEquals(t1, secondResult.authToken());
+        Assertions.assertThrows(DataAccessException.class, () -> auth.verify(t0));
+        Assertions.assertDoesNotThrow(() -> auth.verify(t1));
     }
 
     @Test
