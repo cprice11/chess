@@ -1,6 +1,7 @@
 package serviceTests;
 
 import chess.ChessGame;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import model.GameSummary;
@@ -40,6 +41,10 @@ public class ServiceVars {
             new GameSummary(g1.gameID(), g1.whiteUsername(), g1.blackUsername(), g1.gameName()),
             new GameSummary(g2.gameID(), g2.whiteUsername(), g2.blackUsername(), g2.gameName())
     ));
+
+    private static final AuthDAO auth = new MemoryAuthDAO();
+    private static final GameDAO games = new MemoryGameDAO();
+    private static final UserDAO users = new MemoryUserDAO();
 
 
     // register

@@ -11,9 +11,7 @@ import java.util.stream.IntStream;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthServiceTest extends ServiceVars {
-    private static final AuthDAO auth = new MemoryAuthDAO();
-    private static final GameDAO games = new MemoryGameDAO();
-    private static final UserDAO users = new MemoryUserDAO();
+
     private static final AuthService authService = new AuthService(auth);
     private static final MemoryDatabase db = new MemoryDatabase();
 
