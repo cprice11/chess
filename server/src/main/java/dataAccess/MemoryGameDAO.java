@@ -1,12 +1,14 @@
 package dataAccess;
 
 import chess.ChessGame;
+import chess.GameState;
 import model.AuthData;
 import model.GameData;
 import model.GameSummary;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 
 public class MemoryGameDAO implements GameDAO {
     /**
@@ -61,8 +63,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public GameData verify(int gameID) throws DataAccessException {
-        HashSet<GameData> gameData = MemoryDatabase.getGames();
-        for (GameData g : gameData) {
+        for (GameData g : MemoryDatabase.getGames()) {
             if (g.gameID() == gameID) return g;
         }
         throw new DataAccessException(gameID + " Does not exist in database");
@@ -97,9 +98,10 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public int createGame(String gameName) {
-        throw new RuntimeException("Not yet implemented");
+        GameData newGame = new GameData(new Random().nextInt(), null, null, gameName, new ChessGame());
+        MemoryDatabase.games.add(newGame);
+        return newGame.gameID();
     }
-
 
     /**
      * Updates a game to a new game state
@@ -109,7 +111,13 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public void setGameState(int gameID, ChessGame game) {
-        throw new RuntimeException("Not yet implemented");
+        for (GameData g : MemoryDatabase.getGames()) {
+            if (g.gameID() == gameID) {
+                delete(g);
+                GameData updated = new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), game);
+                return;
+            }
+        }
     }
 
     @Override
@@ -118,7 +126,10 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public GameData getGame(int gameID) {
-        throw new RuntimeException("Not yet implemented");
+        for (GameData g : MemoryDatabase.getGames()) {
+            if (g.gameID() == gameID) return g;
+        }
+        return null;
     }
 
     public HashSet<GameData> getGamesByPlayer(String username) {
