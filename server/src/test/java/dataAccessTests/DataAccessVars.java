@@ -3,6 +3,7 @@ package dataAccessTests;
 import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
+import model.GameSummary;
 import model.UserData;
 
 import java.util.Collection;
@@ -24,4 +25,10 @@ public class DataAccessVars {
     static final Collection<AuthData> authData = List.of(new AuthData[]{a0, a1, a2});
     static final Collection<GameData> gameData = List.of(new GameData[]{g0, g1, g2});
     static final Collection<UserData> userData = List.of(new UserData[]{u0, u1, u2});
+
+    static final Collection<GameSummary> gameSummaries = List.of(new GameSummary[]{
+            new GameSummary(g0.gameID(), g0.whiteUsername(), g0.blackUsername(), g0.gameName()),
+            new GameSummary(g1.gameID(), g1.whiteUsername(), g1.blackUsername(), g1.gameName()),
+            new GameSummary(g2.gameID(), g2.whiteUsername(), g2.blackUsername(), g2.gameName())
+    });
 }

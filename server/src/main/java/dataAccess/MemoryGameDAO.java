@@ -6,7 +6,7 @@ import model.GameSummary;
 
 import java.util.Collection;
 
-public class MemoryGameDAO implements GameDAO{
+public class MemoryGameDAO implements GameDAO {
     /**
      * Returns all objects in the database
      */
@@ -73,8 +73,8 @@ public class MemoryGameDAO implements GameDAO{
      * @param gameName The object to add
      */
     @Override
-    public GameData createGame(String gameName) {
-        return null;
+    public int createGame(String gameName) {
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -99,15 +99,15 @@ public class MemoryGameDAO implements GameDAO{
 
     }
 
-    GameData getGame(int gameID) {
+    public GameData getGame(int gameID) {
         throw new RuntimeException("Not yet implemented");
     }
 
-    Collection<GameData> getGamesByPlayer(String username) {
+    public Collection<GameData> getGamesByPlayer(String username) {
         throw new RuntimeException("Not yet implemented");
     }
 
-    Collection<GameData> getGamesByName(String name) {
+    public Collection<GameData> getGamesByName(String name) {
         throw new RuntimeException("Not yet implemented");
     }
 }

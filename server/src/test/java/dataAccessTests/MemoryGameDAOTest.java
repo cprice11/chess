@@ -4,6 +4,7 @@ import dataAccess.DataAccessException;
 import dataAccess.MemoryDatabase;
 import dataAccess.MemoryGameDAO;
 import model.GameData;
+import model.GameSummary;
 import org.junit.jupiter.api.*;
 
 import java.util.Collection;
@@ -80,10 +81,13 @@ public class MemoryGameDAOTest extends DataAccessVars{
 
     @Test
     void getGameSummaries() {
+        Assertions.assertEquals(gameSummaries, gameDAO.getGameSummaries());
     }
 
     @Test
     void createGame() {
+        int newGameID = gameDAO.createGame("exampleGameName");
+        Assertions.assertSame("exampleGameName", gameDAO.getGame(newGameID).gameName());
     }
 
     @Test

@@ -1,18 +1,17 @@
 package dataAccess;
 
 import model.AuthData;
-import model.UserData;
 
 import java.util.Collection;
 
-public class MemoryAuthDAO implements AuthDAO{
+public class MemoryAuthDAO implements AuthDAO {
 
     /**
      * Returns all objects in the database
      */
     @Override
     public Collection<AuthData> getAll() {
-        return AuthDAO.super.getAll();
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -20,7 +19,7 @@ public class MemoryAuthDAO implements AuthDAO{
      */
     @Override
     public void delete(AuthData target) {
-        AuthDAO.super.delete(target);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -28,7 +27,7 @@ public class MemoryAuthDAO implements AuthDAO{
      */
     @Override
     public void deleteAll() {
-        AuthDAO.super.deleteAll();
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -37,7 +36,7 @@ public class MemoryAuthDAO implements AuthDAO{
      */
     @Override
     public void update(AuthData target, AuthData value) {
-        AuthDAO.super.update(target, value);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -46,7 +45,7 @@ public class MemoryAuthDAO implements AuthDAO{
      */
     @Override
     public void verify(AuthData target) throws DataAccessException {
-        AuthDAO.super.verify(target);
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -69,29 +68,29 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     /**
-     * @param username 
+     * @param username
      * @return
      */
     @Override
     public AuthData getAuthToken(String username) {
-        return null;
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
-     * @param authToken 
+     * @param authToken
      * @return
      */
     @Override
     public AuthData getUsername(String authToken) {
-        return null;
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
-     * @param username 
+     * @param username
      * @return
      */
     @Override
     public AuthData createAuth(String username) {
-        return null;
+        throw new RuntimeException("Not yet implemented");
     }
 }

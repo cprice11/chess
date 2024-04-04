@@ -8,7 +8,7 @@ import model.GameSummary;
 
 import java.util.Collection;
 
-public interface GameDAO extends DAO<GameData>{
+public interface GameDAO extends DAO<GameData> {
     /**
      * Returns all objects in the database
      */
@@ -67,12 +67,13 @@ public interface GameDAO extends DAO<GameData>{
     Collection<GameSummary> getGameSummaries();
 
     // might move to private in implementation class or move to a utility class to inherit from
+
     /**
      * creates a GameData object from a gameName parameter.
      *
      * @param gameName The object to add
      */
-    GameData createGame(String gameName);
+    int createGame(String gameName);
 
     /**
      * Confirms that a game is the database
@@ -86,7 +87,7 @@ public interface GameDAO extends DAO<GameData>{
      * Updates a game to a new game state
      *
      * @param gameID The ID of the existing game in the database
-     * @param game The value to set the game state to
+     * @param game   The value to set the game state to
      */
     void setGameState(int gameID, ChessGame game);
 }
