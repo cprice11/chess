@@ -122,7 +122,12 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public void setGameState(GameData gameData) {
-        throw new RuntimeException("Not yet implemented");
+        for (GameData g : MemoryDatabase.getGames()) {
+            if (g.gameID() == gameData.gameID()){
+                update(g, gameData);
+                return;
+            }
+        }
     }
 
     public GameData getGame(int gameID) {
@@ -133,10 +138,18 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public HashSet<GameData> getGamesByPlayer(String username) {
-        throw new RuntimeException("Not yet implemented");
+        HashSet<GameData> gamesWith = new HashSet<>();
+        for (GameData g : MemoryDatabase.getGames()) {
+            if (g.whiteUsername() == username || g.blackUsername() == username) gamesWith.add(g);
+        }
+        return gamesWith;
     }
 
     public HashSet<GameData> getGamesByName(String name) {
-        throw new RuntimeException("Not yet implemented");
+        HashSet<GameData> gamesNamed = new HashSet<>();
+        for (GameData g : MemoryDatabase.getGames()) {
+            if (g.gameName().equals(name)) gamesNamed.add(g);
+        }
+        return gamesNamed;
     }
 }
