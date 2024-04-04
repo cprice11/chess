@@ -6,13 +6,13 @@ import dataAccess.MemoryDatabase;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MemoryAuthDAOTest extends DataAccessVars {
-    MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    MemoryDatabase db = new MemoryDatabase();
+    MemoryAuthDAO authDAO = new MemoryAuthDAO(db);
 
     @BeforeEach
     void setup() {
@@ -35,8 +35,9 @@ public class MemoryAuthDAOTest extends DataAccessVars {
     @Order(2)
     void delete() {
         authDAO.delete(a0);
-        Collection<AuthData> allAuths = authDAO.getAll();
-        Assertions.assertEquals(allAuths, List.of(new AuthData[]{a1, a2}));
+        HashSet<AuthData> allAuths = authDAO.getAll();
+        HashSet<AuthData> oneAndTwo = new HashSet<>(Arrays.asList(a1, a2));
+        Assertions.assertEquals(oneAndTwo, allAuths);
     }
 
     @Test

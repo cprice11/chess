@@ -6,7 +6,9 @@ import model.GameData;
 import model.GameSummary;
 import model.UserData;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class DataAccessVars {
@@ -22,9 +24,9 @@ public class DataAccessVars {
     static final UserData u1 = new UserData("antonius", "G00dK!ght", "email@email.com");
     static final UserData u2 = new UserData("death", "humor0us", "email@email.com");
 
-    static final Collection<AuthData> authData = List.of(new AuthData[]{a0, a1, a2});
-    static final Collection<GameData> gameData = List.of(new GameData[]{g0, g1, g2});
-    static final Collection<UserData> userData = List.of(new UserData[]{u0, u1, u2});
+    static final HashSet<AuthData> authData = new HashSet<>(Arrays.asList(a0, a1, a2));
+    static final HashSet<GameData> gameData = new HashSet<>(Arrays.asList(g0, g1, g2));
+    static final HashSet<UserData> userData = new HashSet<>(Arrays.asList(u0, u1, u2));
 
     static final Collection<GameSummary> gameSummaries = List.of(new GameSummary[]{
             new GameSummary(g0.gameID(), g0.whiteUsername(), g0.blackUsername(), g0.gameName()),

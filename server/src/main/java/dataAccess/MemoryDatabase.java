@@ -4,43 +4,41 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 
 public class MemoryDatabase {
-    static final Collection<AuthData> blankAuth = List.of(new AuthData[]{});
-    static final Collection<GameData> blankGames = List.of(new GameData[]{});
-    static final Collection<UserData> blankUsers = List.of(new UserData[]{});
-    public static Collection<AuthData> auth = new ArrayList<>();
-    public static Collection<GameData> games = new ArrayList<>();
-    public static Collection<UserData> users = new ArrayList<>();
+    public static HashSet<AuthData> auth;
+    public static HashSet<GameData> games;
+    public static HashSet<UserData> users;
 
     public MemoryDatabase() {
+        auth = new HashSet<>();
+        games = new HashSet<>();
+        users = new HashSet<>();
     }
 
-    public static Collection<AuthData> getAuth() {
+    public static HashSet<AuthData> getAuth() {
         return auth;
     }
 
-    public static void setAuth(Collection<AuthData> auth) {
-        MemoryDatabase.auth = auth;
+    public static void setAuth(HashSet<AuthData> auth) {
+        MemoryDatabase.auth = new HashSet<>(auth);
     }
 
-    public static Collection<GameData> getGames() {
+    public static HashSet<GameData> getGames() {
         return games;
     }
 
-    public static void setGames(Collection<GameData> games) {
-        MemoryDatabase.games = games;
+    public static void setGames(HashSet<GameData> games) {
+        MemoryDatabase.games= new HashSet<>(games);
     }
 
-    public static Collection<UserData> getUsers() {
+    public static HashSet<UserData> getUsers() {
         return users;
     }
 
-    public static void setUsers(Collection<UserData> users) {
-        MemoryDatabase.users = users;
+    public static void setUsers(HashSet<UserData> users) {
+        MemoryDatabase.users = new HashSet<>(users);
     }
 
 
@@ -51,14 +49,14 @@ public class MemoryDatabase {
     }
 
     public static void clearAuth() {
-        setAuth(blankAuth);
+        auth.clear();
     }
 
     public static void clearGames() {
-        setGames(blankGames);
+        games.clear();
     }
 
     public static void clearUsers() {
-        setUsers(blankUsers);
+        users.clear();
     }
 }

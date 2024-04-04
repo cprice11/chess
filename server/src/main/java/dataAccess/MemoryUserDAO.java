@@ -22,7 +22,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void delete(UserData target) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.getUsers().remove(target);
     }
 
     /**

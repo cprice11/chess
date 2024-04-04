@@ -3,15 +3,20 @@ package dataAccess;
 import model.AuthData;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 public class MemoryAuthDAO implements AuthDAO {
+    public MemoryDatabase db;
+    public MemoryAuthDAO(MemoryDatabase db) {
+        this.db = db;
+    }
 
     /**
      * Returns all objects in the database
      */
     @Override
-    public Collection<AuthData> getAll() {
-        throw new RuntimeException("Not yet implemented");
+    public HashSet<AuthData> getAll() {
+        return MemoryDatabase.getAuth();
     }
 
     /**
@@ -19,7 +24,7 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public void delete(AuthData target) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.auth.remove(target);
     }
 
     /**
@@ -27,7 +32,7 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public void deleteAll() {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.clearAuth();
     }
 
     /**
@@ -45,7 +50,8 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public void verify(AuthData target) throws DataAccessException {
-        throw new RuntimeException("Not yet implemented");
+        if (MemoryDatabase.getAuth().contains(target)) return;
+        throw new DataAccessException(target.toString() + " Does not exist in database");
     }
 
     /**
@@ -54,7 +60,11 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public AuthData verify(String authToken) throws DataAccessException {
-        throw new RuntimeException("Not yet implemented");
+        Collection<AuthData> authData = MemoryDatabase.getAuth();
+        for (AuthData a : authData) {
+            if (a.authToken().equals(authToken)) return a;
+        }
+        throw new DataAccessException(authToken + " Does not exist in database");
     }
 
     /**
