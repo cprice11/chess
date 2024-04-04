@@ -7,9 +7,7 @@ import model.GameSummary;
 import model.UserData;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 public class DataAccessVars {
     static final AuthData a0 = new AuthData("0hu2^7T@YXtJhDuQ2%dg", "myname123");
