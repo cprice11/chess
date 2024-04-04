@@ -1,7 +1,5 @@
 package dataAccess;
 
-import model.AuthData;
-import model.GameData;
 import model.UserData;
 
 import java.util.Collection;
@@ -61,9 +59,9 @@ public interface UserDAO extends DAO<UserData>{
 
     UserData getUser(String username);
 
-    void EditUserUsername(UserData user, String newUsername);
+    void editUserUsername(UserData user, String newUsername);
 
-    void EditUserPassword(UserData user, String Password);
+    void editUserPassword(UserData user, String Password);
 
-    void EditUserEmail(UserData user, String email);
+    void editUserEmail(UserData user, String email);
 }

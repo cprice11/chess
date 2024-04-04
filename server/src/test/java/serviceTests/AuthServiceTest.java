@@ -1,9 +1,10 @@
-package service;
+package serviceTests;
 
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import service.AuthService;
 
 import static org.junit.jupiter.api.Assertions.*;
 

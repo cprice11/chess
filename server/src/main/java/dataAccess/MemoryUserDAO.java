@@ -5,17 +5,15 @@ import model.UserData;
 import java.util.Collection;
 
 public class MemoryUserDAO implements UserDAO{
-    MemoryDatabase db;
 
-    public MemoryUserDAO(MemoryDatabase db) {
-        this.db = db;
+    public MemoryUserDAO() {
     }
     /**
      * Returns all objects in the database
      */
     @Override
     public Collection<UserData> getAll() {
-        return db.getUsers();
+        return MemoryDatabase.getUsers();
     }
 
     /**
@@ -68,7 +66,7 @@ public class MemoryUserDAO implements UserDAO{
      */
     @Override
     public UserData getUser(String username) {
-        return null;
+        throw new RuntimeException("Not yet implimented");
     }
 
     /**
@@ -76,8 +74,8 @@ public class MemoryUserDAO implements UserDAO{
      * @param newUsername
      */
     @Override
-    public void EditUserUsername(UserData user, String newUsername) {
-
+    public void editUserUsername(UserData user, String newUsername) {
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -85,8 +83,8 @@ public class MemoryUserDAO implements UserDAO{
      * @param Password
      */
     @Override
-    public void EditUserPassword(UserData user, String Password) {
-
+    public void editUserPassword(UserData user, String Password) {
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -94,7 +92,7 @@ public class MemoryUserDAO implements UserDAO{
      * @param email
      */
     @Override
-    public void EditUserEmail(UserData user, String email) {
-
+    public void editUserEmail(UserData user, String email) {
+        throw new RuntimeException("Not yet implemented");
     }
 }
