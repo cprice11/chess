@@ -4,6 +4,7 @@ import model.AuthData;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO {
     public MemoryDatabase db;
@@ -108,6 +109,8 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public AuthData createAuth(String username) {
-        throw new RuntimeException("Not yet implemented");
+        AuthData newAuth = new AuthData(UUID.randomUUID().toString(), username);
+        add(newAuth);
+        return newAuth;
     }
 }
