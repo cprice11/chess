@@ -1,5 +1,6 @@
 package dataAccess;
 
+import model.AuthData;
 import model.UserData;
 
 import java.util.Collection;
@@ -69,7 +70,10 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public UserData getUser(String username) {
-        throw new RuntimeException("Not yet implemented");
+        for (UserData u : MemoryDatabase.getUsers()) {
+            if (u.username().equals(username)) return u;
+        }
+        return null;
     }
 
     /**
