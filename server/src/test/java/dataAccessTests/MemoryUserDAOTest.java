@@ -65,10 +65,9 @@ public class MemoryUserDAOTest extends DataAccessVars {
     @Test
     @Order(5)
     void verify() {
-        userDAO.update(u0, u1);
+        userDAO.delete(u0);
         Assertions.assertThrows(DataAccessException.class, () -> userDAO.verify(u0));
-        Collection<UserData> allUsers = userDAO.getAll();
-        Assertions.assertEquals(allUsers, List.of(new UserData[]{u1, u1, u2}));
+        Assertions.assertDoesNotThrow(() -> userDAO.verify(u2));
     }
 
     @Test
@@ -76,7 +75,9 @@ public class MemoryUserDAOTest extends DataAccessVars {
     void add() {
         userDAO.deleteAll();
         userDAO.add(u0);
-        Assertions.assertEquals(userDAO.getAll(), List.of(new UserData[]{u1}));
+        HashSet<UserData> justOne = new HashSet<>();
+        justOne.add(u0);
+        Assertions.assertEquals(justOne, userDAO.getAll());
     }
 
     @Test
