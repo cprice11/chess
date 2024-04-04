@@ -41,7 +41,8 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public void update(AuthData target, AuthData value) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.auth.remove(target);
+        MemoryDatabase.auth.add(value);
     }
 
     /**

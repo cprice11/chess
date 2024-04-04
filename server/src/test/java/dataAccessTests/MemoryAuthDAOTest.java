@@ -51,9 +51,9 @@ public class MemoryAuthDAOTest extends DataAccessVars {
     @Test
     @Order(4)
     void update() {
-        authDAO.update(a0, a1);
-        Collection<AuthData> allAuths = authDAO.getAll();
-        Assertions.assertEquals(allAuths, List.of(new AuthData[]{a1, a1, a2}));
+        AuthData updated = new AuthData("updatedToken", "updatedUsername");
+        authDAO.update(a0, updated);
+        Assertions.assertEquals(new HashSet<>(List.of(new AuthData[]{updated, a1, a2})), authDAO.getAll());
     }
 
     @Test
