@@ -75,7 +75,7 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public void add(AuthData entry) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.auth.add(entry);
     }
 
     /**
@@ -84,7 +84,10 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public String getAuthToken(String username) {
-        throw new RuntimeException("Not yet implemented");
+        for (AuthData a : MemoryDatabase.auth) {
+            if (a.username().equals(username)) return a.authToken();
+        }
+        return null;
     }
 
     /**
