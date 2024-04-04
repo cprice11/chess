@@ -7,6 +7,7 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -35,8 +36,10 @@ public class MemoryUserDAOTest extends DataAccessVars {
     @Order(2)
     void delete() {
         userDAO.delete(u0);
-        Collection<UserData> allUsers = userDAO.getAll();
-        Assertions.assertEquals(allUsers, List.of(new UserData[]{u1, u2}));
+        HashSet<UserData> smallerSet = new HashSet<>();
+        smallerSet.add(u1);
+        smallerSet.add(u2);
+        Assertions.assertEquals(smallerSet, userDAO.getAll());
     }
 
     @Test

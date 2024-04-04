@@ -14,7 +14,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public Collection<UserData> getAll() {
-        return MemoryDatabase.getUsers();
+        return MemoryDatabase.users;
     }
 
     /**
@@ -30,7 +30,7 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void deleteAll() {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.clearUsers();
     }
 
     /**
@@ -39,7 +39,8 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void update(UserData target, UserData value) {
-        throw new RuntimeException("Not yet implemented");
+        MemoryDatabase.users.remove(target);
+        MemoryDatabase.users.add(value);
     }
 
     /**
