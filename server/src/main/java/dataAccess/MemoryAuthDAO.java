@@ -8,9 +8,6 @@ import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO {
     public MemoryDatabase db;
-    public MemoryAuthDAO(MemoryDatabase db) {
-        this.db = db;
-    }
 
     /**
      * Returns all objects in the database

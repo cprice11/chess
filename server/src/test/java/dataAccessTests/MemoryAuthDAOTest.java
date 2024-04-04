@@ -12,7 +12,7 @@ import java.util.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MemoryAuthDAOTest extends DataAccessVars {
     MemoryDatabase db = new MemoryDatabase();
-    MemoryAuthDAO authDAO = new MemoryAuthDAO(db);
+    MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     @BeforeEach
     void setup() {
