@@ -59,9 +59,7 @@ public interface UserDAO extends DAO<UserData> {
 
     UserData getUser(String username);
 
-    void editUserUsername(UserData user, String newUsername);
+    void editUserPassword(String username, String Password);
 
-    void editUserPassword(UserData user, String Password);
-
-    void editUserEmail(UserData user, String email);
+    void editUserEmail(String username, String email);
 }

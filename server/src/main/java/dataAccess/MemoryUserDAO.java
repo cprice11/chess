@@ -1,7 +1,7 @@
 package dataAccess;
 
-import model.AuthData;
 import model.UserData;
+import org.eclipse.jetty.servlet.jmx.ServletMappingMBean;
 
 import java.util.Collection;
 
@@ -77,29 +77,34 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     /**
-     * @param user
-     * @param newUsername
+     * @param username
+     * @param password
      */
     @Override
-    public void editUserUsername(UserData user, String newUsername) {
-        throw new RuntimeException("Not yet implemented");
+    public void editUserPassword(String username, String password) {
+        for (UserData u : MemoryDatabase.getUsers()) {
+            if (u.username().equals(username)) {
+                MemoryDatabase.users.remove(u);
+                UserData updated = new UserData(username, password, u.email());
+                MemoryDatabase.users.add(updated);
+                return;
+            }
+        }
     }
 
     /**
-     * @param user
-     * @param Password
-     */
-    @Override
-    public void editUserPassword(UserData user, String Password) {
-        throw new RuntimeException("Not yet implemented");
-    }
-
-    /**
-     * @param user
+     * @param username
      * @param email
      */
     @Override
-    public void editUserEmail(UserData user, String email) {
-        throw new RuntimeException("Not yet implemented");
+    public void editUserEmail(String username, String email) {
+        for (UserData u : MemoryDatabase.getUsers()) {
+            if (u.username().equals(username)) {
+                MemoryDatabase.users.remove(u);
+                UserData updated = new UserData(username, u.password(), email);
+                MemoryDatabase.users.add(updated);
+                return;
+            }
+        }
     }
 }

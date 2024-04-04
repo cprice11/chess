@@ -87,23 +87,16 @@ public class MemoryUserDAOTest extends DataAccessVars {
     }
 
     @Test
-    @Order(8)
-    void editUserUsername() {
-        userDAO.editUserUsername(u0, "max");
-        Assertions.assertEquals(userDAO.getUser("max").password(), u0.password());
-    }
-
-    @Test
     @Order(9)
     void editUserPassword() {
-        userDAO.editUserPassword(u0, "betterP@ssword");
+        userDAO.editUserPassword(u0.username(), "betterP@ssword");
         Assertions.assertEquals(userDAO.getUser(u0.username()).password(), "betterP@ssword");
     }
 
     @Test
     @Order(10)
     void editUserEmail() {
-        userDAO.editUserEmail(u0, "workemail@company.com");
+        userDAO.editUserEmail(u0.username(), "workemail@company.com");
         Assertions.assertEquals(userDAO.getUser(u0.username()).email(), "workemail@company.com");
     }
 }
