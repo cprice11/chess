@@ -49,7 +49,8 @@ public class MemoryUserDAO implements UserDAO {
      */
     @Override
     public void verify(UserData target) throws DataAccessException {
-        throw new RuntimeException("Not yet implemented");
+        if (MemoryDatabase.getUsers().contains(target)) return;
+        throw new DataAccessException(target.toString() + " Does not exist in database");
     }
 
     /**
