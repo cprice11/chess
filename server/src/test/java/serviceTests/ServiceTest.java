@@ -1,5 +1,6 @@
 package serviceTests;
 
+import dataAccessTests.DataAccessVars;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import service.AuthService;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ServiceTest {
+public class ServiceTest extends DataAccessVars {
     //    In addition to the HTTP server pass off tests provided in the starter code, you need to write tests that execute
 //    directly against your service classes. These tests skip the HTTP server network communication and will help you in
 //    the development of your service code for this phase.
@@ -22,37 +23,4 @@ public class ServiceTest {
 //    pass off test code that is provided with the starter code.
 //
 //    ⚠ You must place your service test cases in a folder named server/src/test/java/serviceTests.
-    private final static String username = "exampleUsername37";
-    private final static String password = "$^R6DPVDtdSNSj&W83WJ";
-
-    @Test
-    @Order(1)
-    void getAuthByUsername() {
-    }
-
-    @Test
-    @Order(2)
-    void getAuthByAuthToken() {
-    }
-
-    @Test
-    @Order(3)
-    void testCreateAuth() {
-        AuthService service = new AuthService();
-        service.createAuth(username);
-    }
-
-    @Test
-    void testLogin() {
-    }
-
-    @Test
-    void testLogout() {
-    }
-
-    @Test
-    void testVerify() {
-    }
-
-
 }

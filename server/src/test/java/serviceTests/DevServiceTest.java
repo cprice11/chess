@@ -2,9 +2,9 @@ package serviceTests;
 
 import org.junit.jupiter.api.Test;
 
-class DevServiceTest {
+class DevServiceTest extends ServiceTest{
 
     @Test
-    void clearDatabase() {
+    void clearDatabase(){
     }
 }

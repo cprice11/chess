@@ -1,18 +1,21 @@
 package serviceTests;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import dataAccess.MemoryAuthDAO;
+import org.junit.jupiter.api.*;
 import service.AuthService;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthServiceTest {
     private final static String username = "exampleUsername37";
+    private final AuthService authService = new AuthService();
+
+    @BeforeEach
+
 
     @Test
     @Order(1)
     void getAuthByUsername() {
+
     }
 
     @Test
