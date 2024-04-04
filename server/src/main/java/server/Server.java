@@ -1,6 +1,6 @@
 package server;
 
-import spark.*;
+import spark.Spark;
 
 public class Server {
 //    The Server receives network HTTP requests and sends them to the correct handler for processing. The server should

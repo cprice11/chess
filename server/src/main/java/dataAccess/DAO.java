@@ -7,19 +7,23 @@ public interface DAO<T> {
      * Returns all objects in the database
      */
     Collection<T> getAll();
+
     /**
      * @param target The object in the database to be removed
      */
     void delete(T target);
+
     /**
      * Deletes all objects in the database, leaving the tables
      */
     void deleteAll();
+
     /**
      * @param target The existing object in the database
-     * @param value The object to replace the target object
+     * @param value  The object to replace the target object
      */
     void update(T target, T value);
+
     /**
      * @param target the object to search for in the database
      * @throws DataAccessException if the object is not found
@@ -28,6 +32,7 @@ public interface DAO<T> {
 
     /**
      * Adds a new object in the database
+     *
      * @param entry The object to add
      */
     void add(T entry);

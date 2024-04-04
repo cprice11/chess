@@ -4,10 +4,11 @@ import model.UserData;
 
 import java.util.Collection;
 
-public class MemoryUserDAO implements UserDAO{
+public class MemoryUserDAO implements UserDAO {
 
     public MemoryUserDAO() {
     }
+
     /**
      * Returns all objects in the database
      */
@@ -61,7 +62,7 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     /**
-     * @param username 
+     * @param username
      * @return
      */
     @Override
@@ -70,7 +71,7 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     /**
-     * @param user 
+     * @param user
      * @param newUsername
      */
     @Override
@@ -79,7 +80,7 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     /**
-     * @param user 
+     * @param user
      * @param Password
      */
     @Override
@@ -88,7 +89,7 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     /**
-     * @param user 
+     * @param user
      * @param email
      */
     @Override

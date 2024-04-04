@@ -1,8 +1,8 @@
 package dataAccessTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.MemoryDatabase;
 import dataAccess.MemoryAuthDAO;
+import dataAccess.MemoryDatabase;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 
@@ -11,7 +11,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryAuthDAOTest extends DataAccessVars{
+public class MemoryAuthDAOTest extends DataAccessVars {
     MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     @BeforeEach
@@ -35,7 +35,7 @@ public class MemoryAuthDAOTest extends DataAccessVars{
     @Order(2)
     void delete() {
         authDAO.delete(a0);
-        Collection<AuthData>allAuths = authDAO.getAll();
+        Collection<AuthData> allAuths = authDAO.getAll();
         Assertions.assertEquals(allAuths, List.of(new AuthData[]{a1, a2}));
     }
 
@@ -60,7 +60,7 @@ public class MemoryAuthDAOTest extends DataAccessVars{
     void verify() {
         authDAO.update(a0, a1);
         Assertions.assertThrows(DataAccessException.class, () -> authDAO.verify(a0));
-        Collection<AuthData>allAuths = authDAO.getAll();
+        Collection<AuthData> allAuths = authDAO.getAll();
         Assertions.assertEquals(allAuths, List.of(new AuthData[]{a1, a1, a2}));
     }
 

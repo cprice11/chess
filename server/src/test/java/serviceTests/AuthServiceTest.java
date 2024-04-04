@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import service.AuthService;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthServiceTest {
     private final static String username = "exampleUsername37";
@@ -21,6 +19,7 @@ class AuthServiceTest {
     @Order(2)
     void getAuthByAuthToken() {
     }
+
     @Test
     @Order(3)
     void testCreateAuth() {

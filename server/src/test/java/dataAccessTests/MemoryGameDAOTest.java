@@ -4,7 +4,6 @@ import dataAccess.DataAccessException;
 import dataAccess.MemoryDatabase;
 import dataAccess.MemoryGameDAO;
 import model.GameData;
-import model.GameSummary;
 import org.junit.jupiter.api.*;
 
 import java.util.Collection;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryGameDAOTest extends DataAccessVars{
+public class MemoryGameDAOTest extends DataAccessVars {
     MemoryGameDAO gameDAO = new MemoryGameDAO();
 
     @BeforeEach
@@ -36,7 +35,7 @@ public class MemoryGameDAOTest extends DataAccessVars{
     @Order(2)
     void delete() {
         gameDAO.delete(g0);
-        Collection<GameData>allGames = gameDAO.getAll();
+        Collection<GameData> allGames = gameDAO.getAll();
         Assertions.assertEquals(allGames, List.of(new GameData[]{g1, g2}));
     }
 
@@ -61,7 +60,7 @@ public class MemoryGameDAOTest extends DataAccessVars{
     void verify() {
         gameDAO.update(g0, g1);
         Assertions.assertThrows(DataAccessException.class, () -> gameDAO.verify(g0));
-        Collection<GameData>allGames = gameDAO.getAll();
+        Collection<GameData> allGames = gameDAO.getAll();
         Assertions.assertEquals(allGames, List.of(new GameData[]{g1, g1, g2}));
     }
 

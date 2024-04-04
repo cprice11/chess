@@ -1,11 +1,10 @@
 package service;
 
-import model.AuthData;
 import model.UserData;
 import server.RegisterRequest;
 import server.RegisterResult;
 
-public class UserService extends Service{
+public class UserService extends Service {
     public RegisterResult register(RegisterRequest request) {
         throw new RuntimeException("Not implemented yet");
         // Check if takken

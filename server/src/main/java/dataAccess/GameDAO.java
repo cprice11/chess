@@ -1,8 +1,6 @@
 package dataAccess;
 
 import chess.ChessGame;
-import chess.InvalidMoveException;
-import model.AuthData;
 import model.GameData;
 import model.GameSummary;
 

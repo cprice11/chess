@@ -1,20 +1,11 @@
 package dataAccessTests;
 
-        import chess.ChessGame;
-        import dataAccess.DataAccessException;
-        import dataAccess.MemoryDatabase;
-        import dataAccess.MemoryUserDAO;
-        import model.AuthData;
-        import model.GameData;
-        import model.UserData;
-        import org.junit.jupiter.api.*;
-
-        import java.util.Collection;
-        import java.util.List;
+import dataAccess.MemoryDatabase;
+import org.junit.jupiter.api.*;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class DataAccessTest extends DataAccessVars{
+public class DataAccessTest extends DataAccessVars {
     @BeforeAll
     static void reset() {
         MemoryDatabase.clearAll();

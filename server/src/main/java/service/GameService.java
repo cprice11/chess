@@ -9,7 +9,7 @@ import server.JoinGameRequest;
 
 import java.util.Collection;
 
-public class GameService extends Service{
+public class GameService extends Service {
     public void joinGame(JoinGameRequest request) {
         throw new RuntimeException("Not implemented yet");
     }

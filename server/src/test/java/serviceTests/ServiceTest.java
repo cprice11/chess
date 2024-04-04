@@ -6,11 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import service.AuthService;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceTest {
-//    In addition to the HTTP server pass off tests provided in the starter code, you need to write tests that execute
+    //    In addition to the HTTP server pass off tests provided in the starter code, you need to write tests that execute
 //    directly against your service classes. These tests skip the HTTP server network communication and will help you in
 //    the development of your service code for this phase.
 //
@@ -26,6 +24,7 @@ public class ServiceTest {
 //    ⚠ You must place your service test cases in a folder named server/src/test/java/serviceTests.
     private final static String username = "exampleUsername37";
     private final static String password = "$^R6DPVDtdSNSj&W83WJ";
+
     @Test
     @Order(1)
     void getAuthByUsername() {
@@ -35,6 +34,7 @@ public class ServiceTest {
     @Order(2)
     void getAuthByAuthToken() {
     }
+
     @Test
     @Order(3)
     void testCreateAuth() {
