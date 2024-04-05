@@ -16,12 +16,10 @@ import java.util.Collection;
 public class GameService extends Service {
     private final GameDAO dao;
     private final AuthService authService;
-    private final UserService userService;
 
-    public GameService(GameDAO dao, AuthService auth, UserService users) {
+    public GameService(GameDAO dao, AuthService auth) {
         this.dao = dao;
         this.authService = auth;
-        this.userService = users;
     }
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException{
         authService.verify(request.authorization());
@@ -33,7 +31,8 @@ public class GameService extends Service {
 
     }
 
-    public Collection<GameSummary> getGames(ListGamesRequest request) {
+    public Collection<GameSummary> getGames(ListGamesRequest request) throws DataAccessException{
+        authService.verify(request.authorization());
         return dao.getGameSummaries();
     }
 
@@ -41,11 +40,11 @@ public class GameService extends Service {
         return dao.getGame(gameID);
     }
 
-    public Collection<GameData> getGamesByPlayer(String username) {
-        return getGamesByPlayer(username);
+    public Collection<GameSummary> getGamesByPlayer(String username) {
+        return dao.getGamesByPlayer(username);
     }
 
-    public GameData getGamesByName(String gameName) {
-        return getGamesByName(gameName);
+    public Collection<GameSummary> getGamesByName(String gameName) {
+        return dao.getGamesByName(gameName);
     }
 }

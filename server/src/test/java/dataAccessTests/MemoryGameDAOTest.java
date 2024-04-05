@@ -3,19 +3,15 @@ package dataAccessTests;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
-import chess.InvalidMoveException;
 import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
 import dataAccess.MemoryDatabase;
 import dataAccess.MemoryGameDAO;
 import model.GameData;
 import model.GameSummary;
 import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -84,7 +80,9 @@ public class MemoryGameDAOTest extends DataAccessVars {
             Assertions.assertNotNull(game.gameName());
             Assertions.assertNotNull(game.blackUsername());
             Assertions.assertNotNull(game.whiteUsername());
-        } catch (DataAccessException e) { Assertions.assertNull(e);}
+        } catch (DataAccessException e) {
+            Assertions.assertNull(e);
+        }
     }
 
     @Test
@@ -100,7 +98,10 @@ public class MemoryGameDAOTest extends DataAccessVars {
     @Test
     @Order(7)
     void getGame() {
-        Assertions.assertEquals(gameDAO.getGame(g0.gameID()), g0);
+        Assertions.assertDoesNotThrow(() -> {
+                    Assertions.assertEquals(gameDAO.getGame(g0.gameID()), g0);
+                }
+        );
     }
 
     @Test
@@ -111,26 +112,27 @@ public class MemoryGameDAOTest extends DataAccessVars {
     @Test
     void createGame() {
         int newGameID = gameDAO.createGame("exampleGameName");
-        Assertions.assertSame("exampleGameName", gameDAO.getGame(newGameID).gameName());
+        Assertions.assertDoesNotThrow(() -> {
+                    Assertions.assertSame("exampleGameName", gameDAO.getGame(newGameID).gameName());
+                }
+        );
     }
 
     @Test
     void setGameState() {
-        try {
-            ChessGame newGameState = new ChessGame();
-            newGameState.makeMove(
-                    new ChessMove(
-                            new ChessPosition(2, 1),
-                            new ChessPosition(3, 1),
-                            null));
+        ChessGame newGameState = new ChessGame();
+        Assertions.assertDoesNotThrow(() -> newGameState.makeMove(
+                new ChessMove(
+                        new ChessPosition(2, 1),
+                        new ChessPosition(3, 1),
+                        null)));
+        Assertions.assertDoesNotThrow(() -> {
             GameData dbGame = gameDAO.getGame(g1.gameID());
             Assertions.assertNotEquals(newGameState, dbGame.game());
             Assertions.assertDoesNotThrow(() -> gameDAO.setGameState(g1.gameID(), newGameState));
             dbGame = gameDAO.getGame(g1.gameID());
             Assertions.assertEquals(newGameState, dbGame.game());
-        } catch (InvalidMoveException e) {
-            Assertions.assertNull(e);
-        }
+        });
     }
 
     @Test

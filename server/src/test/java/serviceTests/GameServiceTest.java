@@ -9,12 +9,13 @@ import service.GameService;
 import service.UserService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class GameServiceTest extends ServiceVars{
     private static AuthService authService = new AuthService(auth);
-    private static UserService userService = new UserService(users, authService);
-    private static GameService gameService = new GameService(games, authService, userService);
+    private static GameService gameService = new GameService(games, authService);
 
     @BeforeEach
     void buildDatabase() {
@@ -23,7 +24,6 @@ class GameServiceTest extends ServiceVars{
         MemoryDatabase.setUsers(userData);
         auth = new MemoryAuthDAO();
         authService = new AuthService(auth);
-        userService = new UserService(users, authService);
     }
 
     @Test
@@ -42,7 +42,9 @@ class GameServiceTest extends ServiceVars{
 
     @Test
     void testGetGames() {
-        Assertions.assertEquals(gameSummaries, gameService.getGames(goodListGamesRequest));
+        Assertions.assertDoesNotThrow(() -> {
+                    Assertions.assertEquals(gameSummaries, gameService.getGames(goodListGamesRequest));
+                    }, "Threw unexpected exception");
         Assertions.assertThrows(DataAccessException.class, () -> gameService.getGames(badListGamesRequest));
     }
 
@@ -56,12 +58,12 @@ class GameServiceTest extends ServiceVars{
 
     @Test
     void getGamesByPlayer() {
-        Assertions.assertEquals(new ArrayList<>(), gameService.getGamesByPlayer("death"));
+        Assertions.assertEquals(new HashSet<>(Arrays.asList(s1,s2)), gameService.getGamesByPlayer("death"));
         Assertions.assertDoesNotThrow(() -> gameService.getGamesByPlayer("death"));
     }
 
     @Test
     void getGamesByName() {
-        Assertions.assertDoesNotThrow(() -> gameService.getGamesByPlayer("chessgame"));
+        Assertions.assertDoesNotThrow(() -> gameService.getGamesByName("chessgame"));
     }
 }

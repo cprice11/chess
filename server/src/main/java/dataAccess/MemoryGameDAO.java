@@ -135,11 +135,11 @@ public class MemoryGameDAO implements GameDAO {
         }
     }
 
-    public GameData getGame(int gameID) {
+    public GameData getGame(int gameID) throws DataAccessException{
         for (GameData g : MemoryDatabase.getGames()) {
             if (g.gameID() == gameID) return g;
         }
-        return null;
+        throw new DataAccessException("No game with ID:" + gameID);
     }
 
     public HashSet<GameSummary> getGamesByPlayer(String username) {

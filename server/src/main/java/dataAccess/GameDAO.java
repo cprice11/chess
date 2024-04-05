@@ -5,6 +5,7 @@ import model.GameData;
 import model.GameSummary;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 public interface GameDAO extends DAO<GameData> {
     /**
@@ -86,4 +87,8 @@ public interface GameDAO extends DAO<GameData> {
     GameData getGame(int gameID) throws DataAccessException;
 
     GameSummary getSummary(GameData game);
+
+    HashSet<GameSummary> getGamesByPlayer(String username);
+
+    HashSet<GameSummary> getGamesByName(String name);
 }
