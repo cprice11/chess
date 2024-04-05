@@ -1,5 +1,6 @@
 package server;
 
+import server.handler.*;
 import spark.Spark;
 
 public class Server {
@@ -40,7 +41,7 @@ public class Server {
         Spark.delete("/db", ClearHandler::handleRequest);
         Spark.post("/user", RegisterHandler::handleRequest);
         Spark.post("/session", LoginHandler::handleRequest);
-//        Spark.delete("/session", (req, res) -> "Hit the endpoint!!!");
+        Spark.delete("/session", LogoutHandler::handleRequest);
         Spark.get("/game", ListGamesHandler::handleRequest);
         Spark.post("/game", CreateGameHandler::handleRequest);
         Spark.put("/game", JoinGameHandler::handleRequest);

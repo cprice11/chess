@@ -1,16 +1,14 @@
-package server;
+package server.handler;
 
 import dataAccess.DataAccessException;
 import server.request.InvalidRequestException;
 import server.request.ListGamesRequest;
-import server.result.ErrorResult;
 import server.result.ListGamesResult;
 import spark.Request;
 import spark.Response;
 
 public class ListGamesHandler extends Handler{
     public static String handleRequest(Request req, Response res) {
-        String body;
         try {
             String authToken = req.headers("authorization");
             if (authToken == null) throw new InvalidRequestException("Auth or nothin'");

@@ -1,4 +1,4 @@
-package server;
+package server.handler;
 
 import dataAccess.DataAccessException;
 import server.request.LoginRequest;
