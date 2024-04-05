@@ -6,16 +6,14 @@ import dataAccess.MemoryDatabase;
 import org.junit.jupiter.api.*;
 import service.AuthService;
 import service.GameService;
-import service.UserService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class GameServiceTest extends ServiceVars{
+class GameServiceTest extends ServiceVars {
     private static AuthService authService = new AuthService(auth);
-    private static GameService gameService = new GameService(games, authService);
+    private static final GameService gameService = new GameService(games, authService);
 
     @BeforeEach
     void buildDatabase() {
@@ -42,23 +40,23 @@ class GameServiceTest extends ServiceVars{
 
     @Test
     void testGetGames() {
-        Assertions.assertDoesNotThrow(() -> {
-                    Assertions.assertEquals(gameSummaries, gameService.getGames(goodListGamesRequest));
-                    }, "Threw unexpected exception");
+        Assertions.assertDoesNotThrow(() ->
+                        Assertions.assertEquals(gameSummaries, gameService.getGames(goodListGamesRequest)),
+                "Threw unexpected exception");
         Assertions.assertThrows(DataAccessException.class, () -> gameService.getGames(badListGamesRequest));
     }
 
     @Test
     void getGame() {
-        Assertions.assertDoesNotThrow(() -> {
-            Assertions.assertEquals(g1, gameService.getGame(1), "Didn't return correct game");
-        }, "Threw unexpected Exceptions");
+        Assertions.assertDoesNotThrow(() ->
+                        Assertions.assertEquals(g1, gameService.getGame(1), "Didn't return correct game"),
+                "Threw unexpected Exceptions");
         Assertions.assertThrows(DataAccessException.class, () -> gameService.getGame(-1));
     }
 
     @Test
     void getGamesByPlayer() {
-        Assertions.assertEquals(new HashSet<>(Arrays.asList(s1,s2)), gameService.getGamesByPlayer("death"));
+        Assertions.assertEquals(new HashSet<>(Arrays.asList(s1, s2)), gameService.getGamesByPlayer("death"));
         Assertions.assertDoesNotThrow(() -> gameService.getGamesByPlayer("death"));
     }
 

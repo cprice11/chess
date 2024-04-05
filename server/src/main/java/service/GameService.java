@@ -2,10 +2,8 @@ package service;
 
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import dataAccess.UserDAO;
 import model.GameData;
 import model.GameSummary;
-import server.Authorization;
 import server.request.CreateGameRequest;
 import server.request.JoinGameRequest;
 import server.request.ListGamesRequest;
@@ -21,7 +19,8 @@ public class GameService extends Service {
         this.dao = dao;
         this.authService = auth;
     }
-    public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException{
+
+    public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
         authService.verify(request.authorization());
         return new CreateGameResult(dao.createGame(request.gameName()));
     }
@@ -31,7 +30,7 @@ public class GameService extends Service {
 
     }
 
-    public Collection<GameSummary> getGames(ListGamesRequest request) throws DataAccessException{
+    public Collection<GameSummary> getGames(ListGamesRequest request) throws DataAccessException {
         authService.verify(request.authorization());
         return dao.getGameSummaries();
     }

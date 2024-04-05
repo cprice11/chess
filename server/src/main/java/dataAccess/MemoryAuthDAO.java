@@ -2,12 +2,13 @@ package dataAccess;
 
 import model.AuthData;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Random;
 
 public class MemoryAuthDAO implements AuthDAO {
-    public MemoryDatabase db;
-    private Random randomTokenGenerator = new Random(111);
+    private final Random randomTokenGenerator = new Random(111);
 
     /**
      * Returns all objects in the database
@@ -121,7 +122,7 @@ public class MemoryAuthDAO implements AuthDAO {
      */
     @Override
     public AuthData getAuthFromToken(String authToken) throws DataAccessException {
-        return null;
+        return verify(authToken);
     }
 
 

@@ -1,17 +1,15 @@
 package dataAccess;
 
 import chess.ChessGame;
-import chess.GameState;
-import model.AuthData;
 import model.GameData;
 import model.GameSummary;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Random;
 
 public class MemoryGameDAO implements GameDAO {
-    private Random randomIdGenerator = new Random(111);
+    private final Random randomIdGenerator = new Random(111);
     /**
      * Returns all objects in the database
      */
@@ -123,6 +121,7 @@ public class MemoryGameDAO implements GameDAO {
                 return;
             }
         }
+        throw new DataAccessException("Game with ID '" + gameID + " was not found.");
     }
 
     @Override
@@ -145,7 +144,7 @@ public class MemoryGameDAO implements GameDAO {
     public HashSet<GameSummary> getGamesByPlayer(String username) {
         HashSet<GameSummary> gamesWith = new HashSet<>();
         for (GameData g : MemoryDatabase.getGames()) {
-            if (g.whiteUsername() == username || g.blackUsername() == username) gamesWith.add(getSummary(g));
+            if (Objects.equals(g.whiteUsername(), username) || Objects.equals(g.blackUsername(), username)) gamesWith.add(getSummary(g));
         }
         return gamesWith;
     }
