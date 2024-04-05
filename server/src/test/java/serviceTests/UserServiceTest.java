@@ -57,13 +57,15 @@ class UserServiceTest extends ServiceVars {
     void testLogin() {
         auth.deleteAll();
         Assertions.assertDoesNotThrow(() -> userService.login(goodLoginRequest), "Threw Exception on valid request");
-        Assertions.assertDoesNotThrow(() -> {
+        try {
             LoginResult result = userService.login(goodLoginRequest);
             Assertions.assertEquals(t1, result.authToken(), "Returned unexpected auth token");
             Assertions.assertEquals(goodLoginResult.username(), result.username(), "Returned unexpected username");
             Assertions.assertTrue(auth.getAll().contains(new AuthData(result.authToken(), result.username())), "new auth not found in database after request");
-        }, "Threw Unexpected Exception");
-        Assertions.assertThrows(DataAccessException.class, () -> userService.login(badLoginRequest), "No Exception thrown on invalid request");
+        } catch (Exception e) {
+            Assertions.fail("Threw Unexpected Exception: " + e.getMessage());
+        }
+        Assertions.assertThrows(UnauthorizedException.class, () -> userService.login(badLoginRequest), "No Exception thrown on invalid request");
     }
 
     @Test
@@ -72,7 +74,7 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertDoesNotThrow(() -> userService.logout(goodLogoutRequest));
         Assertions.assertFalse(auth.getAll().contains(a0), "AuthData remained after logout");
         Assertions.assertTrue(auth.getAll().contains(a1), "incorrect AuthData dropped after logout");
-        Assertions.assertThrows(DataAccessException.class, () -> userService.logout(badLogoutRequest), "No error thrown on invalid request");
+        Assertions.assertThrows(UnauthorizedException.class, () -> userService.logout(badLogoutRequest), "No error thrown on invalid request");
     }
 
     @Test
