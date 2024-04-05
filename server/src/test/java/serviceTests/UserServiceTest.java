@@ -35,10 +35,9 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertTrue(users.getAll().contains(uNew));
         Assertions.assertThrows(DataAccessException.class, () -> userService.register(badRegisterRequest));
         Assertions.assertFalse(users.getAll().contains(
-                new UserData(
-                        badRegisterRequest.username(),
-                        badRegisterRequest.password(),
-                        badRegisterRequest.email())
+                new UserData(   badRegisterRequest.username(),
+                                badRegisterRequest.password(),
+                                badRegisterRequest.email())
                 )
         );
     }
@@ -62,7 +61,7 @@ class UserServiceTest extends ServiceVars {
             Assertions.assertEquals(goodLoginResult.username(), result.username(), "Returned unexpected username");
             Assertions.assertTrue(auth.getAll().contains(new AuthData(result.authToken(), result.username())), "new auth not found in database after request");
         }, "Threw Unexpected Exception");
-            Assertions.assertThrows(DataAccessException.class, () -> userService.login(badLoginRequest), "No Exception thrown on invalid request");
+        Assertions.assertThrows(DataAccessException.class, () -> userService.login(badLoginRequest), "No Exception thrown on invalid request");
     }
 
     @Test
