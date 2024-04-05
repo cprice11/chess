@@ -51,6 +51,13 @@ public class Handler {
         res.body(body);
         return  body;
     }
+
+    protected static String alreadyTaken(Response res) {
+        res.status(403);
+        String body = serializer.toJson(new Result("Error: already taken"));
+        res.body(body);
+        return  body;
+    }
     protected static String failure(Response res, String message) {
         res.status(500);
         String body = serializer.toJson(new Result("Error: " + message));

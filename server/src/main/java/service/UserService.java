@@ -43,10 +43,11 @@ public class UserService extends Service {
 
     public void logout(LogoutRequest request) throws DataAccessException{
         AuthData authData = auth.verify(request.authorization());
-        Collection<AuthData> allSessions = auth.getAuthByUsername(authData.username());
-        for (AuthData session : allSessions) {
-            auth.delete(session);
-        }
+        auth.delete(authData);
+//        Collection<AuthData> allSessions = auth.getAuthByUsername(authData.username());
+//        for (AuthData session : allSessions) {
+//            auth.delete(session);
+//        }
     }
 
     // FIXME: I assume that these will be useful later.

@@ -73,6 +73,7 @@ public class ServiceVars {
     static final CreateGameResult badCreateGameResult = new CreateGameResult(g1.gameID());
     // joinGame
     static final JoinGameRequest goodJoinGameRequest = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, gEmpty.gameID());
+    static final JoinGameRequest goodJoinGameRequestBlack = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.BLACK, gEmpty.gameID());
     static final JoinGameRequest goodJoinGameRequestFullGame = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, g2.gameID());
     static final JoinGameRequest goodJoinGameRequestNoColor = new JoinGameRequest(a1.authToken(), null, gEmpty.gameID());
     static final JoinGameRequest getGoodJoinGameRequestNewPlayerNoColor = new JoinGameRequest(a2.authToken(), null, gEmpty.gameID());
