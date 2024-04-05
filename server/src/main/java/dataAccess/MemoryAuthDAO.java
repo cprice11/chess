@@ -55,7 +55,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     /**
-     * @param authToken the authToken of the AuthData object to search for in the database
+     * @param authToken the authentication of the AuthData object to search for in the database
      * @throws DataAccessException if the object is not found
      */
     @Override

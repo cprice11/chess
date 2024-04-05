@@ -49,12 +49,12 @@ public class ServiceVars {
     // register
     static final RegisterRequest goodRegisterRequest = new RegisterRequest(uNew.username(), uNew.password(), uNew.email());
     static final RegisterRequest badRegisterRequest = new RegisterRequest(u2.username(), uNew.password(), uNew.email());
-    // static final RegisterResult goodRegisterResult = new RegisterResult(null, uNew.username()); // authToken shouldn't be created here
+    // static final RegisterResult goodRegisterResult = new RegisterResult(null, uNew.username()); // authentication shouldn't be created here
     // static final RegisterResult badRegisterResult = new RegisterResult();
     // login
     static final LoginRequest goodLoginRequest = new LoginRequest(u0.username(), u0.password());
     static final LoginRequest badLoginRequest = new LoginRequest(u0.username(), u2.password());
-    static final LoginResult goodLoginResult = new LoginResult(u0.username(), null); // authToken shouldn't be created here
+    static final LoginResult goodLoginResult = new LoginResult(u0.username(), null); // authentication shouldn't be created here
     //    static final LoginResult badLoginResult = new LoginResult();
     // logout
     static final LogoutRequest goodLogoutRequest = new LogoutRequest(a0.authToken());

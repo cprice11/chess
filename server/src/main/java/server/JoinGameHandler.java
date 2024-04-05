@@ -1,9 +1,7 @@
 package server;
 
 import dataAccess.DataAccessException;
-import server.request.CreateGameRequest;
 import server.request.JoinGameRequest;
-import server.result.CreateGameResult;
 import server.result.Result;
 import spark.Request;
 import spark.Response;
@@ -14,11 +12,9 @@ public class JoinGameHandler extends Handler{
             try {
                 JoinGameRequest parsedRequest = serializer.fromJson(req.body(), JoinGameRequest.class);
                 games.joinGame(parsedRequest);
-                body = serializer.toJson(new Result(200, null));
-                setStatusAndBody(res, 200, body);
+                return success(res, serializer.toJson(new Result(null)));
             } catch (DataAccessException e) {
-                return fourZeroOne();
+                return unauthorized(res);
             }
-            return body;
         }
 }

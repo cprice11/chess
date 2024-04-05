@@ -77,21 +77,21 @@ class UserServiceTest extends ServiceVars {
     @Order(7)
     void testMultipleLogin() {
         // I'm going to assume that multiple auths is ok, but one logout clears everything?
-        // If multiple logins are received, and the client sends either authToken both should work
+        // If multiple logins are received, and the client sends either authentication both should work
         // If a user logs out, but still has a live AuthData, that one may not ever get cleared if the client doesn't
-        // have the authToken.
+        // have the authentication.
         // clearing both would prevent password sharing between multiple clients.
         // IRL Auth would have a lifetime and be connected to a physical device.
         auth.deleteAll();
         Assertions.assertDoesNotThrow(() -> {
             LoginResult firstResult = userService.login(goodLoginRequest);
             LoginResult secondResult = userService.login(goodLoginRequest);
-            Assertions.assertEquals(t0, firstResult.authToken(), "Unexpected authToken from login");
-            Assertions.assertEquals(t1, secondResult.authToken(), "Unexpected authToken from login");
+            Assertions.assertEquals(t0, firstResult.authToken(), "Unexpected authentication from login");
+            Assertions.assertEquals(t1, secondResult.authToken(), "Unexpected authentication from login");
             Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(firstResult.authToken())), "Threw error on valid logout request");
-            Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authToken");
+            Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authentication");
             Assertions.assertThrows(DataAccessException.class, () -> authService.verify(goodLoginRequest.username()), "Verified logged out user");
             Assertions.assertThrows(DataAccessException.class, () -> userService.logout(new LogoutRequest(secondResult.authToken())), "Verified invalid logout request");
         }, "Threw Unexpected Exception");
@@ -104,12 +104,12 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertDoesNotThrow(() -> {
             LoginResult firstResult = userService.login(goodLoginRequest);
             LoginResult secondResult = userService.login(goodLoginRequest);
-            Assertions.assertEquals(t0, firstResult.authToken(), "Unexpected authToken from login");
-            Assertions.assertEquals(t1, secondResult.authToken(), "Unexpected authToken from login");
+            Assertions.assertEquals(t0, firstResult.authToken(), "Unexpected authentication from login");
+            Assertions.assertEquals(t1, secondResult.authToken(), "Unexpected authentication from login");
             Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(secondResult.authToken())), "Threw error on valid logout request");
-            Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authToken");
+            Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authentication");
             Assertions.assertThrows(DataAccessException.class, () -> authService.verify(goodLoginRequest.username()), "Verified logged out user");
             Assertions.assertThrows(DataAccessException.class, () -> userService.logout(new LogoutRequest(firstResult.authToken())), "Verified invalid logout request");
         }, "Threw Unexpected Exception");

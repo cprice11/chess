@@ -3,9 +3,8 @@ package server;
 import dataAccess.DataAccessException;
 import server.request.InvalidRequestException;
 import server.request.ListGamesRequest;
-import server.result.CreateGameResult;
+import server.result.ErrorResult;
 import server.result.ListGamesResult;
-import server.result.Result;
 import spark.Request;
 import spark.Response;
 
@@ -13,18 +12,14 @@ public class ListGamesHandler extends Handler{
     public static String handleRequest(Request req, Response res) {
         String body;
         try {
-            var j = req.body();
-            ListGamesRequest parsedRequest = serializer.fromJson(req.body(), ListGamesRequest.class);
-            if (parsedRequest == null) throw new InvalidRequestException("Auth or nothin'");
-            ListGamesResult result = games.listGames(parsedRequest);
-            body = serializer.toJson(result, ListGamesResult.class);
-            setStatusAndBody(res, 200, body);
+            String authToken = req.headers("authorization");
+            if (authToken == null) throw new InvalidRequestException("Auth or nothin'");
+            ListGamesResult result = games.listGames(new ListGamesRequest(authToken));
+            return success(res, serializer.toJson(result, ListGamesResult.class));
         } catch (DataAccessException e) {
-            return fourZeroOne();
+            return unauthorized(res);
         } catch (InvalidRequestException e) {
-            body = serializer.toJson(new Result(400, "Error: bad request"));
-            setStatusAndBody(res, 401, body);
+            return badRequest(res);
         }
-        return body;
     }
 }

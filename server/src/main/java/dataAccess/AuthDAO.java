@@ -38,7 +38,7 @@ public interface AuthDAO extends DAO<AuthData> {
     void verify(AuthData target) throws DataAccessException;
 
     /**
-     * @param authToken the authToken of the AuthData object to search for in the database
+     * @param authToken the authentication of the AuthData object to search for in the database
      * @throws DataAccessException if the object is not found
      */
     AuthData verify(String authToken) throws DataAccessException;

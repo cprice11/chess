@@ -71,7 +71,7 @@ class AuthServiceTest extends ServiceVars {
         // AuthTokens are pseudo-random and will generate the same tokens in order after every test init.
         String username = "brand-new-user";
         AuthData newAuth = authService.createAuth(username);
-        Assertions.assertNotNull(newAuth.authToken(), "returned null authToken");
+        Assertions.assertNotNull(newAuth.authToken(), "returned null authentication");
         Assertions.assertEquals(t0, newAuth.authToken(), "unexpected token value");
         Assertions.assertNotEquals(a0.authToken(), newAuth.authToken(), "Unexpected token value");
         Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authToken(), username)), "AuthData not found after creation");

@@ -21,14 +21,41 @@ public class Handler {
     protected static UserService users = new UserService(userDAO, auth);
     protected static Gson serializer = new Gson();
 
-
     protected static void setStatusAndBody(Response res, int status, String body) {
         res.status(status);
         res.body(body);
     }
 
-    protected static String fourZeroOne() {
-        return serializer.toJson(new Result(401, "Error: unauthorized"));
+    protected static String success(Response res, String jsonBody) {
+        res.status(200);
+        res.body(jsonBody);
+        return jsonBody;
+    }
+
+    protected static String unauthorized(Response res, String message) {
+        res.status(401);
+        String body = serializer.toJson(new Result("Error: unauthorized" + message));
+        res.body(body);
+        return  body;
+    }
+    protected static String unauthorized(Response res) {
+        res.status(401);
+        String body = serializer.toJson(new Result("Error: unauthorized"));
+        res.body(body);
+        return  body;
+    }
+
+    protected static String badRequest(Response res) {
+        res.status(400);
+        String body = serializer.toJson(new Result("Error: badRequest"));
+        res.body(body);
+        return  body;
+    }
+    protected static String failure(Response res, String message) {
+        res.status(500);
+        String body = serializer.toJson(new Result("Error: " + message));
+        res.body(body);
+        return  body;
     }
 
 

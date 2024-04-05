@@ -157,12 +157,12 @@ public class StandardAPITests {
         TestModels.TestLoginRegisterResult loginOne = serverFacade.login(loginRequest);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
                 "Server response code was not 200 OK");
-        Assertions.assertNotNull(loginOne.authToken, "Login result did not contain an authToken");
+        Assertions.assertNotNull(loginOne.authToken, "Login result did not contain an authentication");
 
         TestModels.TestLoginRegisterResult loginTwo = serverFacade.login(loginRequest);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
                 "Server response code was not 200 OK");
-        Assertions.assertNotNull(loginTwo.authToken, "Login result did not contain an authToken");
+        Assertions.assertNotNull(loginTwo.authToken, "Login result did not contain an authentication");
 
         Assertions.assertNotEquals(existingAuth, loginOne.authToken,
                 "Authtoken returned by login matched authtoken from prior register");
