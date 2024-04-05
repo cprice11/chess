@@ -3,6 +3,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.*;
+import server.result.Result;
 import service.AuthService;
 import service.DevService;
 import service.GameService;
@@ -20,9 +21,14 @@ public class Handler {
     protected static UserService users = new UserService(userDAO, auth);
     protected static Gson serializer = new Gson();
 
+
     protected static void setStatusAndBody(Response res, int status, String body) {
         res.status(status);
         res.body(body);
+    }
+
+    protected static String fourZeroOne() {
+        return serializer.toJson(new Result(401, "Error: unauthorized"));
     }
 
 

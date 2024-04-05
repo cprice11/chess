@@ -1,5 +1,6 @@
 package server;
 
+import dataAccess.DataAccessException;
 import server.request.CreateGameRequest;
 import server.request.JoinGameRequest;
 import server.result.CreateGameResult;
@@ -15,9 +16,8 @@ public class JoinGameHandler extends Handler{
                 games.joinGame(parsedRequest);
                 body = serializer.toJson(new Result(200, null));
                 setStatusAndBody(res, 200, body);
-            } catch (Exception e) {
-                body = serializer.toJson(new Result(500, "Error " + e));
-                setStatusAndBody(res, 500, body);
+            } catch (DataAccessException e) {
+                return fourZeroOne();
             }
             return body;
         }

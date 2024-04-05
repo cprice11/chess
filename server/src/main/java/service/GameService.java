@@ -32,7 +32,7 @@ public class GameService extends Service {
     }
 
     public ListGamesResult listGames(ListGamesRequest request) throws DataAccessException {
-        authService.verify(request.authorization());
+        authService.verify(request.authToken());
         return new ListGamesResult(dao.getGameSummaries());
     }
 
