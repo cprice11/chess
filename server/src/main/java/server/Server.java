@@ -39,7 +39,7 @@ public class Server {
 
     private void createRoutes() {
         Spark.delete("/db", ClearHandler::handleRequest);
-        Spark.post("/user", RegisterHandler::handleRequest);
+        Spark.post("/user", (req, res) -> RegisterHandler.handleRequest(req, res));
         Spark.post("/session", LoginHandler::handleRequest);
         Spark.delete("/session", LogoutHandler::handleRequest);
         Spark.get("/game", ListGamesHandler::handleRequest);

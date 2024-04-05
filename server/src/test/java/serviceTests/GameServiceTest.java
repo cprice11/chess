@@ -5,9 +5,8 @@ import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryDatabase;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import service.AlreadyTakenException;
-import service.AuthService;
-import service.GameService;
+import server.request.InvalidRequestException;
+import service.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,7 +29,7 @@ class GameServiceTest extends ServiceVars {
     @Order(1)
     void testCreateGame() {
         Assertions.assertDoesNotThrow(() -> gameService.createGame(goodCreateGameRequest));
-        Assertions.assertThrows(DataAccessException.class, () -> gameService.createGame(badCreateGameRequest));
+        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.createGame(badCreateGameRequest));
     }
 
     @Test
@@ -38,7 +37,7 @@ class GameServiceTest extends ServiceVars {
     void testListGames() {
         try {
             Assertions.assertEquals(goodListGamesResult, gameService.listGames(goodListGamesRequest), "Didn't return expected summary list.");
-            Assertions.assertThrows(DataAccessException.class, () -> gameService.listGames(badListGamesRequest));
+            Assertions.assertThrows(UnauthorizedException.class, () -> gameService.listGames(badListGamesRequest));
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
@@ -125,16 +124,18 @@ class GameServiceTest extends ServiceVars {
     @Test
     void badJoinGameRequests() {
         MemoryDatabase.games.add(gEmpty);
-        Assertions.assertThrows(DataAccessException.class, () -> gameService.joinGame(badJoinGameRequestBadToken));
-        Assertions.assertThrows(DataAccessException.class, () -> gameService.joinGame(badJoinGameRequestWrongId));
+        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.joinGame(badJoinGameRequestBadToken));
+        Assertions.assertThrows(InvalidRequestException.class, () -> gameService.joinGame(badJoinGameRequestWrongId));
     }
 
 
     @Test
     void getGame() {
-        Assertions.assertDoesNotThrow(() ->
-                        Assertions.assertEquals(g1, gameService.getGame(1), "Didn't return correct game"),
-                "Threw unexpected Exceptions");
+        try {
+            Assertions.assertEquals(g1, gameService.getGame(1), "Didn't return correct game");
+        } catch (Exception e) {
+            Assertions.fail("Threw unexpected exception");
+        }
         Assertions.assertThrows(DataAccessException.class, () -> gameService.getGame(-1));
     }
 

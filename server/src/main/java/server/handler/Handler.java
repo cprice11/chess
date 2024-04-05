@@ -6,7 +6,6 @@ import dataAccess.*;
 import server.request.InvalidRequestException;
 import server.result.Result;
 import service.*;
-import spark.Request;
 import spark.Response;
 
 public abstract class Handler {
@@ -35,55 +34,50 @@ public abstract class Handler {
         res.status(401);
         String body = serializer.toJson(new Result("Error: unauthorized" + message));
         res.body(body);
-        return  body;
+        return body;
     }
+
     protected static String unauthorized(Response res) {
         res.status(401);
         String body = serializer.toJson(new Result("Error: unauthorized"));
         res.body(body);
-        return  body;
+        return body;
     }
 
     protected static String badRequest(Response res) {
         res.status(400);
         String body = serializer.toJson(new Result("Error: badRequest"));
         res.body(body);
-        return  body;
+        return body;
     }
 
     protected static String alreadyTaken(Response res) {
         res.status(403);
         String body = serializer.toJson(new Result("Error: already taken"));
         res.body(body);
-        return  body;
+        return body;
     }
+
     protected static String failure(Response res, String message) {
         res.status(500);
         String body = serializer.toJson(new Result("Error: " + message));
         res.body(body);
-        return  body;
+        return body;
     }
 
-    protected static String safeHandleRequest(Request req, Response res)
-            throws AlreadyTakenException, DataAccessException, UnauthorizedException, InvalidRequestException {
-        return null;
-    }
-
-    public static String handleRequest(Request req, Response res) {
-             try {
-                 // in each method
-                 return safeHandleRequest(req, res);
-
-             } catch (UnauthorizedException e) {
-                 return unauthorized(res);
-             } catch (AlreadyTakenException e) {
-                 return alreadyTaken(res);
-             } catch (InvalidRequestException e) {
-                 return badRequest(res);
-             } catch (DataAccessException e) {
-                 return unauthorized(res, e.getMessage());
-             }catch (Exception e) {
-                 return failure(res, e.getMessage());
-             }
+    public static String catchExceptions(Response res, Exception caughtException) {
+        try {
+            throw caughtException;
+        } catch (UnauthorizedException e) {
+            return unauthorized(res);
+        } catch (AlreadyTakenException e) {
+            return alreadyTaken(res);
+        } catch (InvalidRequestException e) {
+            return badRequest(res);
+        } catch (DataAccessException e) {
+            return unauthorized(res, e.getMessage());
+        } catch (Exception e) {
+            return failure(res, e.getMessage());
         }
     }
+}
