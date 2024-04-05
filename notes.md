@@ -145,11 +145,11 @@ history
 You can create and test your code in whatever order you would like. However, if you are trying to figure out how to get started, you might consider the following order.
 
 - [x] Use your sequence diagrams to guide the decision for what classes you need for your server, service, and data access objects.
-- [ ] Implement your services
+- [x] Implement your services
     - [x] Create the classes you need to implement the `clear` service method.
     - [x] Write a service test for `clear` to make sure the service and data access parts of your code are working properly.
-    - [ ] Finish Auth tests and methods
-    - [ ] Repeat writing and implementing service classes and tests until you have built all the required functionality.
+    - [x] Finish Auth tests and methods
+    - [x] Repeat writing and implementing service classes and tests until you have built all the required functionality.
 - [ ] Create your server handler for a single endpoint that simply returns a string.
 - [ ] Make sure you can hit your endpoint from a browser or Curl.
 - [ ] Implement your server handlers

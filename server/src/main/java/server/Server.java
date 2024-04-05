@@ -23,6 +23,8 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        createRoutes();
+
         // Register your endpoints and handle exceptions here.
 
         Spark.awaitInitialization();
@@ -32,5 +34,15 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private static void createRoutes() {
+        Spark.delete("/db", (req, res) -> ClearHandler.handleRequest(req, res));
+        Spark.post("/user", (req, res) -> RegisterHandler.handleRequest(req, res));
+//        Spark.post("/session", (req, res) -> "Hit the endpoint!!!");
+//        Spark.delete("/session", (req, res) -> "Hit the endpoint!!!");
+//        Spark.get("/game", (req, res) -> "Hit the endpoint!!!");
+//        Spark.post("/game", (req, res) -> "Hit the endpoint!!!");
+//        Spark.put("/game", (req, res) -> "Hit the endpoint!!!");
     }
 }
