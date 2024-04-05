@@ -4,26 +4,26 @@ import java.util.Collection;
 import java.util.Vector;
 
 public class AlgebraParser extends ChessParser {
-    private final String PIECE_CODES = "KQBNR";
-    private final String FILE_CODES = "abcdefgh";
-    private final String RANK_CODES = "12345678";
-    private final String CASTLE_CODES = "0oO";
-    private final String SEPARATION_CODES = "-xX:";
-    private final String CHECK_SIGNIFIERS = "#+";
-    private final String PROMOTION_CODES = "QBNR";
-    private final String VALID_START_CHARS = PIECE_CODES + FILE_CODES + CASTLE_CODES;
+    private static final String PIECE_CODES = "KQBNR";
+    private static final String FILE_CODES = "abcdefgh";
+    private static final String RANK_CODES = "12345678";
+    private static final String CASTLE_CODES = "0oO";
+    private static final String SEPARATION_CODES = "-xX:";
+    private static final String CHECK_SIGNIFIERS = "#+";
+    private static final String PROMOTION_CODES = "QBNR";
+    private static final String VALID_START_CHARS = PIECE_CODES + FILE_CODES + CASTLE_CODES;
 
 
-    private final ChessMove.MoveBuilder WHITE_SHORT_CASTLE = new ChessMove.MoveBuilder(E1, H1)
+    private static final ChessMove.MoveBuilder WHITE_SHORT_CASTLE = new ChessMove.MoveBuilder(E1, H1)
             .shortCastle();
-    private final ChessMove.MoveBuilder WHITE_LONG_CASTLE = new ChessMove.MoveBuilder(E1, A1)
+    private static final ChessMove.MoveBuilder WHITE_LONG_CASTLE = new ChessMove.MoveBuilder(E1, A1)
             .longCastle();
-    private final ChessMove.MoveBuilder BLACK_SHORT_CASTLE = new ChessMove.MoveBuilder(E8, H8)
+    private static final ChessMove.MoveBuilder BLACK_SHORT_CASTLE = new ChessMove.MoveBuilder(E8, H8)
             .shortCastle();
-    private final ChessMove.MoveBuilder BLACK_LONG_CASTLE = new ChessMove.MoveBuilder(E8, A8)
+    private static final ChessMove.MoveBuilder BLACK_LONG_CASTLE = new ChessMove.MoveBuilder(E8, A8)
             .longCastle();
 
-    private enum TOKEN_TYPE {
+    private enum TokenType {
         WHITE,
         TAG,
         DIGIT,
@@ -53,10 +53,10 @@ public class AlgebraParser extends ChessParser {
             System.out.println("UPNEXT\t" + pgnString.substring(parseIndex, Math.min(50 + parseIndex, pgnString.length())));
             if (Character.isWhitespace(c)) {
                 if (!data.isEmpty()) {
-                    tokens.add(new AlgebraToken(TOKEN_TYPE.UNKNOWN, data.toString()));
+                    tokens.add(new AlgebraToken(TokenType.UNKNOWN, data.toString()));
                     data = new StringBuilder("\0");
                 }
-                tokens.add(new AlgebraToken(TOKEN_TYPE.WHITE, String.valueOf(c)));
+                tokens.add(new AlgebraToken(TokenType.WHITE, String.valueOf(c)));
                 while (parseIndex < pgnString.length()) {
                     if (Character.isWhitespace(pgnString.charAt(parseIndex))) {
                         parseIndex++;
@@ -66,34 +66,34 @@ public class AlgebraParser extends ChessParser {
             }
             if (c == '[') {
                 if (!data.isEmpty()) {
-                    tokens.add(new AlgebraToken(TOKEN_TYPE.UNKNOWN, data.toString()));
+                    tokens.add(new AlgebraToken(TokenType.UNKNOWN, data.toString()));
                     data = new StringBuilder("\0");
                 }
                 int end = pgnString.substring(parseIndex).indexOf(']');
                 if (end == -1) throw new RuntimeException("Could not parse pgn");
                 end += parseIndex + 1;
-                tokens.add(new AlgebraToken(TOKEN_TYPE.TAG, pgnString.substring(parseIndex, end)));
+                tokens.add(new AlgebraToken(TokenType.TAG, pgnString.substring(parseIndex, end)));
                 parseIndex = end;
                 continue;
             }
             if (c == '{') {
                 if (!data.isEmpty()) {
-                    tokens.add(new AlgebraToken(TOKEN_TYPE.UNKNOWN, data.toString()));
+                    tokens.add(new AlgebraToken(TokenType.UNKNOWN, data.toString()));
                     data = new StringBuilder("\0");
                 }
                 int end = pgnString.substring(parseIndex).indexOf('}');
                 if (end == -1) throw new RuntimeException("Could not parse pgn");
                 end += parseIndex + 1;
-                tokens.add(new AlgebraToken(TOKEN_TYPE.COMMENT, pgnString.substring(parseIndex, end)));
+                tokens.add(new AlgebraToken(TokenType.COMMENT, pgnString.substring(parseIndex, end)));
                 parseIndex = end;
                 continue;
             }
             if (c == '.') {
                 if (!data.isEmpty()) {
-                    tokens.add(new AlgebraToken(TOKEN_TYPE.UNKNOWN, data.toString()));
+                    tokens.add(new AlgebraToken(TokenType.UNKNOWN, data.toString()));
                     data = new StringBuilder("\0");
                 }
-                tokens.add(new AlgebraToken(TOKEN_TYPE.PERIOD, pgnString.substring(parseIndex, parseIndex + 1)));
+                tokens.add(new AlgebraToken(TokenType.PERIOD, pgnString.substring(parseIndex, parseIndex + 1)));
                 parseIndex++;
                 continue;
             }
@@ -202,10 +202,10 @@ public class AlgebraParser extends ChessParser {
     }
 
     class AlgebraToken {
-        TOKEN_TYPE type;
+        TokenType type;
         String value;
 
-        public TOKEN_TYPE getType() {
+        public TokenType getType() {
             return type;
         }
 
@@ -213,7 +213,7 @@ public class AlgebraParser extends ChessParser {
             return value;
         }
 
-        public AlgebraToken(TOKEN_TYPE type, String value) {
+        public AlgebraToken(TokenType type, String value) {
             this.type = type;
             this.value = value;
         }
@@ -230,14 +230,6 @@ public class AlgebraParser extends ChessParser {
     }
 
     private boolean isLongCastle(String algebra) {
-        return (algebra.length() >= 5 &&
-                algebra.charAt(0) == algebra.charAt(2) &&
-                algebra.charAt(0) == algebra.charAt(4) &&
-                algebra.charAt(1) == '-' &&
-                algebra.charAt(1) == algebra.charAt(3));
-    }
-
-    private boolean isMoveCastle(String algebra) {
         return (algebra.length() >= 5 &&
                 algebra.charAt(0) == algebra.charAt(2) &&
                 algebra.charAt(0) == algebra.charAt(4) &&
