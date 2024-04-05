@@ -11,43 +11,32 @@ public interface GameDAO extends DAO<GameData> {
      * Returns all objects in the database
      */
     @Override
-    default Collection<GameData> getAll() {
-        return null;
-    }
+    Collection<GameData> getAll();
 
     /**
      * @param target The object in the database to be removed
      */
     @Override
-    default void delete(GameData target) {
-
-    }
+    void delete(GameData target);
 
     /**
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    default void deleteAll() {
-
-    }
+    void deleteAll();
 
     /**
      * @param target The existing object in the database
      * @param value  The object to replace the target object
      */
     @Override
-    default void update(GameData target, GameData value) {
-
-    }
-
+    void update(GameData target, GameData value) throws DataAccessException;
     /**
      * @param target the object to search for in the database
      * @throws DataAccessException if the object is not found
      */
     @Override
-    default void verify(GameData target) throws DataAccessException {
-
-    }
+    void verify(GameData target) throws DataAccessException;
 
     /**
      * Adds a new object in the database
@@ -55,9 +44,7 @@ public interface GameDAO extends DAO<GameData> {
      * @param entry The object to add
      */
     @Override
-    default void add(GameData entry) {
-
-    }
+    void add(GameData entry) throws DataAccessException;
 
     /**
      * Gets a list of the summaries of every game in the database
@@ -87,12 +74,16 @@ public interface GameDAO extends DAO<GameData> {
      * @param gameID The ID of the existing game in the database
      * @param game   The value to set the game state to
      */
-    void setGameState(int gameID, ChessGame game);
+    void setGameState(int gameID, ChessGame game) throws DataAccessException;
 
     /**
      * Updates a game to a new game state
      *
      * @param gameData the game object to replace the existing one
      */
-    void setGameState(GameData gameData);
+    void setGameState(GameData gameData) throws DataAccessException;
+
+    GameData getGame(int gameID) throws DataAccessException;
+
+    GameSummary getSummary(GameData game);
 }

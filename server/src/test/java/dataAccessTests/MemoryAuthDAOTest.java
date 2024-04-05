@@ -79,7 +79,7 @@ public class MemoryAuthDAOTest extends DataAccessVars {
     @Test
     void getAuthToken() {
         Assertions.assertDoesNotThrow(() -> {
-            Assertions.assertEquals(new HashSet<>(Arrays.asList(a0)), authDAO.getAuthFromUser(a0.username()));
+            Assertions.assertEquals(new ArrayList<>(Arrays.asList(a0)), authDAO.getAuthFromUser(a0.username()));
         }, "Threw unexpected Exception");
     }
 

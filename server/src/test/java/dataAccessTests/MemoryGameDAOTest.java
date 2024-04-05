@@ -9,6 +9,7 @@ import dataAccess.GameDAO;
 import dataAccess.MemoryDatabase;
 import dataAccess.MemoryGameDAO;
 import model.GameData;
+import model.GameSummary;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -124,7 +125,7 @@ public class MemoryGameDAOTest extends DataAccessVars {
                             null));
             GameData dbGame = gameDAO.getGame(g1.gameID());
             Assertions.assertNotEquals(newGameState, dbGame.game());
-            gameDAO.setGameState(g1.gameID(), newGameState);
+            Assertions.assertDoesNotThrow(() -> gameDAO.setGameState(g1.gameID(), newGameState));
             dbGame = gameDAO.getGame(g1.gameID());
             Assertions.assertEquals(newGameState, dbGame.game());
         } catch (InvalidMoveException e) {
@@ -134,21 +135,21 @@ public class MemoryGameDAOTest extends DataAccessVars {
 
     @Test
     void getGamesByPlayer() {
-        HashSet<GameData> games = gameDAO.getGamesByPlayer("death");
+        HashSet<GameSummary> games = gameDAO.getGamesByPlayer("death");
         Assertions.assertNotNull(games);
         Assertions.assertEquals(2, games.size());
-        Assertions.assertFalse(games.contains(g0));
-        Assertions.assertTrue(games.contains(g1));
-        Assertions.assertTrue(games.contains(g2));
+        Assertions.assertFalse(games.contains(s0));
+        Assertions.assertTrue(games.contains(s1));
+        Assertions.assertTrue(games.contains(s2));
     }
 
     @Test
     void getGamesByName() {
-        HashSet<GameData> games = gameDAO.getGamesByName("chessgame");
+        HashSet<GameSummary> games = gameDAO.getGamesByName("chessgame");
         Assertions.assertNotNull(games);
         Assertions.assertEquals(2, games.size());
-        Assertions.assertFalse(games.contains(g0));
-        Assertions.assertTrue(games.contains(g1));
-        Assertions.assertTrue(games.contains(g2));
+        Assertions.assertFalse(games.contains(s0));
+        Assertions.assertTrue(games.contains(s1));
+        Assertions.assertTrue(games.contains(s2));
     }
 }

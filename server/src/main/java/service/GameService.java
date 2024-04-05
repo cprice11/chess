@@ -1,38 +1,51 @@
 package service;
 
+import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
+import dataAccess.UserDAO;
 import model.GameData;
 import model.GameSummary;
 import server.Authorization;
 import server.request.CreateGameRequest;
-import server.result.CreateGameResult;
 import server.request.JoinGameRequest;
+import server.request.ListGamesRequest;
+import server.result.CreateGameResult;
 
 import java.util.Collection;
 
 public class GameService extends Service {
-    public void joinGame(JoinGameRequest request) {
-        throw new RuntimeException("Not implemented yet");
+    private final GameDAO dao;
+    private final AuthService authService;
+    private final UserService userService;
+
+    public GameService(GameDAO dao, AuthService auth, UserService users) {
+        this.dao = dao;
+        this.authService = auth;
+        this.userService = users;
+    }
+    public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException{
+        authService.verify(request.authorization());
+        return new CreateGameResult(dao.createGame(request.gameName()));
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) {
-        throw new RuntimeException("Not implemented yet");
+    public void joinGame(JoinGameRequest request) throws DataAccessException {
+        authService.verify(request.authorization());
+
     }
 
-    public Collection<GameSummary> getGames(Authorization authorization) {
-        throw new RuntimeException("Not implemented yet");
-        // verify()
-        // getAllGameSummaries()
+    public Collection<GameSummary> getGames(ListGamesRequest request) {
+        return dao.getGameSummaries();
     }
 
-    public GameData getGame(String gameID) {
-        throw new RuntimeException("Not implemented yet");
+    public GameData getGame(int gameID) throws DataAccessException {
+        return dao.getGame(gameID);
     }
 
     public Collection<GameData> getGamesByPlayer(String username) {
-        throw new RuntimeException("Not implemented yet");
+        return getGamesByPlayer(username);
     }
 
     public GameData getGamesByName(String gameName) {
-        throw new RuntimeException("Not implemented yet");
+        return getGamesByName(gameName);
     }
 }

@@ -87,9 +87,13 @@ public class MemoryGameDAO implements GameDAO {
     public HashSet<GameSummary> getGameSummaries() {
         HashSet<GameSummary> summaries = new HashSet<>();
         for (GameData g : MemoryDatabase.games) {
-            summaries.add(new GameSummary(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName()));
+            summaries.add(getSummary(g));
         }
         return summaries;
+    }
+
+    public GameSummary getSummary(GameData game) {
+        return new GameSummary(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName());
     }
 
     /**
@@ -111,7 +115,7 @@ public class MemoryGameDAO implements GameDAO {
      * @param game   The value to set the game state to
      */
     @Override
-    public void setGameState(int gameID, ChessGame game) {
+    public void setGameState(int gameID, ChessGame game) throws DataAccessException{
         for (GameData g : MemoryDatabase.getGames()) {
             if (g.gameID() == gameID) {
                 delete(g);
@@ -138,18 +142,18 @@ public class MemoryGameDAO implements GameDAO {
         return null;
     }
 
-    public HashSet<GameData> getGamesByPlayer(String username) {
-        HashSet<GameData> gamesWith = new HashSet<>();
+    public HashSet<GameSummary> getGamesByPlayer(String username) {
+        HashSet<GameSummary> gamesWith = new HashSet<>();
         for (GameData g : MemoryDatabase.getGames()) {
-            if (g.whiteUsername() == username || g.blackUsername() == username) gamesWith.add(g);
+            if (g.whiteUsername() == username || g.blackUsername() == username) gamesWith.add(getSummary(g));
         }
         return gamesWith;
     }
 
-    public HashSet<GameData> getGamesByName(String name) {
-        HashSet<GameData> gamesNamed = new HashSet<>();
+    public HashSet<GameSummary> getGamesByName(String name) {
+        HashSet<GameSummary> gamesNamed = new HashSet<>();
         for (GameData g : MemoryDatabase.getGames()) {
-            if (g.gameName().equals(name)) gamesNamed.add(g);
+            if (g.gameName().equals(name)) gamesNamed.add(getSummary(g));
         }
         return gamesNamed;
     }

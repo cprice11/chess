@@ -19,9 +19,9 @@ public class ServiceVars {
 
     static final AuthData aNew = new AuthData("3hu2^7T@YXtJhDuQ2%dg", "Magnus");
 
-    static final GameData g0 = new GameData(1, "myname123", "Antonius", "firstmatch", new ChessGame());
-    static final GameData g1 = new GameData(2, "antonius", "death", "chessgame", new ChessGame());
-    static final GameData g2 = new GameData(3, "death", "myname123", "chessgame", new ChessGame());
+    static final GameData g0 = new GameData(0, "myname123", "Antonius", "firstmatch", new ChessGame());
+    static final GameData g1 = new GameData(1, "antonius", "death", "chessgame", new ChessGame());
+    static final GameData g2 = new GameData(2, "death", "myname123", "chessgame", new ChessGame());
 
     static final GameData gNew = new GameData(4, "Magnus", null, "partialMatch", new ChessGame());
     static final GameData gEmpty = new GameData(5, null, null, "partialMatch", new ChessGame());
@@ -36,11 +36,10 @@ public class ServiceVars {
     static final HashSet<GameData> gameData = new HashSet<>(Arrays.asList(g0, g1, g2));
     static final HashSet<UserData> userData = new HashSet<>(Arrays.asList(u0, u1, u2));
 
-    static final HashSet<GameSummary> gameSummaries = new HashSet<>(Arrays.asList(
-            new GameSummary(g0.gameID(), g0.whiteUsername(), g0.blackUsername(), g0.gameName()),
-            new GameSummary(g1.gameID(), g1.whiteUsername(), g1.blackUsername(), g1.gameName()),
-            new GameSummary(g2.gameID(), g2.whiteUsername(), g2.blackUsername(), g2.gameName())
-    ));
+    static final GameSummary s0 = new GameSummary(g0.gameID(), g0.whiteUsername(), g0.blackUsername(), g0.gameName());
+    static final GameSummary s1 = new GameSummary(g1.gameID(), g1.whiteUsername(), g1.blackUsername(), g1.gameName());
+    static final GameSummary s2 = new GameSummary(g2.gameID(), g2.whiteUsername(), g2.blackUsername(), g2.gameName());
+    static final HashSet<GameSummary> gameSummaries = new HashSet<>(Arrays.asList(s0, s1, s2));
 
     protected static AuthDAO auth = new MemoryAuthDAO();
     protected static GameDAO games = new MemoryGameDAO();
