@@ -37,12 +37,12 @@ public class Server {
     }
 
     private static void createRoutes() {
-        Spark.delete("/db", (req, res) -> ClearHandler.handleRequest(req, res));
-        Spark.post("/user", (req, res) -> RegisterHandler.handleRequest(req, res));
-//        Spark.post("/session", (req, res) -> "Hit the endpoint!!!");
+        Spark.delete("/db", ClearHandler::handleRequest);
+        Spark.post("/user", RegisterHandler::handleRequest);
+        Spark.post("/session", LoginHandler::handleRequest);
 //        Spark.delete("/session", (req, res) -> "Hit the endpoint!!!");
-//        Spark.get("/game", (req, res) -> "Hit the endpoint!!!");
-//        Spark.post("/game", (req, res) -> "Hit the endpoint!!!");
-//        Spark.put("/game", (req, res) -> "Hit the endpoint!!!");
+        Spark.get("/game", ListGamesHandler::handleRequest);
+        Spark.post("/game", CreateGameHandler::handleRequest);
+        Spark.put("/game", JoinGameHandler::handleRequest);
     }
 }

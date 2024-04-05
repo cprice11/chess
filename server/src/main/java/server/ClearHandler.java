@@ -13,10 +13,10 @@ public class ClearHandler extends Handler{
         String body;
         try {
             dev.clearDatabase();
-            body = serializer.toJson("");
+            body = serializer.toJson(new Result(200, ""));
             setStatusAndBody(res, 200, body);
         } catch (Exception e) {
-            body = serializer.toJson("Error " + e);
+            body = serializer.toJson(new Result(500,"Error " + e));
             setStatusAndBody(res, 500, body);
         }
         return body;

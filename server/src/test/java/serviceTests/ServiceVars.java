@@ -64,7 +64,7 @@ public class ServiceVars {
     // listGames
     static final ListGamesRequest goodListGamesRequest = new ListGamesRequest(a1.authToken());
     static final ListGamesRequest badListGamesRequest = new ListGamesRequest(aNew.authToken());
-    static final ListGamesResult goodListGamesResult = new ListGamesResult(gameSummaries.toArray(new GameSummary[0]));
+    // static final ListGamesResult goodListGamesResult = new ListGamesResult(gameSummaries.toArray(new GameSummary[0]));
     static final ListGamesResult badListGamesResult = new ListGamesResult(null);
     // createGame
     static final CreateGameRequest goodCreateGameRequest = new CreateGameRequest(a0.authToken(), g1.gameName());

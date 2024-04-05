@@ -8,6 +8,7 @@ import server.request.CreateGameRequest;
 import server.request.JoinGameRequest;
 import server.request.ListGamesRequest;
 import server.result.CreateGameResult;
+import server.result.ListGamesResult;
 
 import java.util.Collection;
 
@@ -30,9 +31,9 @@ public class GameService extends Service {
 
     }
 
-    public Collection<GameSummary> getGames(ListGamesRequest request) throws DataAccessException {
+    public ListGamesResult listGames(ListGamesRequest request) throws DataAccessException {
         authService.verify(request.authorization());
-        return dao.getGameSummaries();
+        return new ListGamesResult(dao.getGameSummaries());
     }
 
     public GameData getGame(int gameID) throws DataAccessException {

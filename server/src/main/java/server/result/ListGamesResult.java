@@ -3,6 +3,6 @@ package server.result;
 import model.GameSummary;
 
 public record ListGamesResult(
-        GameSummary[] games
+        java.util.Collection<GameSummary> games
 ) {
 }

@@ -41,9 +41,9 @@ class GameServiceTest extends ServiceVars {
     @Test
     void testGetGames() {
         Assertions.assertDoesNotThrow(() ->
-                        Assertions.assertEquals(gameSummaries, gameService.getGames(goodListGamesRequest)),
+                        Assertions.assertEquals(gameSummaries, gameService.listGames(goodListGamesRequest)),
                 "Threw unexpected exception");
-        Assertions.assertThrows(DataAccessException.class, () -> gameService.getGames(badListGamesRequest));
+        Assertions.assertThrows(DataAccessException.class, () -> gameService.listGames(badListGamesRequest));
     }
 
     @Test

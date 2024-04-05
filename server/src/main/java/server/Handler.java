@@ -10,6 +10,7 @@ import service.UserService;
 import spark.Response;
 
 public class Handler {
+    protected static MemoryDatabase db = new MemoryDatabase();
     protected static AuthDAO authDAO = new MemoryAuthDAO();
     protected static GameDAO gameDAO = new MemoryGameDAO();
     protected static UserDAO userDAO = new MemoryUserDAO();
