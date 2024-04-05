@@ -3,6 +3,7 @@ package server.handler;
 import dataAccess.DataAccessException;
 import server.request.RegisterRequest;
 import server.result.RegisterResult;
+import service.AlreadyTakenException;
 import spark.Request;
 import spark.Response;
 
@@ -12,8 +13,9 @@ public class RegisterHandler extends Handler{
             RegisterRequest parsedRequest = serializer.fromJson(req.body(), RegisterRequest.class);
             RegisterResult result = users.register(parsedRequest);
             return success(res, serializer.toJson(result));
-        } catch (DataAccessException e) {
-            return unauthorized(res);
+        } catch (AlreadyTakenException e) {
+            return badRequest(res);
+//            return alreadyTaken(res);
         }
     }
 }

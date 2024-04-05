@@ -1,6 +1,7 @@
 package dataAccess;
 
 import model.UserData;
+import service.AlreadyTakenException;
 
 import java.util.Collection;
 
@@ -43,7 +44,7 @@ public interface UserDAO extends DAO<UserData> {
      * @param entry The object to add
      */
     @Override
-    void add(UserData entry) throws DataAccessException;
+    void add(UserData entry) throws AlreadyTakenException;
 
     UserData getUser(String username) throws DataAccessException;
 

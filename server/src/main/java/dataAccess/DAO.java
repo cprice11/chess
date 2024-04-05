@@ -1,5 +1,7 @@
 package dataAccess;
 
+import service.AlreadyTakenException;
+
 import java.util.Collection;
 
 public interface DAO<T> {
@@ -35,5 +37,5 @@ public interface DAO<T> {
      *
      * @param entry The object to add
      */
-    void add(T entry) throws DataAccessException;
+    void add(T entry) throws AlreadyTakenException;
 }

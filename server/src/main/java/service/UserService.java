@@ -10,8 +10,6 @@ import server.request.RegisterRequest;
 import server.result.LoginResult;
 import server.result.RegisterResult;
 
-import java.util.Collection;
-
 public class UserService extends Service {
     private final UserDAO dao;
     private final AuthService auth;
@@ -21,18 +19,18 @@ public class UserService extends Service {
         this.auth = auth;
     }
 
-    public RegisterResult register(RegisterRequest request) throws DataAccessException {
+    public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
         String username = request.username();
         try {
             dao.getUser(username);
+            throw new AlreadyTakenException("Username already in use; registration failed.");
         } catch (DataAccessException e) {
             dao.add(new UserData(username, request.password(), request.email()));
             return new RegisterResult(auth.createAuth(username).authToken(), username);
         }
-        throw new DataAccessException("Username already in use; registration failed.");
     }
 
-    public LoginResult login(LoginRequest request) throws DataAccessException{
+    public LoginResult login(LoginRequest request) throws DataAccessException {
         String username = request.username();
         UserData existingUser = dao.getUser(username);
         if (existingUser.password().equals(request.password())) {
@@ -41,7 +39,7 @@ public class UserService extends Service {
         throw new DataAccessException("Credentials do not match; login failed.");
     }
 
-    public void logout(LogoutRequest request) throws DataAccessException{
+    public void logout(LogoutRequest request) throws DataAccessException {
         AuthData authData = auth.verify(request.authorization());
         auth.delete(authData);
 //        Collection<AuthData> allSessions = auth.getAuthByUsername(authData.username());

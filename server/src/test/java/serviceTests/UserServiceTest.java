@@ -8,6 +8,7 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.LogoutRequest;
 import server.result.LoginResult;
+import service.AlreadyTakenException;
 import service.AuthService;
 import service.UserService;
 
@@ -33,7 +34,7 @@ class UserServiceTest extends ServiceVars {
     void testRegister() {
         Assertions.assertDoesNotThrow(() -> userService.register(goodRegisterRequest), "Threw exception on valid register request");
         Assertions.assertTrue(users.getAll().contains(uNew));
-        Assertions.assertThrows(DataAccessException.class, () -> userService.register(badRegisterRequest));
+        Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(badRegisterRequest));
         Assertions.assertFalse(users.getAll().contains(
                 new UserData(   badRegisterRequest.username(),
                                 badRegisterRequest.password(),

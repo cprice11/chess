@@ -2,6 +2,7 @@ package dataAccess;
 
 import model.UserData;
 import org.eclipse.jetty.servlet.jmx.ServletMappingMBean;
+import service.AlreadyTakenException;
 
 import java.util.Collection;
 
@@ -61,8 +62,8 @@ public class MemoryUserDAO implements UserDAO {
      * @param entry The object to add
      */
     @Override
-    public void add(UserData entry) throws DataAccessException{
-        if (MemoryDatabase.getUsers().contains(entry)) throw new DataAccessException("User already exists; adding failed");
+    public void add(UserData entry) throws AlreadyTakenException {
+        if (MemoryDatabase.getUsers().contains(entry)) throw new AlreadyTakenException("User already exists; adding failed");
         MemoryDatabase.users.add(entry);
     }
 

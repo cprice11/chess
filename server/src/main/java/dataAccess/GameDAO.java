@@ -3,6 +3,7 @@ package dataAccess;
 import chess.ChessGame;
 import model.GameData;
 import model.GameSummary;
+import service.AlreadyTakenException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -45,7 +46,7 @@ public interface GameDAO extends DAO<GameData> {
      * @param entry The object to add
      */
     @Override
-    void add(GameData entry) throws DataAccessException;
+    void add(GameData entry) throws AlreadyTakenException;
 
     /**
      * Gets a list of the summaries of every game in the database
