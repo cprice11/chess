@@ -101,7 +101,7 @@ public class MemoryGameDAO implements GameDAO {
      */
     @Override
     public int createGame(String gameName) {
-        GameData newGame = new GameData(randomIdGenerator.nextInt(), null, null, gameName, new ChessGame());
+        GameData newGame = new GameData(randomIdGenerator.nextInt() & Integer.MAX_VALUE, null, null, gameName, new ChessGame());
         MemoryDatabase.games.add(newGame);
         return newGame.gameID();
     }
