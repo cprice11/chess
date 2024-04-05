@@ -9,7 +9,8 @@ import spark.Request;
 import spark.Response;
 
 public class ListGamesHandler extends Handler {
-    public static String safeHandleRequest(Request req, Response res) throws InvalidRequestException, UnauthorizedException, DataAccessException {
+    // FIXME Throwing invalid request is undefined behavior
+    public static String safeHandleRequest(Request req, Response res) throws UnauthorizedException, InvalidRequestException{
         String authToken = req.headers("authorization");
         if (authToken == null) throw new InvalidRequestException("Auth or nothin'");
         ListGamesResult result = games.listGames(new ListGamesRequest(authToken));

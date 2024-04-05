@@ -30,13 +30,17 @@ public class UserService extends Service {
         }
     }
 
-    public LoginResult login(LoginRequest request) throws DataAccessException {
-        String username = request.username();
-        UserData existingUser = dao.getUser(username);
-        if (existingUser.password().equals(request.password())) {
-            return new LoginResult(username, auth.createAuth(username).authToken());
+    public LoginResult login(LoginRequest request) throws UnauthorizedException {
+        try {
+            String username = request.username();
+            UserData existingUser = dao.getUser(username);
+            if (existingUser.password().equals(request.password())) {
+                return new LoginResult(username, auth.createAuth(username).authToken());
+            }
+            throw new UnauthorizedException("Credentials do not match; login failed.");
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException("User with username does not exist");
         }
-        throw new DataAccessException("Credentials do not match; login failed.");
     }
 
     public void logout(LogoutRequest request) throws UnauthorizedException {

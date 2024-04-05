@@ -1,14 +1,15 @@
 package server.handler;
 
-import dataAccess.DataAccessException;
 import server.request.CreateGameRequest;
 import server.request.CreateGameRequestBody;
+import server.request.InvalidRequestException;
 import server.result.CreateGameResult;
+import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
 public class CreateGameHandler extends Handler{
-    public static String safeHandleRequest(Request req, Response res) throws DataAccessException {
+    public static String safeHandleRequest(Request req, Response res) throws InvalidRequestException, UnauthorizedException {
         String authToken = req.headers("authorization");
         CreateGameRequest parsedRequest = new CreateGameRequest(
                 authToken,

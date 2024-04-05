@@ -10,6 +10,7 @@ import server.request.LogoutRequest;
 import server.result.LoginResult;
 import service.AlreadyTakenException;
 import service.AuthService;
+import service.UnauthorizedException;
 import service.UserService;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -88,10 +89,10 @@ class UserServiceTest extends ServiceVars {
             Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(firstResult.authToken())), "Threw error on valid logout request");
-            Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t0), "Verified invalid authentication");
+            Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(t0), "Verified invalid authentication");
             Assertions.assertDoesNotThrow(() -> authService.getAuthByUsername(goodLoginRequest.username()), "No auth for logged in user");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(secondResult.authToken())), "Rejected valid logout request");
-        } catch (DataAccessException e) {
+        } catch (UnauthorizedException e) {
             Assertions.fail("Threw Unexpected Exception");
         }
     }
@@ -108,10 +109,10 @@ class UserServiceTest extends ServiceVars {
             Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(secondResult.authToken())), "Threw error on valid logout request");
-            Assertions.assertThrows(DataAccessException.class, () -> authService.verify(t1), "Verified invalid authentication");
+            Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(t1), "Verified invalid authentication");
             Assertions.assertDoesNotThrow(() -> authService.getAuthByUsername(goodLoginRequest.username()), "No auth for logged in user");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(firstResult.authToken())), "Rejected valid logout request");
-        } catch (DataAccessException e) {
+        } catch (UnauthorizedException e) {
             Assertions.fail("Threw Unexpected Exception");
         }
     }
