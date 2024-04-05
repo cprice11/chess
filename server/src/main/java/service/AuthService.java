@@ -18,7 +18,6 @@ public class AuthService extends Service {
 //    public LoginResult login(LoginRequest request) {
 //        throw new RuntimeException("Not implemented yet");
 //    }
-
 //    public Result logout(LogoutRequest request) {
 //        throw new RuntimeException("Not implemented yet");
 //    }

@@ -1,6 +1,5 @@
 package service;
 
-import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import model.AuthData;
@@ -25,7 +24,7 @@ public class UserService extends Service {
     public RegisterResult register(RegisterRequest request) throws DataAccessException {
         String username = request.username();
         try {
-            UserData user = dao.getUser(username);
+            dao.getUser(username);
         } catch (DataAccessException e) {
             dao.add(new UserData(username, request.password(), request.email()));
             return new RegisterResult(auth.createAuth(username).authToken(), username);
