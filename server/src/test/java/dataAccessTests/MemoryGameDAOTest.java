@@ -98,10 +98,7 @@ public class MemoryGameDAOTest extends DataAccessVars {
     @Test
     @Order(7)
     void getGame() {
-        Assertions.assertDoesNotThrow(() -> {
-                    Assertions.assertEquals(gameDAO.getGame(g0.gameID()), g0);
-                }
-        );
+        Assertions.assertDoesNotThrow(() -> Assertions.assertEquals(gameDAO.getGame(g0.gameID()), g0));
     }
 
     @Test
@@ -112,9 +109,7 @@ public class MemoryGameDAOTest extends DataAccessVars {
     @Test
     void createGame() {
         int newGameID = gameDAO.createGame("exampleGameName");
-        Assertions.assertDoesNotThrow(() -> {
-                    Assertions.assertSame("exampleGameName", gameDAO.getGame(newGameID).gameName());
-                }
+        Assertions.assertDoesNotThrow(() -> Assertions.assertSame("exampleGameName", gameDAO.getGame(newGameID).gameName())
         );
     }
 

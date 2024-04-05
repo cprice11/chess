@@ -1,6 +1,5 @@
 package serviceTests;
 
-import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryDatabase;
 import model.AuthData;
@@ -37,20 +36,12 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertTrue(users.getAll().contains(uNew));
         Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(badRegisterRequest));
         Assertions.assertFalse(users.getAll().contains(
-                new UserData(   badRegisterRequest.username(),
+                        new UserData(badRegisterRequest.username(),
                                 badRegisterRequest.password(),
                                 badRegisterRequest.email())
                 )
         );
     }
-
-//    @Test
-//    void getUserByUsername() {
-//    }
-//
-//    @Test
-//    void getUserByEmail() {
-//    }
 
     @Test
     @Order(5)
@@ -60,7 +51,7 @@ class UserServiceTest extends ServiceVars {
         try {
             LoginResult result = userService.login(goodLoginRequest);
             Assertions.assertEquals(t1, result.authToken(), "Returned unexpected auth token");
-            Assertions.assertEquals(goodLoginResult.username(), result.username(), "Returned unexpected username");
+            Assertions.assertEquals(loginResult.username(), result.username(), "Returned unexpected username");
             Assertions.assertTrue(auth.getAll().contains(new AuthData(result.authToken(), result.username())), "new auth not found in database after request");
         } catch (Exception e) {
             Assertions.fail("Threw Unexpected Exception: " + e.getMessage());

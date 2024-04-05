@@ -31,19 +31,13 @@ public class ChessGame {
     }
 
 
-
-    public GameState state(){
+    public GameState state() {
         return state;
     }
 
-//    public void state(GameState state){
-//        this.state = state;
-//    }
-//    public void loadFen(String fenString) {
-//        state.board().loadFenPosition(fenString);
-//    }
 
     // moves
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -55,7 +49,7 @@ public class ChessGame {
         Collection<ChessMove> moves;
         if (state.board().getPiece(startPosition) == null) return null;
         moves = state.getValidMoves(startPosition);
-        state.prettyPrint();
+        // state.prettyPrint();
         return moves;
     }
 
@@ -69,18 +63,6 @@ public class ChessGame {
         state.makeMove(move);
         state.prettyPrint();
     }
-
-//    public void makeMove(String move) throws InvalidMoveException {
-//        state.makeMove(move);
-//    }
-//
-//    // getter setters
-//    /**
-//     * @return Which team's turn it is
-//     */
-//    public TeamColor getTeamTurn() {
-//        return state.turn();
-//    }
 
     /**
      * Set's which teams turn it is
@@ -112,6 +94,7 @@ public class ChessGame {
     }
 
     // boolean flags
+
     /**
      * Determines if the given team is in check
      *

@@ -39,23 +39,10 @@ public class ChessBoard {
 
     private ChessPosition enPassant = null;
 
-//    public boolean isPrintSymbols() {
-//        return printSymbols;
-//    }
-
-//    public void setPrintSymbols(boolean printSymbols) {
-//        this.printSymbols = printSymbols;
-//    }
-
 
     public ChessPiece[][] getPositions() {
         return positions;
     }
-
-//    public Highlight[][] getHighlightedPositions() {
-//        return highlightedPositions;
-//    }
-
 
 
     public enum Highlight {
@@ -109,6 +96,7 @@ public class ChessBoard {
         if (piece != null && piece.getPieceType() == ChessPiece.PieceType.EN_PASSANT) enPassant = position;
         positions[position.getRank() - 1][position.getFile() - 1] = piece;
     }
+
     public ChessPiece removePiece(ChessPosition position) {
         ChessPiece piece = getPiece(position);
         positions[position.getRank() - 1][position.getFile() - 1] = null;
@@ -131,8 +119,8 @@ public class ChessBoard {
     /**
      * Gets a chess piece on the chessboard
      *
-     * @param position  The position to get the piece from
-     * @return          Either the piece at the position, or null if no piece is at that position
+     * @param position The position to get the piece from
+     * @return Either the piece at the position, or null if no piece is at that position
      */
     public ChessPiece getPiece(ChessPosition position) {
         return positions[position.getRank() - 1][position.getFile() - 1];
@@ -140,7 +128,8 @@ public class ChessBoard {
 
     // FIXME this should be State's responsibility
     public Dictionary<ChessPosition, ChessPiece> getPieces() {
-        Dictionary<ChessPosition, ChessPiece> pieces = new Hashtable<>() {};
+        Dictionary<ChessPosition, ChessPiece> pieces = new Hashtable<>() {
+        };
         for (int i = 0; i < positions.length; i++) {
             for (int j = 0; j < positions[i].length; j++) {
                 ChessPiece square = positions[i][j];
@@ -154,8 +143,8 @@ public class ChessBoard {
     /**
      * Gets the color of a piece on the chessboard
      *
-     * @param position  The position to get the piece from
-     * @return          Either the color of the piece at the position, or null if no piece is at that position
+     * @param position The position to get the piece from
+     * @return Either the color of the piece at the position, or null if no piece is at that position
      */
     public ChessGame.TeamColor getPieceColor(ChessPosition position) {
         if (getPiece(position) == null) return null;
@@ -165,8 +154,8 @@ public class ChessBoard {
     /**
      * Gets the color highlighting a position on the chessboard
      *
-     * @param position  The position to get return the color from
-     * @return          The Highlight object specifying the color
+     * @param position The position to get return the color from
+     * @return The Highlight object specifying the color
      */
     private Highlight getHighlight(ChessPosition position) {
         return highlightedPositions[position.getRank() - 1][position.getFile() - 1];
@@ -251,17 +240,17 @@ public class ChessBoard {
                 // set color according to highlights
                 if (highlightColor != Highlight.NONE) {
                     String nextHighlightChar = switch (highlightColor) {
-                        case PRIMARY   -> PRIMARY_START;
+                        case PRIMARY -> PRIMARY_START;
                         case SECONDARY -> SECONDARY_START;
-                        case TERNARY   -> TERNARY_START;
-                        case NEGATIVE  -> NEGATIVE_HIGHLIGHT;
+                        case TERNARY -> TERNARY_START;
+                        case NEGATIVE -> NEGATIVE_HIGHLIGHT;
                         default -> "\0";
                     };
                     currentlyHighlighting = true;
                     board.append(nextHighlightChar);
                 }
 
-                char nextChar = (piece == null)? ' ' : piece.getCode();
+                char nextChar = (piece == null) ? ' ' : piece.getCode();
                 board.append(nextChar);
             }
             if (currentlyHighlighting) board.append(RESET_HIGHLIGHT);
@@ -312,7 +301,7 @@ public class ChessBoard {
                 }
                 board.append(nextHighlight);
 
-                String pieceSymbol = (piece == null)? " " : piece.getSymbol(printSymbols, true);
+                String pieceSymbol = (piece == null) ? " " : piece.getSymbol(printSymbols, true);
 
                 String nextSquare = " " + pieceSymbol + " ";
                 board.append(nextSquare);
@@ -331,7 +320,7 @@ public class ChessBoard {
                 ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
                 ChessPiece piece = getPiece(position);
                 board.append('|');
-                char nextChar = (piece == null)? ' ' : piece.getCode();
+                char nextChar = (piece == null) ? ' ' : piece.getCode();
                 board.append(nextChar);
             }
             board.append('|');

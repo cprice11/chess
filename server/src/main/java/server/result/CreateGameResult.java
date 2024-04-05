@@ -1,6 +1,6 @@
 package server.result;
 
-public final record CreateGameResult(
+public record CreateGameResult(
         int gameID
 ) {
 }

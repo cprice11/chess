@@ -82,9 +82,7 @@ public class MemoryUserDAOTest extends DataAccessVars {
     @Test
     @Order(7)
     void getUser() {
-        Assertions.assertDoesNotThrow(() -> {
-            Assertions.assertEquals(userDAO.getUser(u0.username()), u0);
-        }, "Threw unexpected exception");
+        Assertions.assertDoesNotThrow(() -> Assertions.assertEquals(userDAO.getUser(u0.username()), u0), "Threw unexpected exception");
     }
 
     @Test

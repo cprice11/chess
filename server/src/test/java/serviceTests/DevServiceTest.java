@@ -11,7 +11,6 @@ class DevServiceTest extends ServiceVars {
     private static final GameDAO games = new MemoryGameDAO();
     private static final UserDAO users = new MemoryUserDAO();
     private static final DevService dev = new DevService(auth, games, users);
-    private static final MemoryDatabase db = new MemoryDatabase();
 
     @BeforeEach
     void buildDatabase() {

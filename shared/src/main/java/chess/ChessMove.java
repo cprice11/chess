@@ -2,7 +2,6 @@ package chess;
 
 import java.util.Objects;
 
-// Converted into record since moves shouldn't change.
 
 /**
  * Represents moving a chess piece on a chessboard
@@ -80,9 +79,7 @@ public final class ChessMove {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (ChessMove) obj;
-        return Objects.equals(this.startPosition, that.startPosition) &&
-                Objects.equals(this.endPosition, that.endPosition) &&
-                Objects.equals(this.promotionPiece, that.promotionPiece);
+        return Objects.equals(this.startPosition, that.startPosition) && Objects.equals(this.endPosition, that.endPosition) && Objects.equals(this.promotionPiece, that.promotionPiece);
     }
 
     @Override
@@ -92,10 +89,10 @@ public final class ChessMove {
 
     public String toString() {
         if (promotionPiece == null) return startPosition + "-" + endPosition;
-        return startPosition + "-" + endPosition  + "/" + promotionPiece;
+        return startPosition + "-" + endPosition + "/" + promotionPiece;
     }
 
-    public static class MoveBuilder{
+    public static class MoveBuilder {
         // required
         public final ChessPosition startPosition;
         public final ChessPosition endPosition;
@@ -131,6 +128,7 @@ public final class ChessMove {
             this.offerDraw = move.offerDraw;
             this.castle = move.castle;
         }
+
         public MoveBuilder withPiece(ChessPiece piece) {
             this.piece = piece;
             return this;
@@ -150,6 +148,7 @@ public final class ChessMove {
             this.isCapture = b;
             return this;
         }
+
         public MoveBuilder isCheck() {
             this.isCheck = true;
             return this;
@@ -159,6 +158,7 @@ public final class ChessMove {
             this.isCheck = b;
             return this;
         }
+
         public MoveBuilder isMate() {
             this.isMate = true;
             return this;
@@ -173,10 +173,12 @@ public final class ChessMove {
             this.enPassant = p;
             return this;
         }
+
         public MoveBuilder shortCastle() {
             this.shortCastle = true;
             return this;
         }
+
         public MoveBuilder longCastle() {
             this.longCastle = true;
             return this;
@@ -187,17 +189,19 @@ public final class ChessMove {
             this.castle = shortCastle || castle;
             return this;
         }
+
         public MoveBuilder longCastle(boolean longCastle) {
             this.longCastle = longCastle;
             this.castle = longCastle || castle;
             return this;
         }
+
         public MoveBuilder offerDraw() {
             this.offerDraw = true;
             return this;
         }
 
-        public ChessMove build(){
+        public ChessMove build() {
             return new ChessMove(this);
         }
     }

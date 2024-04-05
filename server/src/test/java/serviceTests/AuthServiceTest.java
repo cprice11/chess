@@ -1,14 +1,12 @@
 package serviceTests;
 
-import dataAccess.*;
+import dataAccess.DataAccessException;
+import dataAccess.MemoryAuthDAO;
+import dataAccess.MemoryDatabase;
 import model.AuthData;
 import org.junit.jupiter.api.*;
-import server.request.LogoutRequest;
-import server.result.LoginResult;
 import service.AuthService;
 import service.UnauthorizedException;
-
-import java.util.stream.IntStream;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthServiceTest extends ServiceVars {

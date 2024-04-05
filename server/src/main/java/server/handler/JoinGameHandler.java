@@ -1,16 +1,12 @@
 package server.handler;
 
-import dataAccess.DataAccessException;
-import server.request.InvalidRequestException;
 import server.request.JoinGameRequest;
 import server.result.Result;
-import service.AlreadyTakenException;
-import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
 public class JoinGameHandler extends Handler {
-    public static String handleRequest(Request req, Response res)  {
+    public static String handleRequest(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
             JoinGameRequest parsedRequest = serializer.fromJson(req.body(), JoinGameRequest.class);

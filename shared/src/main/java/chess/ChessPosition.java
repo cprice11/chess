@@ -53,6 +53,7 @@ public class ChessPosition {
     public String toString() {
         return getFileLetter() + Integer.toString(getRank());
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -109,12 +110,10 @@ public class ChessPosition {
     public boolean isOnBoard() {
         return !isOffBoard();
     }
+
     public boolean isOffBoard() {
-        return (rank > 8 || rank < 1) ||
-                (file > 8 || file < 1);
+        return (rank > 8 || rank < 1) || (file > 8 || file < 1);
     }
-
-
 
 
 }

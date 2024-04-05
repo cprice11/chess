@@ -4,7 +4,7 @@ import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
 
-public class DevService extends Service {
+public class DevService {
     private final AuthDAO auth;
     private final GameDAO games;
     private final UserDAO users;

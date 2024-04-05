@@ -7,7 +7,8 @@ import model.GameData;
 import model.GameSummary;
 import model.UserData;
 import server.request.*;
-import server.result.*;
+import server.result.ListGamesResult;
+import server.result.LoginResult;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -49,13 +50,12 @@ public class ServiceVars {
     // register
     static final RegisterRequest goodRegisterRequest = new RegisterRequest(uNew.username(), uNew.password(), uNew.email());
     static final RegisterRequest badRegisterRequest = new RegisterRequest(u2.username(), uNew.password(), uNew.email());
-    // static final RegisterResult goodRegisterResult = new RegisterResult(null, uNew.username()); // authentication shouldn't be created here
-    // static final RegisterResult badRegisterResult = new RegisterResult();
+
     // login
     static final LoginRequest goodLoginRequest = new LoginRequest(u0.username(), u0.password());
     static final LoginRequest badLoginRequest = new LoginRequest(u0.username(), u2.password());
-    static final LoginResult goodLoginResult = new LoginResult(u0.username(), null); // authentication shouldn't be created here
-    //    static final LoginResult badLoginResult = new LoginResult();
+    static final LoginResult loginResult = new LoginResult(u0.username(), null);
+
     // logout
     static final LogoutRequest goodLogoutRequest = new LogoutRequest(a0.authToken());
     static final LogoutRequest badLogoutRequest = new LogoutRequest(aNew.authToken());
@@ -64,13 +64,12 @@ public class ServiceVars {
     // listGames
     static final ListGamesRequest goodListGamesRequest = new ListGamesRequest(a1.authToken());
     static final ListGamesRequest badListGamesRequest = new ListGamesRequest(aNew.authToken());
-    static final ListGamesResult goodListGamesResult = new ListGamesResult(gameSummaries);
-    static final ListGamesResult badListGamesResult = new ListGamesResult(null);
+    static final ListGamesResult listGamesResult = new ListGamesResult(gameSummaries);
+
     // createGame
     static final CreateGameRequest goodCreateGameRequest = new CreateGameRequest(a0.authToken(), g1.gameName());
     static final CreateGameRequest badCreateGameRequest = new CreateGameRequest(aNew.authToken(), gNew.gameName());
-    // static final CreateGameResult goodCreateGameResult = new CreateGameResult(); // game ID shouldn't be created here
-    static final CreateGameResult badCreateGameResult = new CreateGameResult(g1.gameID());
+
     // joinGame
     static final JoinGameRequest goodJoinGameRequestWhite = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, gEmpty.gameID());
     static final JoinGameRequest goodJoinGameRequestBlack = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.BLACK, gEmpty.gameID());
@@ -83,10 +82,12 @@ public class ServiceVars {
     static final JoinGameRequest goodJoinGameRequestSamePlayerBlack = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.BLACK, gEmpty.gameID());
     static final JoinGameRequest badJoinGameRequestWrongId = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, -1);
     static final JoinGameRequest badJoinGameRequestBadToken = new JoinGameRequest(aNew.authToken(), ChessGame.TeamColor.WHITE, -1);
-    // no result
 
     // clear
     // no request or result
+
+    
+    // first 10 pseudo random outputs seed = 111
     static final String t0 = "f?p*$#3_RR]uRqgt!wcP";
     static final String t1 = ":Zu|-r+&OFo$O5nOv>?1";
     static final String t2 = "KIt`}8e3FcN_]ib5iO?E";

@@ -10,7 +10,7 @@ import server.request.RegisterRequest;
 import server.result.LoginResult;
 import server.result.RegisterResult;
 
-public class UserService extends Service {
+public class UserService {
     private final UserDAO dao;
     private final AuthService auth;
 

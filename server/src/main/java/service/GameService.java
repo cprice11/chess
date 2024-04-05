@@ -14,7 +14,7 @@ import server.result.ListGamesResult;
 
 import java.util.Collection;
 
-public class GameService extends Service {
+public class GameService {
     private final GameDAO dao;
     private final AuthService authService;
 

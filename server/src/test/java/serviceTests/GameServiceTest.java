@@ -6,7 +6,10 @@ import dataAccess.MemoryDatabase;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import server.request.InvalidRequestException;
-import service.*;
+import service.AlreadyTakenException;
+import service.AuthService;
+import service.GameService;
+import service.UnauthorizedException;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +39,7 @@ class GameServiceTest extends ServiceVars {
     @Order(2)
     void testListGames() {
         try {
-            Assertions.assertEquals(goodListGamesResult, gameService.listGames(goodListGamesRequest), "Didn't return expected summary list.");
+            Assertions.assertEquals(listGamesResult, gameService.listGames(goodListGamesRequest), "Didn't return expected summary list.");
             Assertions.assertThrows(UnauthorizedException.class, () -> gameService.listGames(badListGamesRequest));
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
