@@ -72,17 +72,17 @@ public class ServiceVars {
     // static final CreateGameResult goodCreateGameResult = new CreateGameResult(); // game ID shouldn't be created here
     static final CreateGameResult badCreateGameResult = new CreateGameResult(g1.gameID());
     // joinGame
-    static final JoinGameRequest goodJoinGameRequest = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, gEmpty.gameID());
+    static final JoinGameRequest goodJoinGameRequestWhite = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, gEmpty.gameID());
     static final JoinGameRequest goodJoinGameRequestBlack = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.BLACK, gEmpty.gameID());
-    static final JoinGameRequest goodJoinGameRequestFullGame = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, g2.gameID());
-    static final JoinGameRequest goodJoinGameRequestNoColor = new JoinGameRequest(a1.authToken(), null, gEmpty.gameID());
-    static final JoinGameRequest getGoodJoinGameRequestNewPlayerNoColor = new JoinGameRequest(a2.authToken(), null, gEmpty.gameID());
-    static final JoinGameRequest goodJoinGameRequestNewPlayer = new JoinGameRequest(a2.authToken(), ChessGame.TeamColor.BLACK, gEmpty.gameID());
-    static final JoinGameRequest goodJoinGameRequestNewPlayerSameColor = new JoinGameRequest(a2.authToken(), ChessGame.TeamColor.WHITE, gEmpty.gameID());
-    static final JoinGameRequest goodJoinGameRequestSamePlayer = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, gEmpty.gameID());
+    static final JoinGameRequest goodJoinGameRequestFullGameWhite = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, g2.gameID());
+    static final JoinGameRequest goodJoinGameRequestFullGameSpectator = new JoinGameRequest(a1.authToken(), null, g2.gameID());
+    static final JoinGameRequest goodJoinGameRequestSpectator = new JoinGameRequest(a1.authToken(), null, gEmpty.gameID());
+    static final JoinGameRequest goodJoinGameRequestNewSpectator = new JoinGameRequest(a2.authToken(), null, gEmpty.gameID());
+    static final JoinGameRequest goodJoinGameRequestNewPlayerBlack = new JoinGameRequest(a2.authToken(), ChessGame.TeamColor.BLACK, gEmpty.gameID());
+    static final JoinGameRequest goodJoinGameRequestNewPlayerWhite = new JoinGameRequest(a2.authToken(), ChessGame.TeamColor.WHITE, gEmpty.gameID());
+    static final JoinGameRequest goodJoinGameRequestSamePlayerBlack = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.BLACK, gEmpty.gameID());
     static final JoinGameRequest badJoinGameRequestWrongId = new JoinGameRequest(a1.authToken(), ChessGame.TeamColor.WHITE, -1);
     static final JoinGameRequest badJoinGameRequestBadToken = new JoinGameRequest(aNew.authToken(), ChessGame.TeamColor.WHITE, -1);
-    static final JoinGameRequest badJoinGameRequestFull = new JoinGameRequest(aNew.authToken(), ChessGame.TeamColor.WHITE, -1);
     // no result
 
     // clear

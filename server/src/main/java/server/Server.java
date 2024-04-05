@@ -37,7 +37,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private static void createRoutes() {
+    private void createRoutes() {
         Spark.delete("/db", ClearHandler::handleRequest);
         Spark.post("/user", RegisterHandler::handleRequest);
         Spark.post("/session", LoginHandler::handleRequest);

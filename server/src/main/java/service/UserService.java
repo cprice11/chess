@@ -39,13 +39,9 @@ public class UserService extends Service {
         throw new DataAccessException("Credentials do not match; login failed.");
     }
 
-    public void logout(LogoutRequest request) throws DataAccessException {
+    public void logout(LogoutRequest request) throws UnauthorizedException {
         AuthData authData = auth.verify(request.authorization());
         auth.delete(authData);
-//        Collection<AuthData> allSessions = auth.getAuthByUsername(authData.username());
-//        for (AuthData session : allSessions) {
-//            auth.delete(session);
-//        }
     }
 
     // FIXME: I assume that these will be useful later.

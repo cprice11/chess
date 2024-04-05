@@ -3,14 +3,13 @@ package server.handler;
 
 import com.google.gson.Gson;
 import dataAccess.*;
+import server.request.InvalidRequestException;
 import server.result.Result;
-import service.AuthService;
-import service.DevService;
-import service.GameService;
-import service.UserService;
+import service.*;
+import spark.Request;
 import spark.Response;
 
-public class Handler {
+public abstract class Handler {
     protected static MemoryDatabase db = new MemoryDatabase();
     protected static AuthDAO authDAO = new MemoryAuthDAO();
     protected static GameDAO gameDAO = new MemoryGameDAO();
@@ -65,12 +64,26 @@ public class Handler {
         return  body;
     }
 
+    protected static String safeHandleRequest(Request req, Response res)
+            throws AlreadyTakenException, DataAccessException, UnauthorizedException, InvalidRequestException {
+        return null;
+    }
 
-//    The server handler classes serve as a translator between HTTP and Java. Your handlers will convert an HTTP request
-//    into Java usable objects & data. The handler then calls the appropriate service. When the service responds it
-//    converts the response object back to JSON and sends the HTTP response.
-//
-//    You need to create the number of handler classes that are appropriate for your server design. For a simple server
-//    this could be a single class with a few handler methods, or for a complex application it could be dozens of
-//    classes each representing a different group of cohesive endpoints.
-}
+    public static String handleRequest(Request req, Response res) {
+             try {
+                 // in each method
+                 return safeHandleRequest(req, res);
+
+             } catch (UnauthorizedException e) {
+                 return unauthorized(res);
+             } catch (AlreadyTakenException e) {
+                 return alreadyTaken(res);
+             } catch (InvalidRequestException e) {
+                 return badRequest(res);
+             } catch (DataAccessException e) {
+                 return unauthorized(res, e.getMessage());
+             }catch (Exception e) {
+                 return failure(res, e.getMessage());
+             }
+        }
+    }

@@ -32,21 +32,13 @@ public class GameService extends Service {
     public void joinGame(JoinGameRequest request) throws DataAccessException, AlreadyTakenException {
         String newPlayer = authService.verify(request.authorization()).username();
         GameData game = getGame(request.gameID());
+        if (request.playerColor() == null) return; // FIXME: add spectator option
         String whitePlayer = game.whiteUsername();
         String blackPlayer = game.blackUsername();
         if (blackPlayer != null && whitePlayer != null) throw new AlreadyTakenException("Game is full");
-        if (blackPlayer == null && whitePlayer == null) {
-            if (request.playerColor() == null) {
-                if (game.gameID() % 2 == 0) whitePlayer = newPlayer;
-                else blackPlayer = newPlayer;
-            }
-            else if (request.playerColor().equals(ChessGame.TeamColor.WHITE)) whitePlayer = newPlayer;
-            else blackPlayer = newPlayer;
-        }
-        else {
-            if (whitePlayer == null) whitePlayer = newPlayer;
-            else blackPlayer = newPlayer;
-        }
+        if (request.playerColor().equals(ChessGame.TeamColor.WHITE) && whitePlayer == null) whitePlayer = newPlayer;
+        else if (request.playerColor().equals(ChessGame.TeamColor.BLACK) && blackPlayer == null) blackPlayer = newPlayer;
+        else throw new AlreadyTakenException("Color is already taken");
         dao.update(game, new GameData(
                 game.gameID(),
                 whitePlayer,

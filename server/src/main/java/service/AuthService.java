@@ -25,8 +25,12 @@ public class AuthService extends Service {
         dao.delete(target);
     }
 
-    public AuthData verify(String authToken) throws DataAccessException {
-        return dao.verify(authToken);
+    public AuthData verify(String authToken) throws UnauthorizedException {
+        try {
+            return dao.verify(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException("Auth token not verified");
+        }
     }
 
     public Collection<AuthData> getAuthByUsername(String username) throws DataAccessException{
