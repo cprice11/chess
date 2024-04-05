@@ -3,11 +3,11 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.*;
-import server.result.Result;
 import service.AuthService;
 import service.DevService;
 import service.GameService;
 import service.UserService;
+import spark.Response;
 
 public class Handler {
     protected static AuthDAO authDAO = new MemoryAuthDAO();
@@ -18,6 +18,11 @@ public class Handler {
     protected static GameService games = new GameService(gameDAO, auth);
     protected static UserService users = new UserService(userDAO, auth);
     protected static Gson serializer = new Gson();
+
+    protected static void setStatusAndBody(Response res, int status, String body) {
+        res.status(status);
+        res.body(body);
+    }
 
 
 //    The server handler classes serve as a translator between HTTP and Java. Your handlers will convert an HTTP request

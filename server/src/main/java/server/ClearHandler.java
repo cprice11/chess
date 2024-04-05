@@ -10,12 +10,15 @@ import spark.Response;
 
 public class ClearHandler extends Handler{
     public static String handleRequest(Request req, Response res) {
+        String body;
         try {
             dev.clearDatabase();
-            return serializer.toJson(new Result(200, ""));
+            body = serializer.toJson("");
+            setStatusAndBody(res, 200, body);
         } catch (Exception e) {
-            return serializer.toJson(new Result(501, "Error: " + e));
+            body = serializer.toJson("Error " + e);
+            setStatusAndBody(res, 500, body);
         }
+        return body;
     }
-
 }

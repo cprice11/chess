@@ -3,11 +3,11 @@ package server.result;
 import com.google.gson.Gson;
 
 public class Result {
-    int code;
+    int status;
     String message;
 
-    public Result(int code, String message) {
-        this.code = code;
+    public Result(int status, String message) {
+        this.status = status;
         this.message = message;
     }
 }
