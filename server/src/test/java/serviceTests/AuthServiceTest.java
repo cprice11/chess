@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 import server.request.LogoutRequest;
 import server.result.LoginResult;
 import service.AuthService;
+import service.UnauthorizedException;
 
 import java.util.stream.IntStream;
 
@@ -28,18 +29,20 @@ class AuthServiceTest extends ServiceVars {
     @Test
     @Order(0)
     void testVerify() {
-        Assertions.assertThrows(DataAccessException.class, () -> authService.verify(aNew.authToken()), "Did not throw exception on incorrect token");
+        Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(aNew.authToken()), "Did not throw exception on incorrect token");
         Assertions.assertDoesNotThrow(() -> authService.verify(a0.authToken()), "Threw exception on valid token");
     }
 
     @Test
     @Order(1)
     void getAuthByUsername() {
-        Assertions.assertDoesNotThrow(() -> {
+        try {
             Assertions.assertTrue(authService.getAuthByUsername(a0.username()).contains(a0), "Did not return expected AuthData");
             Assertions.assertTrue(authService.getAuthByUsername(a1.username()).contains(a1), "Did not return expected AuthData");
             Assertions.assertTrue(authService.getAuthByUsername(a2.username()).contains(a2), "Did not return expected AuthData");
-        }, "Threw unexpected Exception");
+        } catch (Exception e) {
+            Assertions.fail("Threw unexpected Exception" + e);
+        }
         Assertions.assertThrows(DataAccessException.class, () -> authService.getAuthByUsername(aNew.username()), "Did not throw exception on incorrect username");
     }
 
@@ -47,22 +50,26 @@ class AuthServiceTest extends ServiceVars {
     @Test
     @Order(1)
     void getAuthByAuthToken() {
-        Assertions.assertDoesNotThrow(() -> {
+        try {
             Assertions.assertEquals(a0, authService.getAuthByAuthToken(a0.authToken()), "Did not return expected AuthData");
             Assertions.assertEquals(a1, authService.getAuthByAuthToken(a1.authToken()), "Did not return expected AuthData");
             Assertions.assertEquals(a2, authService.getAuthByAuthToken(a2.authToken()), "Did not return expected AuthData");
-        }, "Threw unexpected exception");
+        } catch (Exception e) {
+            Assertions.fail("Threw unexpected Exception" + e);
+        }
         Assertions.assertThrows(DataAccessException.class, () -> authService.getAuthByAuthToken(aNew.authToken()), "Did not throw exception on incorrect token");
     }
 
     @Test
     @Order(2)
     void authNotRemoved() {
-        Assertions.assertDoesNotThrow(() -> {
+        try {
             authService.getAuthByUsername(a0.username());
             authService.getAuthByAuthToken(a0.authToken());
             Assertions.assertTrue(auth.getAll().contains(a0), "Did not find expected AuthData after retrieval");
-        }, "Threw unexpected Exception");
+        } catch (Exception e) {
+            Assertions.fail("Threw unexpected Exception" + e);
+        }
     }
 
     @Test
