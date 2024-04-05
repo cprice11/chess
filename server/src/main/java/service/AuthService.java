@@ -4,6 +4,8 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import model.AuthData;
 
+import java.util.Collection;
+
 public class AuthService extends Service {
     private final AuthDAO dao;
     public AuthService(AuthDAO dao) {
@@ -28,8 +30,8 @@ public class AuthService extends Service {
         return dao.verify(authToken);
     }
 
-    public AuthData getAuthByUsername(String username) throws DataAccessException{
-        return dao.verify(username);
+    public Collection<AuthData> getAuthByUsername(String username) throws DataAccessException{
+        return dao.getAuthFromUser(username);
     }
 
     public AuthData getAuthByAuthToken(String authToken) throws DataAccessException{

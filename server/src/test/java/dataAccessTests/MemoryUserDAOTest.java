@@ -8,7 +8,6 @@ import org.junit.jupiter.api.*;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -58,7 +57,7 @@ public class MemoryUserDAOTest extends DataAccessVars {
         withNewGuy.add(newGuy);
         withNewGuy.add(u1);
         withNewGuy.add(u2);
-        userDAO.update(u0, newGuy);
+        Assertions.assertDoesNotThrow(() -> userDAO.update(u0, newGuy));
         Assertions.assertEquals(withNewGuy, userDAO.getAll());
     }
 
@@ -74,7 +73,7 @@ public class MemoryUserDAOTest extends DataAccessVars {
     @Order(6)
     void add() {
         userDAO.deleteAll();
-        userDAO.add(u0);
+        Assertions.assertDoesNotThrow(() -> userDAO.add(u0));
         HashSet<UserData> justOne = new HashSet<>();
         justOne.add(u0);
         Assertions.assertEquals(justOne, userDAO.getAll());
@@ -83,20 +82,26 @@ public class MemoryUserDAOTest extends DataAccessVars {
     @Test
     @Order(7)
     void getUser() {
-        Assertions.assertEquals(userDAO.getUser(u0.username()), u0);
+        Assertions.assertDoesNotThrow(() -> {
+            Assertions.assertEquals(userDAO.getUser(u0.username()), u0);
+        }, "Threw unexpected exception");
     }
 
     @Test
     @Order(9)
     void editUserPassword() {
-        userDAO.editUserPassword(u0.username(), "betterP@ssword");
-        Assertions.assertEquals(userDAO.getUser(u0.username()).password(), "betterP@ssword");
+        Assertions.assertDoesNotThrow(() -> {
+            userDAO.editUserPassword(u0.username(), "betterP@ssword");
+            Assertions.assertEquals(userDAO.getUser(u0.username()).password(), "betterP@ssword");
+        }, "Threw unexpected exception");
     }
 
     @Test
     @Order(10)
     void editUserEmail() {
-        userDAO.editUserEmail(u0.username(), "workemail@company.com");
-        Assertions.assertEquals(userDAO.getUser(u0.username()).email(), "workemail@company.com");
+        Assertions.assertDoesNotThrow(() -> {
+            userDAO.editUserEmail(u0.username(), "workemail@company.com");
+            Assertions.assertEquals(userDAO.getUser(u0.username()).email(), "workemail@company.com");
+        }, "Threw unexpected exception");
     }
 }

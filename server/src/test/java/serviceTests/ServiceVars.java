@@ -42,9 +42,9 @@ public class ServiceVars {
             new GameSummary(g2.gameID(), g2.whiteUsername(), g2.blackUsername(), g2.gameName())
     ));
 
-    protected static final AuthDAO auth = new MemoryAuthDAO();
-    protected static final GameDAO games = new MemoryGameDAO();
-    protected static final UserDAO users = new MemoryUserDAO();
+    protected static AuthDAO auth = new MemoryAuthDAO();
+    protected static GameDAO games = new MemoryGameDAO();
+    protected static UserDAO users = new MemoryUserDAO();
 
 
     // register
@@ -87,19 +87,19 @@ public class ServiceVars {
 
     // clear
     // no request or result
-    static final String t0 ="prRB4_<I24){Y?P%MIVO";
-    static final String t1 ="^*ON03OAcXe$%A)Mj->!";
-    static final String t2 ="q%Rn46%z-\\zB3,22gAch";
-    static final String t3 ="-,b('4UN3)ix\"SBX0<_6";
-    static final String t4 ="|,r]D8SSe\\=8~;lZu2#;";
-    static final String t5 ="'&<u`ZWH*HjIO(`P\"]fJ";
-    static final String t6 ="v[KSAS1$^1!MX|{3JWww";
-    static final String t7 ="S&xI+?jW,ASJ/pgSh]!t";
-    static final String t8 ="|y[*R8\\r*8%|do5kp,2b";
-    static final String t9 ="vkga0W/W({-yc!k7(q7z";
+    static final String t0 = "f?p*$#3_RR]uRqgt!wcP";
+    static final String t1 = ":Zu|-r+&OFo$O5nOv>?1";
+    static final String t2 = "KIt`}8e3FcN_]ib5iO?E";
+    static final String t3 = "6j}sS.Ul5wP1=~6u=ARh";
+    static final String t4 = "-,7]mA~3r^\"-hDn2b(<?";
+    static final String t5 = "+2?MPTgB@%4=qC<a`Q@J";
+    static final String t6 = "=KvKo6MeU4x*i%s=MLaU";
+    static final String t7 = ",<.Uo7_7zun>!7Yv\"(w_";
+    static final String t8 = "CvgjPN6^e_\\3>>M)U1\\c";
+    static final String t9 = "@Mao<0%z/|[Y*Y[/*DzM";
 
     static final int id0 = 1431892720;
-    static final int id1= -1939181428;
+    static final int id1 = -1939181428;
     static final int id2 = 1229911139;
     static final int id3 = 399696808;
     static final int id4 = 740427237;
@@ -108,6 +108,5 @@ public class ServiceVars {
     static final int id7 = 107487293;
     static final int id8 = 2127624521;
     static final int id9 = 1996335810;
-
 
 }

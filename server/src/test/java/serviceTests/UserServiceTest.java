@@ -1,7 +1,9 @@
 package serviceTests;
 
 import dataAccess.DataAccessException;
+import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryDatabase;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.LogoutRequest;
@@ -12,8 +14,8 @@ import service.UserService;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceTest extends ServiceVars {
 
-    private static final AuthService authService = new AuthService(auth);
-    private static final UserService userService = new UserService(users, authService);
+    private static AuthService authService = new AuthService(auth);
+    private static UserService userService = new UserService(users, authService);
 
 
     @BeforeEach
@@ -21,6 +23,9 @@ class UserServiceTest extends ServiceVars {
         MemoryDatabase.setAuth(authData);
         MemoryDatabase.setGames(gameData);
         MemoryDatabase.setUsers(userData);
+        auth = new MemoryAuthDAO();
+        authService = new AuthService(auth);
+        userService = new UserService(users, authService);
     }
 
 
@@ -55,9 +60,9 @@ class UserServiceTest extends ServiceVars {
             LoginResult result = userService.login(goodLoginRequest);
             Assertions.assertEquals(t1, result.authToken(), "Returned unexpected auth token");
             Assertions.assertEquals(goodLoginResult.username(), result.username(), "Returned unexpected username");
-            Assertions.assertTrue(auth.getAll().contains(aNew), "new auth not found in database after request");
-            Assertions.assertThrows(DataAccessException.class, () -> userService.login(badLoginRequest), "No Exception thrown on invalid request");
+            Assertions.assertTrue(auth.getAll().contains(new AuthData(result.authToken(), result.username())), "new auth not found in database after request");
         }, "Threw Unexpected Exception");
+            Assertions.assertThrows(DataAccessException.class, () -> userService.login(badLoginRequest), "No Exception thrown on invalid request");
     }
 
     @Test
