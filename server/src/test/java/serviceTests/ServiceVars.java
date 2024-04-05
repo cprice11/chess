@@ -98,15 +98,14 @@ public class ServiceVars {
     static final String t8 = "CvgjPN6^e_\\3>>M)U1\\c";
     static final String t9 = "@Mao<0%z/|[Y*Y[/*DzM";
 
-    static final int id0 = 1431892720;
-    static final int id1 = -1939181428;
-    static final int id2 = 1229911139;
-    static final int id3 = 399696808;
-    static final int id4 = 740427237;
-    static final int id5 = 458997467;
-    static final int id6 = 672200581;
-    static final int id7 = 107487293;
-    static final int id8 = 2127624521;
-    static final int id9 = 1996335810;
-
+    static final int id0 = 950830939;
+    static final int id1 = 506326292;
+    static final int id2 = 1639761914;
+    static final int id3 = 1389273394;
+    static final int id4 = 683937171;
+    static final int id5 = 506057841;
+    static final int id6 = 1092644569;
+    static final int id7 = 412721225;
+    static final int id8 = 902295195;
+    static final int id9 = 886779931;
 }
