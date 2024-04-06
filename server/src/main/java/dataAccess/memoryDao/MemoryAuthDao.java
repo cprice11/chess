@@ -129,7 +129,7 @@ public class MemoryAuthDao implements AuthDao {
     }
 
 
-    public String pseudoRandomToken() {
+    private String pseudoRandomToken() {
         StringBuilder id = new StringBuilder();
         for (int i = 0; i < AUTH_TOKEN_LENGTH; i++ ){
             int myInt = randomTokenGenerator.nextInt(94) + 33;

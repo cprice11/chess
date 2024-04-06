@@ -6,13 +6,19 @@ import dataAccess.DatabaseManager;
 import model.AuthData;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 
 public class SQLAuthDao implements AuthDao {
-    private static final String INSERT_STRING = "INSERT INTO auth VALUES (?, ?)";
+    private static final String INSERT_STATEMENT = "INSERT INTO auth VALUES (?, ?)";
+    private static final String SELECT_STATEMENT = "SELECT authToken, username FROM auth WHERE authToken=?";
+    private static final String DELETE_STATEMENT = "DELETE FROM auth WHERE authToken=?";
+    private static final int AUTH_TOKEN_LENGTH = 40;
+    private static final Random randomTokenGenerator = new Random(111);
+
     /**
      * Returns all objects in the database
      */
@@ -38,8 +44,15 @@ public class SQLAuthDao implements AuthDao {
      * @param target The object in the database to be removed
      */
     @Override
-    public void delete(AuthData target) {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+    public void delete(AuthData target) throws DataAccessException{
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(DELETE_STATEMENT)) {
+                preparedStatement.setString(1, target.authToken());
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
@@ -74,7 +87,21 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public AuthData verify(String authToken) throws DataAccessException {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+        Connection conn = DatabaseManager.getConnection();
+        AuthData result;
+        try {
+            try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
+                preparedStatement.setString(1, authToken);
+                ResultSet res = preparedStatement.executeQuery();
+                if (res.next()) {
+                    result = new AuthData(res.getString("authToken"), res.getString("username"));
+                    if (res.next()) throw new DataAccessException("More than one result returned");
+                } else  throw new DataAccessException("More than one result returned");
+                return result;
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
@@ -86,7 +113,7 @@ public class SQLAuthDao implements AuthDao {
     public void add(AuthData entry) throws DataAccessException{
         Connection conn = DatabaseManager.getConnection();
         try {
-            try (var preparedStatement = conn.prepareStatement(INSERT_STRING)) {
+            try (var preparedStatement = conn.prepareStatement(INSERT_STATEMENT)) {
                 preparedStatement.setString(1, entry.authToken());
                 preparedStatement.setString(2, entry.username());
                 preparedStatement.executeUpdate();
@@ -132,12 +159,31 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public AuthData getAuthFromToken(String authToken) throws DataAccessException {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+        Connection conn = DatabaseManager.getConnection();
+        try {
+        try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
+                preparedStatement.setString(1, authToken);
+                ResultSet res = preparedStatement.executeQuery();
+                return new AuthData(res.getString("authToken"), res.getString("username"));
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     private static String sanitizeInput(String input) {
         input = input.replace("'", "\\'");
         input = input.replace("\\", "\\\\");
         return input;
+    }
+
+    private String pseudoRandomToken() {
+        StringBuilder id = new StringBuilder();
+        for (int i = 0; i < AUTH_TOKEN_LENGTH; i++ ){
+            int myInt = randomTokenGenerator.nextInt(94) + 33;
+            char myChar = (char) myInt;
+            id.append(myChar);
+        }
+        return id.toString();
     }
 }
