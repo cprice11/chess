@@ -1,8 +1,12 @@
 package dataAccess;
 
+import model.AuthData;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -78,7 +82,7 @@ public class DatabaseManager {
     };
 
     public static void resetData() throws DataAccessException {
-        for (var statement : dbConfig) {
+        for (var statement : resetString) {
             try (var conn = DatabaseManager.getConnection()) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
@@ -90,28 +94,28 @@ public class DatabaseManager {
     }
 
     private static final String[] dbConfig = {
-                "USE " + databaseName + ";",
+            "USE " + databaseName + ";",
 
-                "CREATE TABLE IF NOT EXISTS auth ( "
-                +   "authToken char(40) NOT NULL, "
-                +   "username char(255) NOT NULL, "
-                +   "PRIMARY KEY (authToken) "
-                + ");",
-                "CREATE TABLE IF NOT EXISTS games ("
-                +   "gameID int NOT NULL,"
-                +   "whiteUsername char(255) DEFAULT NULL,"
-                +   "blackUsername char(255) DEFAULT NULL,"
-                +   "gameName char(255),"
-                +   "game longtext NOT NULL,"
-                +   "PRIMARY KEY (gameID)"
-                + ");",
-                "CREATE TABLE IF NOT EXISTS users ("
-                +   "id int NOT NULL AUTO_INCREMENT,"
-                +   "username char(255) NOT NULL,"
-                +   "password char(255) NOT NULL,"
-                +   "email char(255) NOT NULL,"
-                +   "PRIMARY KEY (id)"
-                + ");"
+            "CREATE TABLE IF NOT EXISTS auth ( "
+                    + "authToken char(40) NOT NULL, "
+                    + "username char(255) NOT NULL, "
+                    + "PRIMARY KEY (authToken) "
+                    + ");",
+            "CREATE TABLE IF NOT EXISTS games ("
+                    + "gameID int NOT NULL,"
+                    + "whiteUsername char(255) DEFAULT NULL,"
+                    + "blackUsername char(255) DEFAULT NULL,"
+                    + "gameName char(255),"
+                    + "game longtext NOT NULL,"
+                    + "PRIMARY KEY (gameID)"
+                    + ");",
+            "CREATE TABLE IF NOT EXISTS users ("
+                    + "id int NOT NULL AUTO_INCREMENT,"
+                    + "username char(255) NOT NULL,"
+                    + "password char(255) NOT NULL,"
+                    + "email char(255) NOT NULL,"
+                    + "PRIMARY KEY (id)"
+                    + ");"
     };
 
     public static void configureDatabase() throws DataAccessException {

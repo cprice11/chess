@@ -21,6 +21,7 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
     static void initialize() {
         try {
             DatabaseManager.configureDatabase();
+            DatabaseManager.resetData();
         } catch (DataAccessException e) {
             Assertions.fail("Could not set up database: " + e.getMessage());
         }
@@ -30,6 +31,9 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
     @Order(2)
     static void basicAdd() {
         try {
+            var u = authDao.getAll();
+            DatabaseManager.resetData();
+            u = authDao.getAll();
             authDao.add(a0);
         } catch (Exception e) {
             Assertions.fail("Could not set up database: " + e.getMessage());
@@ -39,7 +43,9 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
     @BeforeEach
     void setup() {
         try {
+            var u = authDao.getAll();
             DatabaseManager.resetData();
+            u = authDao.getAll();
             authDao.add(a0);
             authDao.add(a1);
             authDao.add(a2);

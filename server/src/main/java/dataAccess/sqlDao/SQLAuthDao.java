@@ -7,10 +7,12 @@ import model.AuthData;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class SQLAuthDao implements AuthDao {
+    private static final String INSERT_STRING = "INSERT INTO auth VALUES (?, ?)";
     /**
      * Returns all objects in the database
      */
@@ -81,8 +83,17 @@ public class SQLAuthDao implements AuthDao {
      * @param entry The object to add
      */
     @Override
-    public void add(AuthData entry) {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+    public void add(AuthData entry) throws DataAccessException{
+        Connection conn = DatabaseManager.getConnection();
+        try {
+            try (var preparedStatement = conn.prepareStatement(INSERT_STRING)) {
+                preparedStatement.setString(1, entry.authToken());
+                preparedStatement.setString(2, entry.username());
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
@@ -122,5 +133,11 @@ public class SQLAuthDao implements AuthDao {
     @Override
     public AuthData getAuthFromToken(String authToken) throws DataAccessException {
         throw new RuntimeException("NOT YET IMPLEMENTED");
+    }
+
+    private static String sanitizeInput(String input) {
+        input = input.replace("'", "\\'");
+        input = input.replace("\\", "\\\\");
+        return input;
     }
 }
