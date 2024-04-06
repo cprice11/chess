@@ -2,6 +2,16 @@
 
 This project demonstrates mastery of proper software design, client/server architecture, networking using HTTP and WebSocket, database persistence, unit testing, serialization, and security.
 
+## Phases
+
+ - [x] phase - 0
+ - [x] phase - 1
+ - [x] phase - 2
+ - [x] phase - 3
+ - [ ] phase - 4
+ - [ ] phase - 5
+ - [ ] phase - 6
+
 ## Architecture Overview
 
 The application implements a multiplayer chess server and a command line chess client.
