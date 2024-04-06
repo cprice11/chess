@@ -2,7 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
+import dataAccess.GameDao;
 import model.GameData;
 import model.GameSummary;
 import server.request.CreateGameRequest;
@@ -15,10 +15,10 @@ import server.result.ListGamesResult;
 import java.util.Collection;
 
 public class GameService {
-    private final GameDAO dao;
+    private final GameDao dao;
     private final AuthService authService;
 
-    public GameService(GameDAO dao, AuthService auth) {
+    public GameService(GameDao dao, AuthService auth) {
         this.dao = dao;
         this.authService = auth;
     }

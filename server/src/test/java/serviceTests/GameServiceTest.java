@@ -1,8 +1,8 @@
 package serviceTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryDatabase;
+import dataAccess.memoryDao.MemoryAuthDao;
+import dataAccess.memoryDao.MemoryDatabase;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import server.request.InvalidRequestException;
@@ -24,7 +24,7 @@ class GameServiceTest extends ServiceVars {
         MemoryDatabase.setAuth(authData);
         MemoryDatabase.setGames(gameData);
         MemoryDatabase.setUsers(userData);
-        auth = new MemoryAuthDAO();
+        auth = new MemoryAuthDao();
         authService = new AuthService(auth);
     }
 

@@ -1,15 +1,15 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
+import dataAccess.AuthDao;
+import dataAccess.GameDao;
+import dataAccess.UserDao;
 
 public class DevService {
-    private final AuthDAO auth;
-    private final GameDAO games;
-    private final UserDAO users;
+    private final AuthDao auth;
+    private final GameDao games;
+    private final UserDao users;
 
-    public DevService(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
+    public DevService(AuthDao authDAO, GameDao gameDAO, UserDao userDAO) {
         auth = authDAO;
         games = gameDAO;
         users = userDAO;

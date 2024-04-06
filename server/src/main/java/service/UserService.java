@@ -1,9 +1,10 @@
 package service;
 
 import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
+import dataAccess.UserDao;
 import model.AuthData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import server.request.LoginRequest;
 import server.request.LogoutRequest;
 import server.request.RegisterRequest;
@@ -11,10 +12,11 @@ import server.result.LoginResult;
 import server.result.RegisterResult;
 
 public class UserService {
-    private final UserDAO dao;
+    private final UserDao dao;
     private final AuthService auth;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UserService(UserDAO dao, AuthService auth) {
+    public UserService(UserDao dao, AuthService auth) {
         this.dao = dao;
         this.auth = auth;
     }
@@ -25,7 +27,7 @@ public class UserService {
             dao.getUser(username);
             throw new AlreadyTakenException("Username already in use; registration failed.");
         } catch (DataAccessException e) {
-            dao.add(new UserData(username, request.password(), request.email()));
+            dao.add(new UserData(username, encoder.encode(request.password()), request.email()));
             return new RegisterResult(auth.createAuth(username).authToken(), username);
         }
     }
@@ -34,7 +36,7 @@ public class UserService {
         try {
             String username = request.username();
             UserData existingUser = dao.getUser(username);
-            if (existingUser.password().equals(request.password())) {
+            if (encoder.matches(request.password(), existingUser.password())) {
                 return new LoginResult(username, auth.createAuth(username).authToken());
             }
             throw new UnauthorizedException("Credentials do not match; login failed.");

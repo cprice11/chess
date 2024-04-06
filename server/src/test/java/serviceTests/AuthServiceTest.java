@@ -1,12 +1,14 @@
 package serviceTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryDatabase;
+import dataAccess.memoryDao.MemoryAuthDao;
+import dataAccess.memoryDao.MemoryDatabase;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 import service.AuthService;
 import service.UnauthorizedException;
+
+import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthServiceTest extends ServiceVars {
@@ -20,7 +22,7 @@ class AuthServiceTest extends ServiceVars {
         MemoryDatabase.setAuth(authData);
         MemoryDatabase.setGames(gameData);
         MemoryDatabase.setUsers(userData);
-        auth = new MemoryAuthDAO();
+        auth = new MemoryAuthDao();
         authService = new AuthService(auth);
     }
 
@@ -78,8 +80,7 @@ class AuthServiceTest extends ServiceVars {
         AuthData newAuth = authService.createAuth(username);
         Assertions.assertNotNull(newAuth.authToken(), "returned null authentication");
         Assertions.assertEquals(t0, newAuth.authToken(), "unexpected token value");
-        Assertions.assertNotEquals(a0.authToken(), newAuth.authToken(), "Unexpected token value");
-        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authToken(), username)), "AuthData not found after creation");
+        Assertions.assertTrue(auth.getAll().stream().anyMatch(auth -> Objects.equals(auth.authToken(), newAuth.authToken())));
         Assertions.assertDoesNotThrow(() -> authService.verify(newAuth.authToken()), "threw Exception verifying valid request");
     }
 

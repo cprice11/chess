@@ -4,7 +4,7 @@ import model.AuthData;
 
 import java.util.Collection;
 
-public interface AuthDAO extends DAO<AuthData> {
+public interface AuthDao extends Dao<AuthData> {
     /**
      * Returns all objects in the database
      */

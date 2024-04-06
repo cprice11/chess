@@ -1,15 +1,19 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.memoryDao.MemoryAuthDao;
+import dataAccess.memoryDao.MemoryDatabase;
+import dataAccess.memoryDao.MemoryGameDao;
+import dataAccess.memoryDao.MemoryUserDao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.DevService;
 
 class DevServiceTest extends ServiceVars {
-    private static final AuthDAO auth = new MemoryAuthDAO();
-    private static final GameDAO games = new MemoryGameDAO();
-    private static final UserDAO users = new MemoryUserDAO();
+    private static final AuthDao auth = new MemoryAuthDao();
+    private static final GameDao games = new MemoryGameDao();
+    private static final UserDao users = new MemoryUserDao();
     private static final DevService dev = new DevService(auth, games, users);
 
     @BeforeEach

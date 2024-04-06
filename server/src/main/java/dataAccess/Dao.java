@@ -4,7 +4,7 @@ import service.AlreadyTakenException;
 
 import java.util.Collection;
 
-public interface DAO<T> {
+public interface Dao<T> {
     /**
      * Returns all objects in the database
      */

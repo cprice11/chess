@@ -1,4 +1,4 @@
-package dataAccess;
+package dataAccess.memoryDao;
 
 import model.AuthData;
 import model.GameData;
@@ -49,14 +49,14 @@ public class MemoryDatabase {
     }
 
     public static void clearAuth() {
-        auth.clear();
+        if (auth != null) auth.clear();
     }
 
     public static void clearGames() {
-        games.clear();
+        if (games != null) games.clear();
     }
 
     public static void clearUsers() {
-        users.clear();
+        if (users != null) users.clear();
     }
 }

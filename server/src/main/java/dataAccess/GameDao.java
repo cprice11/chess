@@ -8,7 +8,7 @@ import service.AlreadyTakenException;
 import java.util.Collection;
 import java.util.HashSet;
 
-public interface GameDAO extends DAO<GameData> {
+public interface GameDao extends Dao<GameData> {
     /**
      * Returns all objects in the database
      */

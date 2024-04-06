@@ -1,6 +1,8 @@
-package dataAccess;
+package dataAccess.memoryDao;
 
 import chess.ChessGame;
+import dataAccess.DataAccessException;
+import dataAccess.GameDao;
 import model.GameData;
 import model.GameSummary;
 
@@ -8,7 +10,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Random;
 
-public class MemoryGameDAO implements GameDAO {
+public class MemoryGameDao implements GameDao {
     private final Random randomIdGenerator = new Random(111);
     /**
      * Returns all objects in the database

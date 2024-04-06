@@ -4,8 +4,8 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import dataAccess.DataAccessException;
-import dataAccess.MemoryDatabase;
-import dataAccess.MemoryGameDAO;
+import dataAccess.memoryDao.MemoryDatabase;
+import dataAccess.memoryDao.MemoryGameDao;
 import model.GameData;
 import model.GameSummary;
 import org.junit.jupiter.api.*;
@@ -15,8 +15,8 @@ import java.util.HashSet;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryGameDAOTest extends DataAccessVars {
-    MemoryGameDAO gameDAO = new MemoryGameDAO();
+public class MemoryGameDaoTest extends DataAccessVars {
+    MemoryGameDao gameDAO = new MemoryGameDao();
 
     @BeforeEach
     void setup() {

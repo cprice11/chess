@@ -1,5 +1,7 @@
-package dataAccess;
+package dataAccess.memoryDao;
 
+import dataAccess.AuthDao;
+import dataAccess.DataAccessException;
 import model.AuthData;
 
 import java.util.ArrayList;
@@ -7,7 +9,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 
-public class MemoryAuthDAO implements AuthDAO {
+public class MemoryAuthDao implements AuthDao {
+    private static final int AUTH_TOKEN_LENGTH = 40;
     private final Random randomTokenGenerator = new Random(111);
 
     /**
@@ -128,7 +131,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public String pseudoRandomToken() {
         StringBuilder id = new StringBuilder();
-        for (int i = 0; i < 20; i++ ){
+        for (int i = 0; i < AUTH_TOKEN_LENGTH; i++ ){
             int myInt = randomTokenGenerator.nextInt(94) + 33;
             char myChar = (char) myInt;
             id.append(myChar);

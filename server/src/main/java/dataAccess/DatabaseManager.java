@@ -36,8 +36,22 @@ public class DatabaseManager {
      */
     static void createDatabase() throws DataAccessException {
         try {
-            var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
             var conn = DriverManager.getConnection(connectionUrl, user, password);
+            var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName + " CHARACTER SET utf8mb4";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+            statement = "USE " + databaseName;
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+            statement =
+                    "CREATE TABLE auth (" +
+                        "authToken CHAR(40) NOT NULL," +
+                        "username VARCHAR(255) NOT NULL," +
+                        "PRIMARY KEY (authToken)," +
+                        "INDEX (username)" +
+                    ");";
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
@@ -58,12 +72,17 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    public static Connection getConnection() throws DataAccessException {
         try {
-            var conn = DriverManager.getConnection(connectionUrl, user, password);
-            conn.setCatalog(databaseName);
-            return conn;
-        } catch (SQLException e) {
+            try (var conn = DriverManager.getConnection(connectionUrl, user, password)) {
+                try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
+                    var res = preparedStatement.executeQuery();
+                    res.next();
+                    System.out.println(res.getInt(1));
+                }
+                return conn;
+            }
+        }catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
     }

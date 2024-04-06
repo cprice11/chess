@@ -5,7 +5,7 @@ import service.AlreadyTakenException;
 
 import java.util.Collection;
 
-public interface UserDAO extends DAO<UserData> {
+public interface UserDao extends Dao<UserData> {
     /**
      * Returns all objects in the database
      */

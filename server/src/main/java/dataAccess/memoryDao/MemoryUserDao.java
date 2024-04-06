@@ -1,14 +1,15 @@
-package dataAccess;
+package dataAccess.memoryDao;
 
+import dataAccess.DataAccessException;
+import dataAccess.UserDao;
 import model.UserData;
-import org.eclipse.jetty.servlet.jmx.ServletMappingMBean;
 import service.AlreadyTakenException;
 
 import java.util.Collection;
 
-public class MemoryUserDAO implements UserDAO {
+public class MemoryUserDao implements UserDao {
 
-    public MemoryUserDAO() {
+    public MemoryUserDao() {
     }
 
     /**
@@ -40,7 +41,7 @@ public class MemoryUserDAO implements UserDAO {
      * @param value  The object to replace the target object
      */
     @Override
-    public void update(UserData target, UserData value) throws DataAccessException{
+    public void update(UserData target, UserData value) throws DataAccessException {
         verify(target);
         MemoryDatabase.users.remove(target);
         MemoryDatabase.users.add(value);
@@ -72,6 +73,7 @@ public class MemoryUserDAO implements UserDAO {
      * @return
      */
     public UserData getUser(String username) throws DataAccessException{
+        if (MemoryDatabase.getUsers().isEmpty()) throw new DataAccessException("Username not found; failed to get user");
         for (UserData u : MemoryDatabase.getUsers()) {
             if (u.username().equals(username)) return u;
         }

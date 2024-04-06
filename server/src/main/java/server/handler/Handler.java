@@ -3,6 +3,11 @@ package server.handler;
 
 import com.google.gson.Gson;
 import dataAccess.*;
+import dataAccess.memoryDao.MemoryAuthDao;
+import dataAccess.memoryDao.MemoryDatabase;
+import dataAccess.memoryDao.MemoryGameDao;
+import dataAccess.memoryDao.MemoryUserDao;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import server.request.InvalidRequestException;
 import server.result.Result;
 import service.*;
@@ -10,14 +15,15 @@ import spark.Response;
 
 public abstract class Handler {
     protected static MemoryDatabase db = new MemoryDatabase();
-    protected static AuthDAO authDAO = new MemoryAuthDAO();
-    protected static GameDAO gameDAO = new MemoryGameDAO();
-    protected static UserDAO userDAO = new MemoryUserDAO();
+    protected static AuthDao authDAO = new MemoryAuthDao();
+    protected static GameDao gameDAO = new MemoryGameDao();
+    protected static UserDao userDAO = new MemoryUserDao();
     protected static DevService dev = new DevService(authDAO, gameDAO, userDAO);
     protected static AuthService auth = new AuthService(authDAO);
     protected static GameService games = new GameService(gameDAO, auth);
     protected static UserService users = new UserService(userDAO, auth);
     protected static Gson serializer = new Gson();
+    protected static BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     protected static String success(Response res, String jsonBody) {
         res.status(200);
@@ -60,7 +66,7 @@ public abstract class Handler {
         return body;
     }
 
-    public static String catchExceptions(Response res, Exception caughtException) {
+    protected static String catchExceptions(Response res, Exception caughtException) {
         try {
             throw caughtException;
         } catch (UnauthorizedException e) {

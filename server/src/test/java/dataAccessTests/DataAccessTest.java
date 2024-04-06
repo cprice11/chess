@@ -1,6 +1,6 @@
 package dataAccessTests;
 
-import dataAccess.MemoryDatabase;
+import dataAccess.memoryDao.MemoryDatabase;
 import org.junit.jupiter.api.*;
 
 @SuppressWarnings("unused")

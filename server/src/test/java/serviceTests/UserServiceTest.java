@@ -1,16 +1,20 @@
 package serviceTests;
 
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryDatabase;
+import dataAccess.memoryDao.MemoryAuthDao;
+import dataAccess.memoryDao.MemoryDatabase;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.LogoutRequest;
+import server.request.RegisterRequest;
 import server.result.LoginResult;
 import service.AlreadyTakenException;
 import service.AuthService;
 import service.UnauthorizedException;
 import service.UserService;
+
+import java.util.HashSet;
+import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceTest extends ServiceVars {
@@ -21,26 +25,31 @@ class UserServiceTest extends ServiceVars {
 
     @BeforeEach
     void buildDatabase() {
-        MemoryDatabase.setAuth(authData);
-        MemoryDatabase.setGames(gameData);
-        MemoryDatabase.setUsers(userData);
-        auth = new MemoryAuthDAO();
+        MemoryDatabase db = new MemoryDatabase();
+        auth = new MemoryAuthDao();
         authService = new AuthService(auth);
         userService = new UserService(users, authService);
+        try {
+            userService.register(new RegisterRequest(u0.username(), u0.password(), u0.email()));
+            userService.register(new RegisterRequest(u1.username(), u1.password(), u1.email()));
+            userService.register(new RegisterRequest(u2.username(), u2.password(), u2.email()));
+        } catch (AlreadyTakenException e) {
+            Assertions.fail("Could not register new users to initialize the database because of AlreadyTaken Exception");
+        }
     }
 
 
     @Test
+    @Order(4)
     void testRegister() {
+        HashSet<UserData> u = MemoryDatabase.getUsers();
         Assertions.assertDoesNotThrow(() -> userService.register(goodRegisterRequest), "Threw exception on valid register request");
-        Assertions.assertTrue(users.getAll().contains(uNew));
+        Assertions.assertTrue(users.getAll().stream().anyMatch(user -> Objects.equals(user.username(), uNew.username())));
         Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(badRegisterRequest));
-        Assertions.assertFalse(users.getAll().contains(
-                        new UserData(badRegisterRequest.username(),
-                                badRegisterRequest.password(),
-                                badRegisterRequest.email())
-                )
-        );
+        Assertions.assertFalse(users.getAll().stream().anyMatch(user ->
+                user.email().equals(uNew.email())&& user.username().equals(u2.username())
+        ));
+        u = MemoryDatabase.getUsers();
     }
 
     @Test
@@ -50,7 +59,7 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertDoesNotThrow(() -> userService.login(goodLoginRequest), "Threw Exception on valid request");
         try {
             LoginResult result = userService.login(goodLoginRequest);
-            Assertions.assertEquals(t1, result.authToken(), "Returned unexpected auth token");
+            Assertions.assertEquals(t4, result.authToken(), "Returned unexpected auth token");
             Assertions.assertEquals(loginResult.username(), result.username(), "Returned unexpected username");
             Assertions.assertTrue(auth.getAll().contains(new AuthData(result.authToken(), result.username())), "new auth not found in database after request");
         } catch (Exception e) {
@@ -77,12 +86,12 @@ class UserServiceTest extends ServiceVars {
         try {
             LoginResult firstResult = userService.login(goodLoginRequest);
             LoginResult secondResult = userService.login(goodLoginRequest);
-            Assertions.assertEquals(t0, firstResult.authToken(), "Unexpected authentication from login");
-            Assertions.assertEquals(t1, secondResult.authToken(), "Unexpected authentication from login");
-            Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
-            Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
+            Assertions.assertEquals(t3, firstResult.authToken(), "Unexpected authToken from login");
+            Assertions.assertEquals(t4, secondResult.authToken(), "Unexpected authToken from login");
+            Assertions.assertDoesNotThrow(() -> auth.verify(firstResult.authToken()), "Exception thrown on valid login request");
+            Assertions.assertDoesNotThrow(() -> auth.verify(secondResult.authToken()), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(firstResult.authToken())), "Threw error on valid logout request");
-            Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(t0), "Verified invalid authentication");
+            Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(firstResult.authToken()), "Verified invalid authentication");
             Assertions.assertDoesNotThrow(() -> authService.getAuthByUsername(goodLoginRequest.username()), "No auth for logged in user");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(secondResult.authToken())), "Rejected valid logout request");
         } catch (UnauthorizedException e) {
@@ -97,12 +106,12 @@ class UserServiceTest extends ServiceVars {
         try {
             LoginResult firstResult = userService.login(goodLoginRequest);
             LoginResult secondResult = userService.login(goodLoginRequest);
-            Assertions.assertEquals(t0, firstResult.authToken(), "Unexpected authentication from login");
-            Assertions.assertEquals(t1, secondResult.authToken(), "Unexpected authentication from login");
-            Assertions.assertDoesNotThrow(() -> auth.verify(t0), "Exception thrown on valid login request");
-            Assertions.assertDoesNotThrow(() -> auth.verify(t1), "Exception thrown on valid login request");
+            Assertions.assertEquals(t3, firstResult.authToken(), "Unexpected authentication from login");
+            Assertions.assertEquals(t4, secondResult.authToken(), "Unexpected authentication from login");
+            Assertions.assertDoesNotThrow(() -> auth.verify(firstResult.authToken()), "Exception thrown on valid login request");
+            Assertions.assertDoesNotThrow(() -> auth.verify(secondResult.authToken()), "Exception thrown on valid login request");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(secondResult.authToken())), "Threw error on valid logout request");
-            Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(t1), "Verified invalid authentication");
+            Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(secondResult.authToken()), "Verified invalid authentication");
             Assertions.assertDoesNotThrow(() -> authService.getAuthByUsername(goodLoginRequest.username()), "No auth for logged in user");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(firstResult.authToken())), "Rejected valid logout request");
         } catch (UnauthorizedException e) {

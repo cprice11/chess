@@ -1,15 +1,15 @@
 package service;
 
-import dataAccess.AuthDAO;
+import dataAccess.AuthDao;
 import dataAccess.DataAccessException;
 import model.AuthData;
 
 import java.util.Collection;
 
 public class AuthService {
-    private final AuthDAO dao;
+    private final AuthDao dao;
 
-    public AuthService(AuthDAO dao) {
+    public AuthService(AuthDao dao) {
         this.dao = dao;
     }
 

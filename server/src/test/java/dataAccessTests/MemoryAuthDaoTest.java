@@ -1,8 +1,8 @@
 package dataAccessTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryDatabase;
+import dataAccess.memoryDao.MemoryAuthDao;
+import dataAccess.memoryDao.MemoryDatabase;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 
@@ -10,9 +10,9 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryAuthDAOTest extends DataAccessVars {
+public class MemoryAuthDaoTest extends DataAccessVars {
     MemoryDatabase db = new MemoryDatabase();
-    MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    MemoryAuthDao authDAO = new MemoryAuthDao();
 
     @BeforeEach
     void setup() {

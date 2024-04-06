@@ -1,7 +1,12 @@
 package serviceTests;
 
 import chess.ChessGame;
-import dataAccess.*;
+import dataAccess.AuthDao;
+import dataAccess.GameDao;
+import dataAccess.UserDao;
+import dataAccess.memoryDao.MemoryAuthDao;
+import dataAccess.memoryDao.MemoryGameDao;
+import dataAccess.memoryDao.MemoryUserDao;
 import model.AuthData;
 import model.GameData;
 import model.GameSummary;
@@ -14,9 +19,32 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public class ServiceVars {
-    static final AuthData a0 = new AuthData("0hu2^7T@YXtJhDuQ2%dg", "myname123");
-    static final AuthData a1 = new AuthData("1hu2^7T@YXtJhDuQ2%dg", "antonius");
-    static final AuthData a2 = new AuthData("2hu2^7T@YXtJhDuQ2%dg", "death");
+    // first 10 pseudo random outputs seed = 111
+    static final String t0 = "f?p*$#3_RR]uRqgt!wcP";
+    static final String t1 = ":Zu|-r+&OFo$O5nOv>?1";
+    static final String t2 = "KIt`}8e3FcN_]ib5iO?E";
+    static final String t3 = "6j}sS.Ul5wP1=~6u=ARh";
+    static final String t4 = "-,7]mA~3r^\"-hDn2b(<?";
+    static final String t5 = "+2?MPTgB@%4=qC<a`Q@J";
+    static final String t6 = "=KvKo6MeU4x*i%s=MLaU";
+    static final String t7 = ",<.Uo7_7zun>!7Yv\"(w_";
+    static final String t8 = "CvgjPN6^e_\\3>>M)U1\\c";
+    static final String t9 = "@Mao<0%z/|[Y*Y[/*DzM";
+
+    static final int id0 = 950830939;
+    static final int id1 = 506326292;
+    static final int id2 = 1639761914;
+    static final int id3 = 1389273394;
+    static final int id4 = 683937171;
+    static final int id5 = 506057841;
+    static final int id6 = 1092644569;
+    static final int id7 = 412721225;
+    static final int id8 = 902295195;
+    static final int id9 = 886779931;
+
+    static final AuthData a0 = new AuthData(t0, "myname123");
+    static final AuthData a1 = new AuthData(t1, "antonius");
+    static final AuthData a2 = new AuthData(t2, "death");
 
     static final AuthData aNew = new AuthData("3hu2^7T@YXtJhDuQ2%dg", "Magnus");
 
@@ -42,9 +70,9 @@ public class ServiceVars {
     static final GameSummary s2 = new GameSummary(g2.gameID(), g2.whiteUsername(), g2.blackUsername(), g2.gameName());
     static final HashSet<GameSummary> gameSummaries = new HashSet<>(Arrays.asList(s0, s1, s2));
 
-    protected static AuthDAO auth = new MemoryAuthDAO();
-    protected static GameDAO games = new MemoryGameDAO();
-    protected static UserDAO users = new MemoryUserDAO();
+    protected static AuthDao auth = new MemoryAuthDao();
+    protected static GameDao games = new MemoryGameDao();
+    protected static UserDao users = new MemoryUserDao();
 
 
     // register
@@ -58,7 +86,7 @@ public class ServiceVars {
 
     // logout
     static final LogoutRequest goodLogoutRequest = new LogoutRequest(a0.authToken());
-    static final LogoutRequest badLogoutRequest = new LogoutRequest(aNew.authToken());
+    static final LogoutRequest badLogoutRequest = new LogoutRequest(t9);
     // no result
 
     // listGames
@@ -85,28 +113,4 @@ public class ServiceVars {
 
     // clear
     // no request or result
-
-    
-    // first 10 pseudo random outputs seed = 111
-    static final String t0 = "f?p*$#3_RR]uRqgt!wcP";
-    static final String t1 = ":Zu|-r+&OFo$O5nOv>?1";
-    static final String t2 = "KIt`}8e3FcN_]ib5iO?E";
-    static final String t3 = "6j}sS.Ul5wP1=~6u=ARh";
-    static final String t4 = "-,7]mA~3r^\"-hDn2b(<?";
-    static final String t5 = "+2?MPTgB@%4=qC<a`Q@J";
-    static final String t6 = "=KvKo6MeU4x*i%s=MLaU";
-    static final String t7 = ",<.Uo7_7zun>!7Yv\"(w_";
-    static final String t8 = "CvgjPN6^e_\\3>>M)U1\\c";
-    static final String t9 = "@Mao<0%z/|[Y*Y[/*DzM";
-
-    static final int id0 = 950830939;
-    static final int id1 = 506326292;
-    static final int id2 = 1639761914;
-    static final int id3 = 1389273394;
-    static final int id4 = 683937171;
-    static final int id5 = 506057841;
-    static final int id6 = 1092644569;
-    static final int id7 = 412721225;
-    static final int id8 = 902295195;
-    static final int id9 = 886779931;
 }

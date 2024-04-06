@@ -1,8 +1,8 @@
 package dataAccessTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.MemoryDatabase;
-import dataAccess.MemoryUserDAO;
+import dataAccess.memoryDao.MemoryDatabase;
+import dataAccess.memoryDao.MemoryUserDao;
 import model.UserData;
 import org.junit.jupiter.api.*;
 
@@ -11,8 +11,8 @@ import java.util.HashSet;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryUserDAOTest extends DataAccessVars {
-    MemoryUserDAO userDAO = new MemoryUserDAO();
+public class MemoryUserDaoTest extends DataAccessVars {
+    MemoryUserDao userDAO = new MemoryUserDao();
 
     @BeforeEach
     void setup() {
