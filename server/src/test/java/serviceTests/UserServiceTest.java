@@ -47,7 +47,7 @@ class UserServiceTest extends ServiceVars {
         Assertions.assertTrue(users.getAll().stream().anyMatch(user -> Objects.equals(user.username(), uNew.username())));
         Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(badRegisterRequest));
         Assertions.assertFalse(users.getAll().stream().anyMatch(user ->
-                user.email().equals(uNew.email())&& user.username().equals(u2.username())
+                user.email().equals(uNew.email()) && user.username().equals(u2.username())
         ));
         u = MemoryDatabase.getUsers();
     }
@@ -71,10 +71,14 @@ class UserServiceTest extends ServiceVars {
     @Test
     @Order(6)
     void testLogout() {
-        Assertions.assertDoesNotThrow(() -> userService.logout(goodLogoutRequest));
-        Assertions.assertFalse(auth.getAll().contains(a0), "AuthData remained after logout");
-        Assertions.assertTrue(auth.getAll().contains(a1), "incorrect AuthData dropped after logout");
-        Assertions.assertThrows(UnauthorizedException.class, () -> userService.logout(badLogoutRequest), "No error thrown on invalid request");
+        try {
+            Assertions.assertDoesNotThrow(() -> userService.logout(goodLogoutRequest));
+            Assertions.assertFalse(auth.getAll().contains(a0), "AuthData remained after logout");
+            Assertions.assertTrue(auth.getAll().contains(a1), "incorrect AuthData dropped after logout");
+            Assertions.assertThrows(UnauthorizedException.class, () -> userService.logout(badLogoutRequest), "No error thrown on invalid request");
+        } catch (Exception e) {
+            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+        }
     }
 
     @Test

@@ -2,17 +2,35 @@ package dataAccess.sqlDao;
 
 import dataAccess.AuthDao;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import model.AuthData;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class SQLAuthDao implements AuthDao {
     /**
      * Returns all objects in the database
      */
     @Override
-    public Collection<AuthData> getAll() {
-        return null;
+    public Collection<AuthData> getAll() throws DataAccessException {
+        Collection<AuthData> authData = new HashSet<>();
+        try {
+            Connection conn = DatabaseManager.getConnection();
+            try (var rs = conn.prepareStatement("SELECT authToken, username FROM auth;").executeQuery()) {
+                while (rs.next()) {
+                    authData.add(new AuthData(rs.getString("authToken"), rs.getString("username")));
+                }
+            }
+            return authData;
+        } catch (DataAccessException e) {
+            return authData;
+        } catch (SQLException e) {
+            throw new DataAccessException("Threw exception accessing database: " + e.getMessage());
+        }
     }
 
     /**
@@ -20,7 +38,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public void delete(AuthData target) {
-
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -28,7 +46,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public void deleteAll() {
-
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -37,7 +55,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public void update(AuthData target, AuthData value) {
-
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -46,7 +64,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public void verify(AuthData target) throws DataAccessException {
-
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -55,7 +73,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public AuthData verify(String authToken) throws DataAccessException {
-        return null;
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -65,7 +83,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public void add(AuthData entry) {
-
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -75,7 +93,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public Collection<AuthData> getAuthFromUser(String username) throws DataAccessException {
-        return null;
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -85,7 +103,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public String getUsername(String authToken) throws DataAccessException {
-        return null;
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -94,7 +112,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public AuthData createAuth(String username) {
-        return null;
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
     /**
@@ -104,6 +122,6 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public AuthData getAuthFromToken(String authToken) throws DataAccessException {
-        return null;
+        throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 }

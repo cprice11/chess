@@ -1,7 +1,5 @@
 import chess.ChessGame;
 import chess.ChessPiece;
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
 
 public class Main {
     public static void main(String[] args) {

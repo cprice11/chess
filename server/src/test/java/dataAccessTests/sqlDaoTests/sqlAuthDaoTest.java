@@ -1,8 +1,9 @@
 package dataAccessTests.sqlDaoTests;
 
-import dataAccess.DataAccessException;
-import dataAccess.memoryDao.MemoryAuthDao;
-import dataAccess.memoryDao.MemoryDatabase;
+import dataAccess.*;
+import dataAccess.sqlDao.SQLAuthDao;
+import dataAccess.sqlDao.SQLGameDao;
+import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 
@@ -11,89 +12,130 @@ import java.util.*;
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class sqlAuthDaoTest extends sqlDataAccessVars {
-    MemoryDatabase db = new MemoryDatabase();
-    MemoryAuthDao authDAO = new MemoryAuthDao();
+    AuthDao authDao = new SQLAuthDao();
+    GameDao gamesDao = new SQLGameDao();
+    UserDao userDao = new SQLUserDao();
+
+    @BeforeAll
+    static void initialize() {
+        try {
+            DatabaseManager.configureDatabase();
+        } catch (DataAccessException e) {
+            Assertions.fail("Could not set up database: " + e.getMessage());
+        }
+    }
 
     @BeforeEach
     void setup() {
-        MemoryDatabase.setAuth(authData);
-        MemoryDatabase.setGames(gameData);
-        MemoryDatabase.setUsers(userData);
+        try {
+            DatabaseManager.resetData();
+        } catch (Exception e) {
+            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+        }
     }
 
     @Test
     @Order(1)
     void getAll() {
-        Collection<AuthData> allAuths = authDAO.getAll();
-        Assertions.assertEquals(allAuths, authData);
-        MemoryDatabase.clearAuth();
-        allAuths = authDAO.getAll();
-        Assertions.assertTrue(allAuths.isEmpty());
+        try {
+            Collection<AuthData> allAuths = authDao.getAll();
+            Assertions.assertEquals(allAuths, authData);
+            Assertions.assertDoesNotThrow(DatabaseManager::resetData);
+            allAuths = authDao.getAll();
+            Assertions.assertTrue(allAuths.isEmpty());
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test
     @Order(2)
     void delete() {
-        authDAO.delete(a0);
-        HashSet<AuthData> allAuths = authDAO.getAll();
-        HashSet<AuthData> oneAndTwo = new HashSet<>(Arrays.asList(a1, a2));
-        Assertions.assertEquals(oneAndTwo, allAuths);
+        try {
+            authDao.delete(a0);
+            Collection<AuthData> allAuths = authDao.getAll();
+            Collection<AuthData> oneAndTwo = new HashSet<>(Arrays.asList(a1, a2));
+            Assertions.assertEquals(oneAndTwo, allAuths);
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
     }
+
 
     @Test
     @Order(3)
     void deleteAll() {
-        authDAO.deleteAll();
-        Collection<AuthData> allAuths = authDAO.getAll();
-        Assertions.assertTrue(allAuths.isEmpty());
+        try {
+            authDao.deleteAll();
+            Collection<AuthData> allAuths = authDao.getAll();
+            Assertions.assertTrue(allAuths.isEmpty());
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test
     @Order(4)
     void update() {
-        AuthData updated = new AuthData("updatedToken", "updatedUsername");
-        authDAO.update(a0, updated);
-        Assertions.assertEquals(new HashSet<>(List.of(new AuthData[]{updated, a1, a2})), authDAO.getAll());
+        try {
+            AuthData updated = new AuthData("updatedToken", "updatedUsername");
+            authDao.update(a0, updated);
+            Assertions.assertEquals(new HashSet<>(List.of(new AuthData[]{updated, a1, a2})), authDao.getAll());
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test
     @Order(5)
     void verify() {
-        authDAO.update(a0, a1);
-        Assertions.assertThrows(DataAccessException.class, () -> authDAO.verify(a0));
-        Assertions.assertThrows(DataAccessException.class, () -> authDAO.verify(a0.authToken()));
-        Assertions.assertDoesNotThrow(() -> authDAO.verify(a2));
-        Assertions.assertDoesNotThrow(() -> authDAO.verify(a2.authToken()));
+
+        authDao.update(a0, a1);
+        Assertions.assertThrows(DataAccessException.class, () -> authDao.verify(a0));
+        Assertions.assertThrows(DataAccessException.class, () -> authDao.verify(a0.authToken()));
+        Assertions.assertDoesNotThrow(() -> authDao.verify(a2));
+        Assertions.assertDoesNotThrow(() -> authDao.verify(a2.authToken()));
+
     }
 
     @Test
     @Order(6)
     void add() {
-        authDAO.deleteAll();
-        authDAO.add(a0);
-        HashSet<AuthData> a = new HashSet<>();
-        a.add(a0);
-        Assertions.assertEquals(authDAO.getAll(), a);
+        try {
+            authDao.deleteAll();
+            authDao.add(a0);
+            HashSet<AuthData> a = new HashSet<>();
+            a.add(a0);
+            Assertions.assertEquals(authDao.getAll(), a);
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test
     void getAuthToken() {
-        Assertions.assertDoesNotThrow(() -> {
-            Assertions.assertEquals(new ArrayList<>(Arrays.asList(a0)), authDAO.getAuthFromUser(a0.username()));
-        }, "Threw unexpected Exception");
+        try {
+            Assertions.assertEquals(new ArrayList<>(Arrays.asList(a0)), authDao.getAuthFromUser(a0.username()));
+        } catch (Exception e) {
+            Assertions.fail("Unexpected exception was thrown during test. Exception: " + e.getMessage());
+        }
     }
 
     @Test
     void getUsername() {
-        Assertions.assertEquals(a0.username(), authDAO.getUsername(a0.authToken()));
+        try {
+            Assertions.assertEquals(a0.username(), authDao.getUsername(a0.authToken()));
+        } catch (Exception e) {
+            Assertions.fail("Unexpected exception was thrown during test. Exception: " + e.getMessage());
+        }
     }
 
     @Test
     void createAuth() {
-        AuthData auth = authDAO.createAuth(a0.username());
+        AuthData auth = authDao.createAuth(a0.username());
         Assertions.assertNotNull(auth);
         Assertions.assertNotNull(auth.authToken());
         Assertions.assertEquals(auth.username(), a0.username());
-        Assertions.assertDoesNotThrow(() -> authDAO.verify(auth.authToken()));
+        Assertions.assertDoesNotThrow(() -> authDao.verify(auth.authToken()));
     }
 }

@@ -8,7 +8,7 @@ public interface Dao<T> {
     /**
      * Returns all objects in the database
      */
-    Collection<T> getAll();
+    Collection<T> getAll() throws DataAccessException;
 
     /**
      * @param target The object in the database to be removed

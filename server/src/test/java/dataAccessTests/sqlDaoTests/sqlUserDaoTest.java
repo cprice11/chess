@@ -1,8 +1,9 @@
 package dataAccessTests.sqlDaoTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.memoryDao.MemoryDatabase;
-import dataAccess.memoryDao.MemoryUserDao;
+import dataAccess.DatabaseManager;
+import dataAccess.UserDao;
+import dataAccess.sqlDao.SQLUserDao;
 import model.UserData;
 import org.junit.jupiter.api.*;
 
@@ -12,13 +13,16 @@ import java.util.HashSet;
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class sqlUserDaoTest extends sqlDataAccessVars {
-    MemoryUserDao userDAO = new MemoryUserDao();
+    UserDao userDAO = new SQLUserDao();
 
     @BeforeEach
     void setup() {
-        MemoryDatabase.setAuth(authData);
-        MemoryDatabase.setGames(gameData);
-        MemoryDatabase.setUsers(userData);
+        try {
+            // DatabaseManager.createDatabase();
+            DatabaseManager.resetData();
+        } catch (Exception e) {
+            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+        }
     }
 
     @Test
@@ -26,7 +30,7 @@ public class sqlUserDaoTest extends sqlDataAccessVars {
     void getAll() {
         Collection<UserData> allUsers = userDAO.getAll();
         Assertions.assertEquals(allUsers, userData);
-        MemoryDatabase.clearUsers();
+        Assertions.assertDoesNotThrow(DatabaseManager::resetData);
         allUsers = userDAO.getAll();
         Assertions.assertTrue(allUsers.isEmpty());
     }
@@ -88,18 +92,22 @@ public class sqlUserDaoTest extends sqlDataAccessVars {
     @Test
     @Order(9)
     void editUserPassword() {
-        Assertions.assertDoesNotThrow(() -> {
+        try {
             userDAO.editUserPassword(u0.username(), "betterP@ssword");
             Assertions.assertEquals(userDAO.getUser(u0.username()).password(), "betterP@ssword");
-        }, "Threw unexpected exception");
+        } catch (Exception e) {
+            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+        }
     }
 
     @Test
     @Order(10)
     void editUserEmail() {
-        Assertions.assertDoesNotThrow(() -> {
+        try {
             userDAO.editUserEmail(u0.username(), "workemail@company.com");
             Assertions.assertEquals(userDAO.getUser(u0.username()).email(), "workemail@company.com");
-        }, "Threw unexpected exception");
+        } catch (Exception e) {
+            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+        }
     }
 }

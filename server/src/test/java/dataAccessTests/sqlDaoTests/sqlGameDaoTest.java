@@ -4,8 +4,9 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import dataAccess.DataAccessException;
-import dataAccess.memoryDao.MemoryDatabase;
-import dataAccess.memoryDao.MemoryGameDao;
+import dataAccess.DatabaseManager;
+import dataAccess.GameDao;
+import dataAccess.sqlDao.SQLGameDao;
 import model.GameData;
 import model.GameSummary;
 import org.junit.jupiter.api.*;
@@ -16,13 +17,15 @@ import java.util.HashSet;
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class sqlGameDaoTest extends sqlDataAccessVars {
-    MemoryGameDao gameDAO = new MemoryGameDao();
+    GameDao gameDAO = new SQLGameDao();
 
     @BeforeEach
     void setup() {
-        MemoryDatabase.setAuth(authData);
-        MemoryDatabase.setGames(gameData);
-        MemoryDatabase.setUsers(userData);
+        try {
+            DatabaseManager.resetData();
+        } catch (Exception e) {
+            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+        }
     }
 
     @Test
@@ -30,7 +33,7 @@ public class sqlGameDaoTest extends sqlDataAccessVars {
     void getAll() {
         Collection<GameData> allGames = gameDAO.getAll();
         Assertions.assertEquals(allGames, gameData);
-        MemoryDatabase.clearGames();
+        Assertions.assertDoesNotThrow(DatabaseManager::resetData);
         allGames = gameDAO.getAll();
         Assertions.assertTrue(allGames.isEmpty());
     }
@@ -57,7 +60,7 @@ public class sqlGameDaoTest extends sqlDataAccessVars {
     @Order(4)
     void update() {
         GameData updated = new GameData(5000, "white", "black", "updated", new ChessGame());
-        gameDAO.update(g0, updated);
+        Assertions.assertDoesNotThrow(() -> gameDAO.update(g0, updated));
         HashSet<GameData> allGames = new HashSet<>();
         allGames.add(updated);
         allGames.add(g1);
@@ -89,7 +92,7 @@ public class sqlGameDaoTest extends sqlDataAccessVars {
     @Order(6)
     void add() {
         gameDAO.deleteAll();
-        gameDAO.add(g0);
+        Assertions.assertDoesNotThrow(() -> gameDAO.add(g0));
         HashSet<GameData> justOne = new HashSet<>();
         justOne.add(g0);
         Assertions.assertEquals(justOne, gameDAO.getAll());

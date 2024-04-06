@@ -9,7 +9,7 @@ public interface AuthDao extends Dao<AuthData> {
      * Returns all objects in the database
      */
     @Override
-    Collection<AuthData> getAll();
+    Collection<AuthData> getAll() throws DataAccessException;
 
     /**
      * @param target The object in the database to be removed

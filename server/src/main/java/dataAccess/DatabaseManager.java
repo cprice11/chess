@@ -1,6 +1,8 @@
 package dataAccess;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -8,6 +10,7 @@ public class DatabaseManager {
     private static final String user;
     private static final String password;
     private static final String connectionUrl;
+    private static final int AUTH_TOKEN_LEN = 40;
 
     /*
      * Load the database information for the db.properties file.
@@ -41,20 +44,6 @@ public class DatabaseManager {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
-            statement = "USE " + databaseName;
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.executeUpdate();
-            }
-            statement =
-                    "CREATE TABLE auth (" +
-                        "authToken CHAR(40) NOT NULL," +
-                        "username VARCHAR(255) NOT NULL," +
-                        "PRIMARY KEY (authToken)," +
-                        "INDEX (username)" +
-                    ");";
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.executeUpdate();
-            }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
@@ -74,16 +63,67 @@ public class DatabaseManager {
      */
     public static Connection getConnection() throws DataAccessException {
         try {
-            try (var conn = DriverManager.getConnection(connectionUrl, user, password)) {
-                try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
-                    var res = preparedStatement.executeQuery();
-                    res.next();
-                    System.out.println(res.getInt(1));
-                }
-                return conn;
-            }
-        }catch (SQLException e) {
+            var conn = DriverManager.getConnection(connectionUrl, user, password);
+            conn.setCatalog(databaseName);
+            return conn;
+        } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    private static final String[] resetString = {
+            "TRUNCATE TABLE auth;",
+            "TRUNCATE TABLE games;",
+            "TRUNCATE TABLE users;"
+    };
+
+    public static void resetData() throws DataAccessException {
+        for (var statement : dbConfig) {
+            try (var conn = DatabaseManager.getConnection()) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(String.format("Unable to reset database: %s", e.getMessage()));
+            }
+        }
+    }
+
+    private static final String[] dbConfig = {
+                "USE " + databaseName + ";",
+
+                "CREATE TABLE IF NOT EXISTS auth ( "
+                +   "authToken char(40) NOT NULL, "
+                +   "username char(255) NOT NULL, "
+                +   "PRIMARY KEY (authToken) "
+                + ");",
+                "CREATE TABLE IF NOT EXISTS games ("
+                +   "gameID int NOT NULL,"
+                +   "whiteUsername char(255) DEFAULT NULL,"
+                +   "blackUsername char(255) DEFAULT NULL,"
+                +   "gameName char(255),"
+                +   "game longtext NOT NULL,"
+                +   "PRIMARY KEY (gameID)"
+                + ");",
+                "CREATE TABLE IF NOT EXISTS users ("
+                +   "id int NOT NULL AUTO_INCREMENT,"
+                +   "username char(255) NOT NULL,"
+                +   "password char(255) NOT NULL,"
+                +   "email char(255) NOT NULL,"
+                +   "PRIMARY KEY (id)"
+                + ");"
+    };
+
+    public static void configureDatabase() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        for (var statement : dbConfig) {
+            try (var conn = DatabaseManager.getConnection()) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(String.format("Unable to configure database: %s", e.getMessage()));
+            }
         }
     }
 }

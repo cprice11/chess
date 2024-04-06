@@ -76,29 +76,37 @@ class AuthServiceTest extends ServiceVars {
     @Order(3)
     void createAuth() {
         // AuthTokens are pseudo-random and will generate the same tokens in order after every test init.
-        String username = "brand-new-user";
-        AuthData newAuth = authService.createAuth(username);
-        Assertions.assertNotNull(newAuth.authToken(), "returned null authentication");
-        Assertions.assertEquals(t0, newAuth.authToken(), "unexpected token value");
-        Assertions.assertTrue(auth.getAll().stream().anyMatch(auth -> Objects.equals(auth.authToken(), newAuth.authToken())));
-        Assertions.assertDoesNotThrow(() -> authService.verify(newAuth.authToken()), "threw Exception verifying valid request");
+        try {
+            String username = "brand-new-user";
+            AuthData newAuth = authService.createAuth(username);
+            Assertions.assertNotNull(newAuth.authToken(), "returned null authentication");
+            Assertions.assertEquals(t0, newAuth.authToken(), "unexpected token value");
+            Assertions.assertTrue(auth.getAll().stream().anyMatch(auth -> Objects.equals(auth.authToken(), newAuth.authToken())));
+            Assertions.assertDoesNotThrow(() -> authService.verify(newAuth.authToken()), "threw Exception verifying valid request");
+        } catch (Exception e) {
+            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+        }
     }
 
     @Test
     @Order(4)
     void createTwoAuths() {
-        String username = "brand-new-user";
-        AuthData newAuth = authService.createAuth(username);
-        AuthData newAuthTwo = authService.createAuth(username);
-        Assertions.assertNotEquals(newAuth, newAuthTwo, "returned identical auth tokens");
-        Assertions.assertDoesNotThrow(() -> auth.verify(newAuth.authToken()), "Threw Exception on valid request");
-        Assertions.assertDoesNotThrow(() -> auth.verify(newAuthTwo.authToken()), "Threw Exception on valid second request");
-        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authToken(), username)), "first authData found");
-        Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuthTwo.authToken(), username)), "second authData found");
-        Assertions.assertEquals(t0, newAuth.authToken(), "returned unexpected auth token");
-        Assertions.assertEquals(username, newAuth.username(), "returned unexpected username");
-        Assertions.assertEquals(t1, newAuthTwo.authToken(), "returned unexpected auth token");
-        Assertions.assertEquals(username, newAuthTwo.username(), "returned unexpected username");
+        try {
+            String username = "brand-new-user";
+            AuthData newAuth = authService.createAuth(username);
+            AuthData newAuthTwo = authService.createAuth(username);
+            Assertions.assertNotEquals(newAuth, newAuthTwo, "returned identical auth tokens");
+            Assertions.assertDoesNotThrow(() -> auth.verify(newAuth.authToken()), "Threw Exception on valid request");
+            Assertions.assertDoesNotThrow(() -> auth.verify(newAuthTwo.authToken()), "Threw Exception on valid second request");
+            Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authToken(), username)), "first authData found");
+            Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuthTwo.authToken(), username)), "second authData found");
+            Assertions.assertEquals(t0, newAuth.authToken(), "returned unexpected auth token");
+            Assertions.assertEquals(username, newAuth.username(), "returned unexpected username");
+            Assertions.assertEquals(t1, newAuthTwo.authToken(), "returned unexpected auth token");
+            Assertions.assertEquals(username, newAuthTwo.username(), "returned unexpected username");
+        } catch (Exception e) {
+            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+        }
     }
 
 }
