@@ -1,4 +1,4 @@
-package dataAccess.mysqlDao;
+package dataAccess.sqlDao;
 
 import chess.ChessGame;
 import dataAccess.DataAccessException;

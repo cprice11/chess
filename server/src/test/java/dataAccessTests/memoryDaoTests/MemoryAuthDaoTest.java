@@ -1,4 +1,4 @@
-package dataAccessTests;
+package dataAccessTests.memoryDaoTests;
 
 import dataAccess.DataAccessException;
 import dataAccess.memoryDao.MemoryAuthDao;
@@ -10,7 +10,7 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryAuthDaoTest extends DataAccessVars {
+public class MemoryAuthDaoTest extends MemoryDataAccessVars {
     MemoryDatabase db = new MemoryDatabase();
     MemoryAuthDao authDAO = new MemoryAuthDao();
 

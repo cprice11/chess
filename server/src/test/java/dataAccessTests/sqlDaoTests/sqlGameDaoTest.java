@@ -1,4 +1,4 @@
-package dataAccessTests;
+package dataAccessTests.sqlDaoTests;
 
 import chess.ChessGame;
 import chess.ChessMove;
@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryGameDaoTest extends DataAccessVars {
+public class sqlGameDaoTest extends sqlDataAccessVars {
     MemoryGameDao gameDAO = new MemoryGameDao();
 
     @BeforeEach

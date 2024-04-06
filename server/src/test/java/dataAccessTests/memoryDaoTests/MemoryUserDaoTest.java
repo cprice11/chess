@@ -1,4 +1,4 @@
-package dataAccessTests;
+package dataAccessTests.memoryDaoTests;
 
 import dataAccess.DataAccessException;
 import dataAccess.memoryDao.MemoryDatabase;
@@ -11,7 +11,7 @@ import java.util.HashSet;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryUserDaoTest extends DataAccessVars {
+public class MemoryUserDaoTest extends MemoryDataAccessVars {
     MemoryUserDao userDAO = new MemoryUserDao();
 
     @BeforeEach

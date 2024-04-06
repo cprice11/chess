@@ -1,11 +1,11 @@
-package dataAccessTests;
+package dataAccessTests.memoryDaoTests;
 
 import dataAccess.memoryDao.MemoryDatabase;
 import org.junit.jupiter.api.*;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class DataAccessTest extends DataAccessVars {
+public class MemoryMemoryDataAccessTest extends MemoryDataAccessVars {
     @BeforeAll
     static void reset() {
         MemoryDatabase.clearAll();

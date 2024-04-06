@@ -1,4 +1,4 @@
-package dataAccessTests;
+package dataAccessTests.memoryDaoTests;
 
 import chess.ChessGame;
 import model.AuthData;
@@ -9,7 +9,7 @@ import model.UserData;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class DataAccessVars {
+public class MemoryDataAccessVars {
     static final AuthData a0 = new AuthData("0hu2^7T@YXtJhDuQ2%dg", "myname123");
     static final AuthData a1 = new AuthData("1hu2^7T@YXtJhDuQ2%dg", "antonius");
     static final AuthData a2 = new AuthData("2hu2^7T@YXtJhDuQ2%dg", "death");
