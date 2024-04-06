@@ -16,6 +16,7 @@ public class SQLAuthDao implements AuthDao {
     private static final String INSERT_STATEMENT = "INSERT INTO auth VALUES (?, ?)";
     private static final String SELECT_STATEMENT = "SELECT authToken, username FROM auth WHERE authToken=?";
     private static final String DELETE_STATEMENT = "DELETE FROM auth WHERE authToken=?";
+    private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE auth";
     private static final int AUTH_TOKEN_LENGTH = 40;
     private static final Random randomTokenGenerator = new Random(111);
 
@@ -59,8 +60,14 @@ public class SQLAuthDao implements AuthDao {
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    public void deleteAll() {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+    public void deleteAll() throws DataAccessException{
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(TRUNCATE_STATEMENT)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
