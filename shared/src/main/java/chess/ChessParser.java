@@ -1,24 +1,6 @@
 package chess;
 
 public class ChessParser {
-    protected static final int BOARD_SIZE = 8;
-    protected static final ChessPosition A1 = new ChessPosition(1, 1);
-    protected static final ChessPosition B1 = new ChessPosition(1, 2);
-    protected static final ChessPosition C1 = new ChessPosition(1, 3);
-    protected static final ChessPosition D1 = new ChessPosition(1, 4);
-    protected static final ChessPosition E1 = new ChessPosition(1, 5);
-    protected static final ChessPosition F1 = new ChessPosition(1, 6);
-    protected static final ChessPosition G1 = new ChessPosition(1, 7);
-    protected static final ChessPosition H1 = new ChessPosition(1, 8);
-    protected static final ChessPosition A8 = new ChessPosition(8, 1);
-    protected static final ChessPosition B8 = new ChessPosition(8, 2);
-    protected static final ChessPosition C8 = new ChessPosition(8, 3);
-    protected static final ChessPosition D8 = new ChessPosition(8, 4);
-    protected static final ChessPosition E8 = new ChessPosition(8, 5);
-    protected static final ChessPosition F8 = new ChessPosition(8, 6);
-    protected static final ChessPosition G8 = new ChessPosition(8, 7);
-    protected static final ChessPosition H8 = new ChessPosition(8, 8);
-
     protected String pareString(String input, String allowed) {
         StringBuilder cleanString = new StringBuilder();
         for (char c : input.toCharArray()) {
@@ -30,12 +12,12 @@ public class ChessParser {
     }
 
     protected ChessPosition parseAlgebraPosition(String algebra) {
-        String FILE_CODES = "abcdefgh";
-        String RANK_CODES = "12345678";
-        algebra = pareString(algebra, FILE_CODES + RANK_CODES);
+        String fileCodes = "abcdefgh";
+        String rankCodes = "12345678";
+        algebra = pareString(algebra, fileCodes + rankCodes);
         if (algebra.length() < 2 ||
-                FILE_CODES.indexOf(algebra.charAt(0)) == -1 ||
-                RANK_CODES.indexOf(algebra.charAt(1)) == -1) {
+                fileCodes.indexOf(algebra.charAt(0)) == -1 ||
+                rankCodes.indexOf(algebra.charAt(1)) == -1) {
             throw new RuntimeException("couldn't parse move notation");
         }
         int rank = Character.getNumericValue(algebra.charAt(1));

@@ -19,11 +19,6 @@ public abstract class Handler {
     protected static UserService users = new UserService(userDAO, auth);
     protected static Gson serializer = new Gson();
 
-    protected static void setStatusAndBody(Response res, int status, String body) {
-        res.status(status);
-        res.body(body);
-    }
-
     protected static String success(Response res, String jsonBody) {
         res.status(200);
         res.body(jsonBody);

@@ -47,13 +47,4 @@ public class UserService {
         AuthData authData = auth.verify(request.authorization());
         auth.delete(authData);
     }
-
-    // FIXME: I assume that these will be useful later.
-//    public UserData getUserByUsername(String username) {
-//        throw new RuntimeException("Not implemented yet");
-//    }
-//
-//    public UserData getUserByEmail(String username) {
-//        throw new RuntimeException("Not implemented yet");
-//    }
 }

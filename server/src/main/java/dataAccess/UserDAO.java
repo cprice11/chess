@@ -48,7 +48,7 @@ public interface UserDAO extends DAO<UserData> {
 
     UserData getUser(String username) throws DataAccessException;
 
-    void editUserPassword(String username, String Password) throws DataAccessException;
+    void editUserPassword(String username, String password) throws DataAccessException;
 
     void editUserEmail(String username, String email) throws DataAccessException;
 }

@@ -126,7 +126,7 @@ public class ChessBoard {
         return positions[position.getRank() - 1][position.getFile() - 1];
     }
 
-    // FIXME this should be State's responsibility
+    // If I ever refactor this. This should be state's responsibility.
     public Dictionary<ChessPosition, ChessPiece> getPieces() {
         Dictionary<ChessPosition, ChessPiece> pieces = new Hashtable<>() {
         };
@@ -259,10 +259,6 @@ public class ChessBoard {
         }
         board.append("   A B C D E F G H\n");
         System.out.println(board);
-    }
-
-    public void prettyPrint() {
-        System.out.println(prettyToString());
     }
 
     public String prettyToString() {

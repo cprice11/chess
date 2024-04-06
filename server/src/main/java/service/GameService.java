@@ -32,7 +32,7 @@ public class GameService {
         String newPlayer = authService.verify(request.authorization()).username();
         try {
             GameData game = getGame(request.gameID());
-            if (request.playerColor() == null) return; // FIXME: add spectator option
+            if (request.playerColor() == null) return;
             String whitePlayer = game.whiteUsername();
             String blackPlayer = game.blackUsername();
             if (blackPlayer != null && whitePlayer != null) throw new AlreadyTakenException("Game is full");

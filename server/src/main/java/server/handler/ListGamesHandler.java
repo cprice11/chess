@@ -7,7 +7,7 @@ import spark.Request;
 import spark.Response;
 
 public class ListGamesHandler extends Handler {
-    // FIXME Throwing invalid request is undefined behavior
+    // Throwing invalid request is technically undefined behavior
     public static String handleRequest(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");

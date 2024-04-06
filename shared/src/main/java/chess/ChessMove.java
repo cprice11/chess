@@ -149,26 +149,6 @@ public final class ChessMove {
             return this;
         }
 
-        public MoveBuilder isCheck() {
-            this.isCheck = true;
-            return this;
-        }
-
-        public MoveBuilder isCheck(boolean b) {
-            this.isCheck = b;
-            return this;
-        }
-
-        public MoveBuilder isMate() {
-            this.isMate = true;
-            return this;
-        }
-
-        public MoveBuilder isMate(boolean b) {
-            this.isMate = b;
-            return this;
-        }
-
         public MoveBuilder enPassant(ChessPosition p) {
             this.enPassant = p;
             return this;
@@ -193,11 +173,6 @@ public final class ChessMove {
         public MoveBuilder longCastle(boolean longCastle) {
             this.longCastle = longCastle;
             this.castle = longCastle || castle;
-            return this;
-        }
-
-        public MoveBuilder offerDraw() {
-            this.offerDraw = true;
             return this;
         }
 

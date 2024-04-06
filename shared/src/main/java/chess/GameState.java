@@ -40,41 +40,17 @@ public class GameState {
         this.fullMoveClock = fullMoveClock;
     }
 
-    public void incrementFullMoveClock() {
-        this.fullMoveClock += 1;
-    }
-
-    public void incrementHalfMoveClock() {
-        this.halfMoveClock += 1;
-    }
-
-
-    public boolean whiteCanCastleShort() {
-        return whiteCanCastleShort;
-    }
 
     public void whiteCanCastleShort(boolean whiteCanCastleShort) {
         this.whiteCanCastleShort = whiteCanCastleShort;
-    }
-
-    public boolean whiteCanCastleLong() {
-        return whiteCanCastleLong;
     }
 
     public void whiteCanCastleLong(boolean whiteCanCastleLong) {
         this.whiteCanCastleLong = whiteCanCastleLong;
     }
 
-    public boolean blackCanCastleShort() {
-        return blackCanCastleShort;
-    }
-
     public void blackCanCastleShort(boolean blackCanCastleShort) {
         this.blackCanCastleShort = blackCanCastleShort;
-    }
-
-    public boolean blackCanCastleLong() {
-        return blackCanCastleLong;
     }
 
     public void blackCanCastleLong(boolean blackCanCastleLong) {
@@ -155,8 +131,6 @@ public class GameState {
                 decoratedMove.isCapture(false);
             }
         }
-        // decoratedMove.isCheck; // FIXME
-        // boolean isMate = move.isMate; // FIXME
         boolean shortCastle = move.shortCastle;
         boolean longCastle = move.longCastle;
 
@@ -166,7 +140,6 @@ public class GameState {
         }
         decoratedMove.shortCastle(shortCastle);
         decoratedMove.longCastle(longCastle);
-        // boolean offerDraw = move.offerDraw; // FIXME maybe
 
         return decoratedMove.build();
     }
@@ -386,6 +359,7 @@ public class GameState {
         cycleTurn();
         board().resetHighlight();
     }
+
     public ChessGame.TeamColor getOtherTeam(ChessGame.TeamColor current) {
         return (current == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
     }

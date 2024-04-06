@@ -60,11 +60,8 @@ public class FENParser extends ChessParser {
         fenData[1] = (state.turn() == ChessGame.TeamColor.WHITE) ? "w" : "b";
 
         StringBuilder castlingInfo = new StringBuilder();
-        // FIXME FEN parser doesn't give castle options
-//        if (state.whiteCanCastleShort()) castlingInfo.append('K');
-//        if (state.whiteCanCastleLong()) castlingInfo.append('Q');
-//        if (state.blackCanCastleShort()) castlingInfo.append('k');
-//        if (state.blackCanCastleLong()) castlingInfo.append('q');
+        // FIX: FEN parser doesn't give castle options
+
         if (state.board().equals(new ChessBoard())) castlingInfo.append("KQkq");
         if (castlingInfo.isEmpty()) castlingInfo.append('-');
         fenData[2] = castlingInfo.toString();
