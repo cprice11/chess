@@ -6,7 +6,6 @@ import dataAccess.DatabaseManager;
 import model.AuthData;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;

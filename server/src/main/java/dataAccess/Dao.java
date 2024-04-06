@@ -13,12 +13,12 @@ public interface Dao<T> {
     /**
      * @param target The object in the database to be removed
      */
-    void delete(T target);
+    void delete(T target) throws DataAccessException;
 
     /**
      * Deletes all objects in the database, leaving the tables
      */
-    void deleteAll();
+    void deleteAll() throws DataAccessException;
 
     /**
      * @param target The existing object in the database
@@ -37,5 +37,5 @@ public interface Dao<T> {
      *
      * @param entry The object to add
      */
-    void add(T entry) throws AlreadyTakenException;
+    void add(T entry) throws AlreadyTakenException, DataAccessException;
 }

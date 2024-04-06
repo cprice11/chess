@@ -55,9 +55,9 @@ class UserServiceTest extends ServiceVars {
     @Test
     @Order(5)
     void testLogin() {
-        auth.deleteAll();
-        Assertions.assertDoesNotThrow(() -> userService.login(goodLoginRequest), "Threw Exception on valid request");
         try {
+            auth.deleteAll();
+            Assertions.assertDoesNotThrow(() -> userService.login(goodLoginRequest), "Threw Exception on valid request");
             LoginResult result = userService.login(goodLoginRequest);
             Assertions.assertEquals(t4, result.authToken(), "Returned unexpected auth token");
             Assertions.assertEquals(loginResult.username(), result.username(), "Returned unexpected username");
@@ -86,8 +86,8 @@ class UserServiceTest extends ServiceVars {
     void testMultipleLogin() {
         // One login one token.
         // According to tests, one logout deletes one AuthData.
-        auth.deleteAll();
         try {
+            auth.deleteAll();
             LoginResult firstResult = userService.login(goodLoginRequest);
             LoginResult secondResult = userService.login(goodLoginRequest);
             Assertions.assertEquals(t3, firstResult.authToken(), "Unexpected authToken from login");
@@ -98,7 +98,7 @@ class UserServiceTest extends ServiceVars {
             Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(firstResult.authToken()), "Verified invalid authentication");
             Assertions.assertDoesNotThrow(() -> authService.getAuthByUsername(goodLoginRequest.username()), "No auth for logged in user");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(secondResult.authToken())), "Rejected valid logout request");
-        } catch (UnauthorizedException e) {
+        } catch (Exception e) {
             Assertions.fail("Threw Unexpected Exception");
         }
     }
@@ -106,8 +106,8 @@ class UserServiceTest extends ServiceVars {
     @Test
     @Order(8)
     void testReverseMultipleLogin() {
-        auth.deleteAll();
         try {
+            auth.deleteAll();
             LoginResult firstResult = userService.login(goodLoginRequest);
             LoginResult secondResult = userService.login(goodLoginRequest);
             Assertions.assertEquals(t3, firstResult.authToken(), "Unexpected authentication from login");
@@ -118,7 +118,7 @@ class UserServiceTest extends ServiceVars {
             Assertions.assertThrows(UnauthorizedException.class, () -> authService.verify(secondResult.authToken()), "Verified invalid authentication");
             Assertions.assertDoesNotThrow(() -> authService.getAuthByUsername(goodLoginRequest.username()), "No auth for logged in user");
             Assertions.assertDoesNotThrow(() -> userService.logout(new LogoutRequest(firstResult.authToken())), "Rejected valid logout request");
-        } catch (UnauthorizedException e) {
+        } catch (Exception e) {
             Assertions.fail("Threw Unexpected Exception");
         }
     }

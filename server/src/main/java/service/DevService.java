@@ -1,6 +1,7 @@
 package service;
 
 import dataAccess.AuthDao;
+import dataAccess.DataAccessException;
 import dataAccess.GameDao;
 import dataAccess.UserDao;
 
@@ -15,7 +16,7 @@ public class DevService {
         users = userDAO;
     }
 
-    public void clearDatabase() {
+    public void clearDatabase() throws DataAccessException {
         auth.deleteAll();
         games.deleteAll();
         users.deleteAll();

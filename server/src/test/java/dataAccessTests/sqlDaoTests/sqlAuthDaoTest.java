@@ -12,11 +12,12 @@ import java.util.*;
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class sqlAuthDaoTest extends sqlDataAccessVars {
-    AuthDao authDao = new SQLAuthDao();
-    GameDao gamesDao = new SQLGameDao();
-    UserDao userDao = new SQLUserDao();
+    private static final AuthDao authDao = new SQLAuthDao();
+    private static final GameDao gamesDao = new SQLGameDao();
+    private static final UserDao userDao = new SQLUserDao();
 
     @BeforeAll
+    @Order(1)
     static void initialize() {
         try {
             DatabaseManager.configureDatabase();
@@ -25,10 +26,23 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
         }
     }
 
+    @BeforeAll
+    @Order(2)
+    static void basicAdd() {
+        try {
+            authDao.add(a0);
+        } catch (Exception e) {
+            Assertions.fail("Could not set up database: " + e.getMessage());
+        }
+    }
+
     @BeforeEach
     void setup() {
         try {
             DatabaseManager.resetData();
+            authDao.add(a0);
+            authDao.add(a1);
+            authDao.add(a2);
         } catch (Exception e) {
             Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
         }
@@ -39,7 +53,7 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
     void getAll() {
         try {
             Collection<AuthData> allAuths = authDao.getAll();
-            Assertions.assertEquals(allAuths, authData);
+            Assertions.assertEquals(authData, allAuths);
             Assertions.assertDoesNotThrow(DatabaseManager::resetData);
             allAuths = authDao.getAll();
             Assertions.assertTrue(allAuths.isEmpty());
@@ -89,8 +103,11 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
     @Test
     @Order(5)
     void verify() {
-
-        authDao.update(a0, a1);
+        try {
+            authDao.update(a0, a1);
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
         Assertions.assertThrows(DataAccessException.class, () -> authDao.verify(a0));
         Assertions.assertThrows(DataAccessException.class, () -> authDao.verify(a0.authToken()));
         Assertions.assertDoesNotThrow(() -> authDao.verify(a2));
@@ -107,7 +124,7 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
             HashSet<AuthData> a = new HashSet<>();
             a.add(a0);
             Assertions.assertEquals(authDao.getAll(), a);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail(e.getMessage());
         }
     }

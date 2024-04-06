@@ -17,7 +17,7 @@ public class AuthService {
         return dao.createAuth(username);
     }
 
-    public void delete(AuthData target) {
+    public void delete(AuthData target) throws DataAccessException{
         dao.delete(target);
     }
 

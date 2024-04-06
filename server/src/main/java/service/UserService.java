@@ -45,7 +45,7 @@ public class UserService {
         }
     }
 
-    public void logout(LogoutRequest request) throws UnauthorizedException {
+    public void logout(LogoutRequest request) throws UnauthorizedException, DataAccessException{
         AuthData authData = auth.verify(request.authorization());
         auth.delete(authData);
     }

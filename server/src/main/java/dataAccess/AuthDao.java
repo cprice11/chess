@@ -1,6 +1,7 @@
 package dataAccess;
 
 import model.AuthData;
+import service.AlreadyTakenException;
 
 import java.util.Collection;
 
@@ -15,20 +16,20 @@ public interface AuthDao extends Dao<AuthData> {
      * @param target The object in the database to be removed
      */
     @Override
-    void delete(AuthData target);
+    void delete(AuthData target) throws DataAccessException;
 
     /**
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    void deleteAll();
+    void deleteAll() throws DataAccessException;
 
     /**
      * @param target The existing object in the database
      * @param value  The object to replace the target object
      */
     @Override
-    void update(AuthData target, AuthData value);
+    void update(AuthData target, AuthData value) throws DataAccessException;
 
     /**
      * @param target the object to search for in the database
@@ -49,7 +50,7 @@ public interface AuthDao extends Dao<AuthData> {
      * @param entry The object to add
      */
     @Override
-    void add(AuthData entry);
+    void add(AuthData entry) throws AlreadyTakenException, DataAccessException;
 
     Collection<AuthData> getAuthFromUser(String username) throws DataAccessException;
 

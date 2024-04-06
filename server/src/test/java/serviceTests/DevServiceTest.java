@@ -25,7 +25,11 @@ class DevServiceTest extends ServiceVars {
 
     @Test
     void clearDatabase() {
-        dev.clearDatabase();
+        try {
+            dev.clearDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         Assertions.assertTrue(MemoryDatabase.getAuth().isEmpty());
         Assertions.assertTrue(MemoryDatabase.getGames().isEmpty());
         Assertions.assertTrue(MemoryDatabase.getUsers().isEmpty());
