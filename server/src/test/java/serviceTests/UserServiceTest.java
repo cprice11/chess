@@ -13,6 +13,7 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.LogoutRequest;
+import server.request.RegisterRequest;
 import server.result.LoginResult;
 import service.*;
 
@@ -40,14 +41,11 @@ class UserServiceTest extends SqlServiceVars {
             authService = new AuthService(auth);
             gameService = new GameService(games, authService);
             userService = new UserService(users, authService);
-            for (AuthData a : authData) {
-                auth.createAuth(a.username());
-            }
             for (GameData g : gameData) {
                 games.add(g);
             }
             for (UserData u : userData) {
-                users.add(u);
+                userService.register(new RegisterRequest(u.username(), u.password(), u.email()));
             }
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
@@ -59,7 +57,6 @@ class UserServiceTest extends SqlServiceVars {
     @Order(4)
     void testRegister() {
         try {
-            var a = auth.getAll();
             Assertions.assertDoesNotThrow(() -> userService.register(goodRegisterRequest), "Threw exception on valid register request");
             Assertions.assertTrue(users.getAll().stream().anyMatch(user -> Objects.equals(user.username(), uNew.username())));
             Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(badRegisterRequest));
@@ -76,9 +73,8 @@ class UserServiceTest extends SqlServiceVars {
     void testLogin() {
         try {
             auth.deleteAll();
-            Assertions.assertDoesNotThrow(() -> userService.login(goodLoginRequest), "Threw Exception on valid request");
             LoginResult result = userService.login(goodLoginRequest);
-            Assertions.assertEquals(t8, result.authToken(), "Returned unexpected auth token");
+            Assertions.assertEquals(t3, result.authToken(), "Returned unexpected auth token");
             Assertions.assertEquals(loginResult.username(), result.username(), "Returned unexpected username");
             Assertions.assertTrue(auth.getAll().contains(new AuthData(result.authToken(), result.username())), "new auth not found in database after request");
         } catch (Exception e) {
@@ -92,6 +88,7 @@ class UserServiceTest extends SqlServiceVars {
     void testLogout() {
         try {
             userService.logout(goodLogoutRequest);
+            var a = auth.getAll();
             Assertions.assertFalse(auth.getAll().contains(a0), "AuthData remained after logout");
             Assertions.assertTrue(auth.getAll().contains(a1), "incorrect AuthData dropped after logout");
             Assertions.assertThrows(UnauthorizedException.class, () -> userService.logout(badLogoutRequest), "No error thrown on invalid request");
