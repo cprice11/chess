@@ -154,8 +154,7 @@ public class sqlGameDaoTest extends sqlDataAccessVars {
     void createGame() {
         try {
             int newGameID = gameDAO.createGame("exampleGameName");
-            Assertions.assertDoesNotThrow(() -> Assertions.assertSame("exampleGameName", gameDAO.getGame(newGameID).gameName())
-            );
+            Assertions.assertEquals("exampleGameName", gameDAO.getGame(newGameID).gameName());
         } catch (Exception e) {
             Assertions.fail("Unexpected exception: " + e.getMessage());
         }

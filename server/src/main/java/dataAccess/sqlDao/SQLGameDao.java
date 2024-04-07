@@ -21,18 +21,18 @@ import java.util.Random;
 public class SQLGameDao implements GameDao {
     private static final String INSERT_STATEMENT = "INSERT INTO games VALUES (?, ?, ?, ?, ?)";
     private static final String SELECT_STATEMENT = "SELECT * FROM games WHERE gameID=?";
-    private static final String SELECT_SUMMARIES_STATEMENT = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE gameID=?";
+    private static final String SELECT_SUMMARIES_STATEMENT = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
     private static final String DELETE_STATEMENT = "DELETE FROM games WHERE gameID=?";
     private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE games";
     private static final String UPDATE_STATEMENT = "UPDATE games SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameID=?";
     private final Random randomIdGenerator = new Random(111);
 
 
-    private static GameData selectGame(String gameID) throws DataAccessException {
+    private static GameData selectGame(int gameID) throws DataAccessException {
         ArrayList<GameData> entries = new ArrayList<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
-                preparedStatement.setString(1, gameID);
+                preparedStatement.setInt(1, gameID);
                 ResultSet res = preparedStatement.executeQuery();
                 while (res.next()) {
                         int id = res.getInt("gameID");
@@ -139,7 +139,8 @@ public class SQLGameDao implements GameDao {
      */
     @Override
     public void verify(GameData target) throws DataAccessException {
-
+        GameData game = verify(target.gameID());
+        if (game == null) throw new DataAccessException("GameID not verified");
     }
 
     /**
@@ -210,7 +211,9 @@ public class SQLGameDao implements GameDao {
      */
     @Override
     public GameData verify(int gameID) throws DataAccessException {
-        return null;
+        GameData game = selectGame(gameID);
+        if (game == null) throw new DataAccessException("GameID not verified");
+        return game;
     }
 
     /**
@@ -221,7 +224,19 @@ public class SQLGameDao implements GameDao {
      */
     @Override
     public void setGameState(int gameID, ChessGame game) throws DataAccessException {
+        selectGame(gameID);
+        try (Connection conn = DatabaseManager.getConnection()){
+            try (var preparedStatement = conn.prepareStatement("UPDATE games SET game=? WHERE gameID=?")) {
 
+                String json = new Gson().toJson(game);
+                preparedStatement.setString(1, json);
+
+                preparedStatement.setInt(2, gameID);
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
@@ -231,7 +246,7 @@ public class SQLGameDao implements GameDao {
      */
     @Override
     public void setGameState(GameData gameData) throws DataAccessException {
-
+        setGameState(gameData.gameID(), gameData.game());
     }
 
     /**
@@ -241,16 +256,7 @@ public class SQLGameDao implements GameDao {
      */
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        return null;
-    }
-
-    /**
-     * @param game 
-     * @return
-     */
-    @Override
-    public GameSummary getSummary(GameData game) {
-        return null;
+        return selectGame(gameID);
     }
 
     /**
@@ -258,8 +264,26 @@ public class SQLGameDao implements GameDao {
      * @return
      */
     @Override
-    public HashSet<GameSummary> getGamesByPlayer(String username) {
-        return null;
+    public HashSet<GameSummary> getGamesByPlayer(String username) throws DataAccessException{
+        HashSet<GameSummary> entries = new HashSet<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE whiteUsername=? OR blackUsername=?")) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, username);
+                ResultSet res = preparedStatement.executeQuery();
+                while (res.next()) {
+                    int id = res.getInt("gameID");
+                    String white = res.getString("whiteUsername");
+                    String black = res.getString("blackUsername");
+                    String name = res.getString("gameName");
+
+                    entries.add(new GameSummary(id, white, black, name));
+                }
+                return entries;
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
@@ -267,7 +291,24 @@ public class SQLGameDao implements GameDao {
      * @return
      */
     @Override
-    public HashSet<GameSummary> getGamesByName(String name) {
-        return null;
+    public HashSet<GameSummary> getGamesByName(String name) throws DataAccessException{
+        HashSet<GameSummary> entries = new HashSet<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE gameName=?")) {
+                preparedStatement.setString(1, name);
+                ResultSet res = preparedStatement.executeQuery();
+                while (res.next()) {
+                    int id = res.getInt("gameID");
+                    String white = res.getString("whiteUsername");
+                    String black = res.getString("blackUsername");
+                    String gameName = res.getString("gameName");
+
+                    entries.add(new GameSummary(id, white, black, gameName));
+                }
+                return entries;
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 }

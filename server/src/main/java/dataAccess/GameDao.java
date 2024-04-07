@@ -87,8 +87,6 @@ public interface GameDao extends Dao<GameData> {
 
     GameData getGame(int gameID) throws DataAccessException;
 
-    GameSummary getSummary(GameData game) throws DataAccessException;
-
     HashSet<GameSummary> getGamesByPlayer(String username) throws DataAccessException;
 
     HashSet<GameSummary> getGamesByName(String name) throws DataAccessException;
