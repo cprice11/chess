@@ -8,6 +8,7 @@ import model.AuthData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
@@ -17,8 +18,31 @@ public class SQLAuthDao implements AuthDao {
     private static final String SELECT_STATEMENT = "SELECT authToken, username FROM auth WHERE authToken=?";
     private static final String DELETE_STATEMENT = "DELETE FROM auth WHERE authToken=?";
     private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE auth";
+    private static final String SELECT_STATEMENT_USER = "SELECT authToken, username FROM auth WHERE username=?";
     private static final int AUTH_TOKEN_LENGTH = 40;
     private static final Random randomTokenGenerator = new Random(111);
+
+
+    private AuthData selectAuth(String authToken) throws DataAccessException{
+        ArrayList<AuthData> entries = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
+                preparedStatement.setString(1, authToken);
+                ResultSet res = preparedStatement.executeQuery();
+                while (res.next()) {
+                    entries.add(new AuthData(
+                                res.getString("authToken"),
+                                res.getString("username")
+                    ));
+                }
+                if(entries.isEmpty()) return null;
+                if(entries.size() > 1) throw new DataAccessException("Multiple matches found.");
+                return entries.getFirst();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
 
     /**
      * Returns all objects in the database
@@ -26,8 +50,7 @@ public class SQLAuthDao implements AuthDao {
     @Override
     public Collection<AuthData> getAll() throws DataAccessException {
         Collection<AuthData> authData = new HashSet<>();
-        try {
-            Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DatabaseManager.getConnection()){
             try (var rs = conn.prepareStatement("SELECT authToken, username FROM auth;").executeQuery()) {
                 while (rs.next()) {
                     authData.add(new AuthData(rs.getString("authToken"), rs.getString("username")));
@@ -75,8 +98,10 @@ public class SQLAuthDao implements AuthDao {
      * @param value  The object to replace the target object
      */
     @Override
-    public void update(AuthData target, AuthData value) {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+    public void update(AuthData target, AuthData value) throws DataAccessException{
+        // this ends up being better than UPDATE in this case
+        delete(target);
+        add(value);
     }
 
     /**
@@ -85,7 +110,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public void verify(AuthData target) throws DataAccessException {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+        verify(target.authToken());
     }
 
     /**
@@ -94,21 +119,9 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public AuthData verify(String authToken) throws DataAccessException {
-        Connection conn = DatabaseManager.getConnection();
-        AuthData result;
-        try {
-            try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
-                preparedStatement.setString(1, authToken);
-                ResultSet res = preparedStatement.executeQuery();
-                if (res.next()) {
-                    result = new AuthData(res.getString("authToken"), res.getString("username"));
-                    if (res.next()) throw new DataAccessException("More than one result returned");
-                } else  throw new DataAccessException("More than one result returned");
-                return result;
-            }
-        } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
-        }
+        AuthData auth = selectAuth(authToken);
+        if (auth == null) throw new DataAccessException("Token not verified");
+        return auth;
     }
 
     /**
@@ -118,8 +131,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public void add(AuthData entry) throws DataAccessException{
-        Connection conn = DatabaseManager.getConnection();
-        try {
+        try (Connection conn = DatabaseManager.getConnection()){
             try (var preparedStatement = conn.prepareStatement(INSERT_STATEMENT)) {
                 preparedStatement.setString(1, entry.authToken());
                 preparedStatement.setString(2, entry.username());
@@ -137,7 +149,22 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public Collection<AuthData> getAuthFromUser(String username) throws DataAccessException {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+        ArrayList<AuthData> entries = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT_USER)) {
+                preparedStatement.setString(1, username);
+                ResultSet res = preparedStatement.executeQuery();
+                while (res.next()) {
+                    entries.add(new AuthData(
+                            res.getString("authToken"),
+                            res.getString("username")
+                    ));
+                }
+                return entries;
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
@@ -147,7 +174,8 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public String getUsername(String authToken) throws DataAccessException {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+        AuthData auth = selectAuth(authToken);
+        return (auth == null)? null : auth.username();
     }
 
     /**
@@ -155,8 +183,10 @@ public class SQLAuthDao implements AuthDao {
      * @return
      */
     @Override
-    public AuthData createAuth(String username) {
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+    public AuthData createAuth(String username) throws DataAccessException {
+        AuthData newAuth = new AuthData(pseudoRandomToken(), username);
+        add(newAuth);
+        return newAuth;
     }
 
     /**
@@ -166,22 +196,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public AuthData getAuthFromToken(String authToken) throws DataAccessException {
-        Connection conn = DatabaseManager.getConnection();
-        try {
-        try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
-                preparedStatement.setString(1, authToken);
-                ResultSet res = preparedStatement.executeQuery();
-                return new AuthData(res.getString("authToken"), res.getString("username"));
-            }
-        } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
-        }
-    }
-
-    private static String sanitizeInput(String input) {
-        input = input.replace("'", "\\'");
-        input = input.replace("\\", "\\\\");
-        return input;
+        return verify(authToken);
     }
 
     private String pseudoRandomToken() {

@@ -21,7 +21,7 @@ public class UserService {
         this.auth = auth;
     }
 
-    public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
+    public RegisterResult register(RegisterRequest request) throws AlreadyTakenException, DataAccessException {
         String username = request.username();
         try {
             dao.getUser(username);
@@ -45,7 +45,7 @@ public class UserService {
         }
     }
 
-    public void logout(LogoutRequest request) throws UnauthorizedException, DataAccessException{
+    public void logout(LogoutRequest request) throws UnauthorizedException, DataAccessException {
         AuthData authData = auth.verify(request.authorization());
         auth.delete(authData);
     }

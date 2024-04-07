@@ -13,7 +13,7 @@ public class AuthService {
         this.dao = dao;
     }
 
-    public AuthData createAuth(String username) {
+    public AuthData createAuth(String username) throws DataAccessException{
         return dao.createAuth(username);
     }
 

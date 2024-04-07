@@ -35,6 +35,8 @@ class UserServiceTest extends ServiceVars {
             userService.register(new RegisterRequest(u2.username(), u2.password(), u2.email()));
         } catch (AlreadyTakenException e) {
             Assertions.fail("Could not register new users to initialize the database because of AlreadyTaken Exception");
+        } catch (Exception e) {
+            Assertions.fail("Could not register new users to initialize the database because of Exception");
         }
     }
 

@@ -155,10 +155,14 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
 
     @Test
     void createAuth() {
-        AuthData auth = authDao.createAuth(a0.username());
-        Assertions.assertNotNull(auth);
-        Assertions.assertNotNull(auth.authToken());
-        Assertions.assertEquals(auth.username(), a0.username());
-        Assertions.assertDoesNotThrow(() -> authDao.verify(auth.authToken()));
+        try {
+            AuthData auth = authDao.createAuth(a0.username());
+            Assertions.assertNotNull(auth);
+            Assertions.assertNotNull(auth.authToken());
+            Assertions.assertEquals(auth.username(), a0.username());
+            Assertions.assertDoesNotThrow(() -> authDao.verify(auth.authToken()));
+        } catch (Exception e) {
+            Assertions.fail("Unexpected exception was thrown during test. Exception: " + e.getMessage());
+        }
     }
 }
