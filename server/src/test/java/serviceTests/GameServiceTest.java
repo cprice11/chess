@@ -1,9 +1,14 @@
 package serviceTests;
 
-import dataAccess.DataAccessException;
+import dataAccess.*;
 import dataAccess.memoryDao.MemoryAuthDao;
 import dataAccess.memoryDao.MemoryDatabase;
+import dataAccess.sqlDao.SQLAuthDao;
+import dataAccess.sqlDao.SQLGameDao;
+import dataAccess.sqlDao.SQLUserDao;
+import model.AuthData;
 import model.GameData;
+import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.InvalidRequestException;
 import service.AlreadyTakenException;
@@ -15,17 +20,35 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class GameServiceTest extends ServiceVars {
-    private static AuthService authService = new AuthService(auth);
-    private static final GameService gameService = new GameService(games, authService);
+class GameServiceTest extends SqlServiceVars {
+    private AuthService authService;
+    private GameService gameService;
+    private AuthDao auth;
+    private GameDao games;
+    private UserDao users;
 
     @BeforeEach
     void buildDatabase() {
-        MemoryDatabase.setAuth(authData);
-        MemoryDatabase.setGames(gameData);
-        MemoryDatabase.setUsers(userData);
-        auth = new MemoryAuthDao();
-        authService = new AuthService(auth);
+        try {
+            DatabaseManager.configureDatabase();
+            DatabaseManager.resetData();
+            auth = new SQLAuthDao();
+            games = new SQLGameDao();
+            users = new SQLUserDao();
+            for (AuthData a : authData) {
+                auth.add(a);
+            }
+            for (GameData g : gameData) {
+                games.add(g);
+            }
+            for (UserData u : userData) {
+                users.add(u);
+            }
+            authService = new AuthService(auth);
+            gameService = new GameService(games, authService);
+        } catch (Exception e) {
+            Assertions.fail("Threw unexpected exception");
+        }
     }
 
     @Test
