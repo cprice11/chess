@@ -105,7 +105,12 @@ public class SQLUserDao implements UserDao {
      */
     @Override
     public void update(UserData target, UserData value) throws DataAccessException {
-
+        delete(target);
+        try {
+            add(value);
+        } catch (AlreadyTakenException e) {
+            throw new DataAccessException("multiple targets matched given value: " + e.getMessage());
+        }
     }
 
     /**
