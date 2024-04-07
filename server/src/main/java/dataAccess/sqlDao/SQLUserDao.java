@@ -150,7 +150,9 @@ public class SQLUserDao implements UserDao {
      */
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        return selectUser(username);
+        UserData user =  selectUser(username);
+        if (user == null) throw new DataAccessException("User not found");
+        return user;
     }
 
     /**

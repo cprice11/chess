@@ -23,7 +23,7 @@ public class SQLAuthDao implements AuthDao {
     private static final Random randomTokenGenerator = new Random(111);
 
 
-    private AuthData selectAuth(String authToken) throws DataAccessException{
+    private AuthData selectAuth(String authToken) throws DataAccessException {
         ArrayList<AuthData> entries = new ArrayList<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
@@ -31,12 +31,12 @@ public class SQLAuthDao implements AuthDao {
                 ResultSet res = preparedStatement.executeQuery();
                 while (res.next()) {
                     entries.add(new AuthData(
-                                res.getString("authToken"),
-                                res.getString("username")
+                            res.getString("authToken"),
+                            res.getString("username")
                     ));
                 }
-                if(entries.isEmpty()) return null;
-                if(entries.size() > 1) throw new DataAccessException("Multiple matches found.");
+                if (entries.isEmpty()) return null;
+                if (entries.size() > 1) throw new DataAccessException("Multiple matches found.");
                 return entries.getFirst();
             }
         } catch (Exception e) {
@@ -50,7 +50,7 @@ public class SQLAuthDao implements AuthDao {
     @Override
     public Collection<AuthData> getAll() throws DataAccessException {
         Collection<AuthData> authData = new HashSet<>();
-        try (Connection conn = DatabaseManager.getConnection()){
+        try (Connection conn = DatabaseManager.getConnection()) {
             try (var rs = conn.prepareStatement("SELECT authToken, username FROM auth;").executeQuery()) {
                 while (rs.next()) {
                     authData.add(new AuthData(rs.getString("authToken"), rs.getString("username")));
@@ -68,7 +68,7 @@ public class SQLAuthDao implements AuthDao {
      * @param target The object in the database to be removed
      */
     @Override
-    public void delete(AuthData target) throws DataAccessException{
+    public void delete(AuthData target) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(DELETE_STATEMENT)) {
                 preparedStatement.setString(1, target.authToken());
@@ -83,7 +83,7 @@ public class SQLAuthDao implements AuthDao {
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    public void deleteAll() throws DataAccessException{
+    public void deleteAll() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(TRUNCATE_STATEMENT)) {
                 preparedStatement.executeUpdate();
@@ -98,7 +98,7 @@ public class SQLAuthDao implements AuthDao {
      * @param value  The object to replace the target object
      */
     @Override
-    public void update(AuthData target, AuthData value) throws DataAccessException{
+    public void update(AuthData target, AuthData value) throws DataAccessException {
         // this ends up being better than UPDATE in this case
         delete(target);
         add(value);
@@ -130,8 +130,8 @@ public class SQLAuthDao implements AuthDao {
      * @param entry The object to add
      */
     @Override
-    public void add(AuthData entry) throws DataAccessException{
-        try (Connection conn = DatabaseManager.getConnection()){
+    public void add(AuthData entry) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(INSERT_STATEMENT)) {
                 preparedStatement.setString(1, entry.authToken());
                 preparedStatement.setString(2, entry.username());
@@ -143,7 +143,7 @@ public class SQLAuthDao implements AuthDao {
     }
 
     /**
-     * @param username 
+     * @param username
      * @return
      * @throws DataAccessException
      */
@@ -168,18 +168,18 @@ public class SQLAuthDao implements AuthDao {
     }
 
     /**
-     * @param authToken 
+     * @param authToken
      * @return
      * @throws DataAccessException
      */
     @Override
     public String getUsername(String authToken) throws DataAccessException {
         AuthData auth = selectAuth(authToken);
-        return (auth == null)? null : auth.username();
+        return (auth == null) ? null : auth.username();
     }
 
     /**
-     * @param username 
+     * @param username
      * @return
      */
     @Override
@@ -190,7 +190,7 @@ public class SQLAuthDao implements AuthDao {
     }
 
     /**
-     * @param authToken 
+     * @param authToken
      * @return
      * @throws DataAccessException
      */
@@ -201,7 +201,7 @@ public class SQLAuthDao implements AuthDao {
 
     private String pseudoRandomToken() {
         StringBuilder id = new StringBuilder();
-        for (int i = 0; i < AUTH_TOKEN_LENGTH; i++ ){
+        for (int i = 0; i < AUTH_TOKEN_LENGTH; i++) {
             int myInt = randomTokenGenerator.nextInt(94) + 33;
             char myChar = (char) myInt;
             id.append(myChar);
