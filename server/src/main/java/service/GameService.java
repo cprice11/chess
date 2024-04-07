@@ -23,7 +23,7 @@ public class GameService {
         this.authService = auth;
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) throws UnauthorizedException, DataAccessException {
+    public CreateGameResult createGame(CreateGameRequest request) throws UnauthorizedException, DataAccessException, AlreadyTakenException{
         authService.verify(request.authorization());
         return new CreateGameResult(dao.createGame(request.gameName()));
     }

@@ -60,7 +60,7 @@ public interface GameDao extends Dao<GameData> {
      *
      * @param gameName The object to add
      */
-    int createGame(String gameName) throws DataAccessException;
+    int createGame(String gameName) throws DataAccessException, AlreadyTakenException;
 
     /**
      * Confirms that a game is the database

@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 
 public class SQLGameDao implements GameDao {
     private static final String INSERT_STATEMENT = "INSERT INTO games VALUES (?, ?, ?, ?, ?)";
@@ -23,6 +24,7 @@ public class SQLGameDao implements GameDao {
     private static final String SELECT_SUMMARIES_STATEMENT = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE gameID=?";
     private static final String DELETE_STATEMENT = "DELETE FROM games WHERE gameID=?";
     private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE games";
+    private final Random randomIdGenerator = new Random(111);
 
 
     private static GameData selectGame(String gameID) throws DataAccessException {
@@ -179,8 +181,10 @@ public class SQLGameDao implements GameDao {
      * @param gameName The object to add
      */
     @Override
-    public int createGame(String gameName) {
-        return 0;
+    public int createGame(String gameName) throws DataAccessException, AlreadyTakenException {
+        GameData newGame = new GameData(randomIdGenerator.nextInt() & Integer.MAX_VALUE, null, null, gameName, new ChessGame());
+        add(newGame);
+        return newGame.gameID();
     }
 
     /**
