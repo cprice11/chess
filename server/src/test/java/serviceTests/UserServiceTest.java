@@ -1,42 +1,55 @@
 package serviceTests;
 
-import dataAccess.memoryDao.MemoryAuthDao;
+import dataAccess.AuthDao;
+import dataAccess.DatabaseManager;
+import dataAccess.GameDao;
+import dataAccess.UserDao;
 import dataAccess.memoryDao.MemoryDatabase;
+import dataAccess.sqlDao.SQLAuthDao;
+import dataAccess.sqlDao.SQLGameDao;
+import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.LogoutRequest;
-import server.request.RegisterRequest;
 import server.result.LoginResult;
-import service.AlreadyTakenException;
-import service.AuthService;
-import service.UnauthorizedException;
-import service.UserService;
+import service.*;
 
 import java.util.HashSet;
 import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class UserServiceTest extends ServiceVars {
-
-    private static AuthService authService = new AuthService(auth);
-    private static UserService userService = new UserService(users, authService);
+class UserServiceTest extends SqlServiceVars {
+    private AuthService authService;
+    private GameService gameService;
+    private UserService userService;
+    private AuthDao auth;
+    private GameDao games;
+    private UserDao users;
 
 
     @BeforeEach
     void buildDatabase() {
-        MemoryDatabase db = new MemoryDatabase();
-        auth = new MemoryAuthDao();
-        authService = new AuthService(auth);
-        userService = new UserService(users, authService);
         try {
-            userService.register(new RegisterRequest(u0.username(), u0.password(), u0.email()));
-            userService.register(new RegisterRequest(u1.username(), u1.password(), u1.email()));
-            userService.register(new RegisterRequest(u2.username(), u2.password(), u2.email()));
-        } catch (AlreadyTakenException e) {
-            Assertions.fail("Could not register new users to initialize the database because of AlreadyTaken Exception");
+            DatabaseManager.configureDatabase();
+            DatabaseManager.resetData();
+            auth = new SQLAuthDao();
+            games = new SQLGameDao();
+            users = new SQLUserDao();
+            for (AuthData a : authData) {
+                auth.add(a);
+            }
+            for (GameData g : gameData) {
+                games.add(g);
+            }
+            for (UserData u : userData) {
+                users.add(u);
+            }
+            authService = new AuthService(auth);
+            gameService = new GameService(games, authService);
         } catch (Exception e) {
-            Assertions.fail("Could not register new users to initialize the database because of Exception");
+            Assertions.fail("Threw unexpected exception");
         }
     }
 
@@ -65,7 +78,7 @@ class UserServiceTest extends ServiceVars {
             auth.deleteAll();
             Assertions.assertDoesNotThrow(() -> userService.login(goodLoginRequest), "Threw Exception on valid request");
             LoginResult result = userService.login(goodLoginRequest);
-            Assertions.assertEquals(t4, result.authToken(), "Returned unexpected auth token");
+            Assertions.assertEquals(t8, result.authToken(), "Returned unexpected auth token");
             Assertions.assertEquals(loginResult.username(), result.username(), "Returned unexpected username");
             Assertions.assertTrue(auth.getAll().contains(new AuthData(result.authToken(), result.username())), "new auth not found in database after request");
         } catch (Exception e) {
@@ -78,12 +91,12 @@ class UserServiceTest extends ServiceVars {
     @Order(6)
     void testLogout() {
         try {
-            Assertions.assertDoesNotThrow(() -> userService.logout(goodLogoutRequest));
+            userService.logout(goodLogoutRequest);
             Assertions.assertFalse(auth.getAll().contains(a0), "AuthData remained after logout");
             Assertions.assertTrue(auth.getAll().contains(a1), "incorrect AuthData dropped after logout");
             Assertions.assertThrows(UnauthorizedException.class, () -> userService.logout(badLogoutRequest), "No error thrown on invalid request");
         } catch (Exception e) {
-            Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
+            Assertions.fail("Threw unexpected exception: " + e.getMessage());
         }
     }
 

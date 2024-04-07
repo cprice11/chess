@@ -69,8 +69,8 @@ public class SqlServiceVars {
     static final HashSet<GameSummary> gameSummaries = new HashSet<>(Arrays.asList(s0, s1, s2));
 
     //protected static AuthDao auth = new SQLAuthDao();
-    protected static GameDao games = new SQLGameDao();
-    protected static UserDao users = new SQLUserDao();
+    //protected static GameDao games = new SQLGameDao();
+    //protected static UserDao users = new SQLUserDao();
 
 
     // register
