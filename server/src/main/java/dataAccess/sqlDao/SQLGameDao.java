@@ -5,14 +5,13 @@ import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.GameDao;
-import dataAccess.memoryDao.MemoryDatabase;
-import model.AuthData;
 import model.GameData;
 import model.GameSummary;
 import service.AlreadyTakenException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,31 +27,24 @@ public class SQLGameDao implements GameDao {
     private final Random randomIdGenerator = new Random(111);
 
 
-    private static GameData selectGame(int gameID) throws DataAccessException {
+    private GameData selectGame(int gameID) throws DataAccessException {
         ArrayList<GameData> entries = new ArrayList<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
                 preparedStatement.setInt(1, gameID);
                 ResultSet res = preparedStatement.executeQuery();
                 while (res.next()) {
-                        int id = res.getInt("gameID");
-                        String white = res.getString("whiteUsername");
-                        String black = res.getString("blackUsername");
-                        String name = res.getString("gameName");
-
-                        String json = res.getString("game");
-                        ChessGame game = new Gson().fromJson(json, ChessGame.class);
-
-                        entries.add(new GameData(id, white, black, name, game));
+                    entries.add(fillGame(res));
                 }
-                if(entries.isEmpty()) return null;
-                if(entries.size() > 1) throw new DataAccessException("Multiple matches found.");
+                if (entries.isEmpty()) return null;
+                if (entries.size() > 1) throw new DataAccessException("Multiple matches found.");
                 return entries.getFirst();
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
     }
+
     /**
      * Returns all objects in the database
      */
@@ -63,15 +55,7 @@ public class SQLGameDao implements GameDao {
             try (var preparedStatement = conn.prepareStatement("SELECT * FROM games")) {
                 ResultSet res = preparedStatement.executeQuery();
                 while (res.next()) {
-                    int id = res.getInt("gameID");
-                    String white = res.getString("whiteUsername");
-                    String black = res.getString("blackUsername");
-                    String name = res.getString("gameName");
-
-                    String json = res.getString("game");
-                    ChessGame game = new Gson().fromJson(json, ChessGame.class);
-
-                    entries.add(new GameData(id, white, black, name, game));
+                    entries.add(fillGame(res));
                 }
                 return entries;
             }
@@ -80,11 +64,22 @@ public class SQLGameDao implements GameDao {
         }
     }
 
+    private GameData fillGame(ResultSet res) throws SQLException {
+        int id = res.getInt("gameID");
+        String white = res.getString("whiteUsername");
+        String black = res.getString("blackUsername");
+        String name = res.getString("gameName");
+
+        String json = res.getString("game");
+        ChessGame game = new Gson().fromJson(json, ChessGame.class);
+        return new GameData(id, white, black, name, game);
+    }
+
     /**
      * @param target The object in the database to be removed
      */
     @Override
-    public void delete(GameData target) throws DataAccessException{
+    public void delete(GameData target) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(DELETE_STATEMENT)) {
                 preparedStatement.setInt(1, target.gameID());
@@ -99,7 +94,7 @@ public class SQLGameDao implements GameDao {
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    public void deleteAll() throws DataAccessException{
+    public void deleteAll() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(TRUNCATE_STATEMENT)) {
                 preparedStatement.executeUpdate();
@@ -116,7 +111,7 @@ public class SQLGameDao implements GameDao {
     @Override
     // Really should just be ID. Something to fix in the next one.
     public void update(GameData target, GameData value) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()){
+        try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(UPDATE_STATEMENT)) {
                 preparedStatement.setString(1, value.whiteUsername());
                 preparedStatement.setString(2, value.blackUsername());
@@ -150,7 +145,7 @@ public class SQLGameDao implements GameDao {
      */
     @Override
     public void add(GameData entry) throws AlreadyTakenException, DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()){
+        try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(INSERT_STATEMENT)) {
                 preparedStatement.setInt(1, entry.gameID());
                 preparedStatement.setString(2, entry.whiteUsername());
@@ -171,7 +166,7 @@ public class SQLGameDao implements GameDao {
      * Gets a list of the summaries of every game in the database
      */
     @Override
-    public Collection<GameSummary> getGameSummaries() throws DataAccessException{
+    public Collection<GameSummary> getGameSummaries() throws DataAccessException {
         Collection<GameSummary> entries = new HashSet<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(SELECT_SUMMARIES_STATEMENT)) {
@@ -225,7 +220,7 @@ public class SQLGameDao implements GameDao {
     @Override
     public void setGameState(int gameID, ChessGame game) throws DataAccessException {
         selectGame(gameID);
-        try (Connection conn = DatabaseManager.getConnection()){
+        try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("UPDATE games SET game=? WHERE gameID=?")) {
 
                 String json = new Gson().toJson(game);
@@ -250,7 +245,7 @@ public class SQLGameDao implements GameDao {
     }
 
     /**
-     * @param gameID 
+     * @param gameID
      * @return
      * @throws DataAccessException
      */
@@ -262,11 +257,11 @@ public class SQLGameDao implements GameDao {
     }
 
     /**
-     * @param username 
+     * @param username
      * @return
      */
     @Override
-    public HashSet<GameSummary> getGamesByPlayer(String username) throws DataAccessException{
+    public HashSet<GameSummary> getGamesByPlayer(String username) throws DataAccessException {
         HashSet<GameSummary> entries = new HashSet<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE whiteUsername=? OR blackUsername=?")) {
@@ -274,12 +269,7 @@ public class SQLGameDao implements GameDao {
                 preparedStatement.setString(2, username);
                 ResultSet res = preparedStatement.executeQuery();
                 while (res.next()) {
-                    int id = res.getInt("gameID");
-                    String white = res.getString("whiteUsername");
-                    String black = res.getString("blackUsername");
-                    String name = res.getString("gameName");
-
-                    entries.add(new GameSummary(id, white, black, name));
+                    entries.add(filSummary(res));
                 }
                 return entries;
             }
@@ -289,28 +279,31 @@ public class SQLGameDao implements GameDao {
     }
 
     /**
-     * @param name 
+     * @param name
      * @return
      */
     @Override
-    public HashSet<GameSummary> getGamesByName(String name) throws DataAccessException{
+    public HashSet<GameSummary> getGamesByName(String name) throws DataAccessException {
         HashSet<GameSummary> entries = new HashSet<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE gameName=?")) {
                 preparedStatement.setString(1, name);
                 ResultSet res = preparedStatement.executeQuery();
                 while (res.next()) {
-                    int id = res.getInt("gameID");
-                    String white = res.getString("whiteUsername");
-                    String black = res.getString("blackUsername");
-                    String gameName = res.getString("gameName");
-
-                    entries.add(new GameSummary(id, white, black, gameName));
+                    entries.add(filSummary(res));
                 }
                 return entries;
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
+    }
+
+    private GameSummary filSummary(ResultSet res) throws SQLException {
+        int id = res.getInt("gameID");
+        String white = res.getString("whiteUsername");
+        String black = res.getString("blackUsername");
+        String name = res.getString("gameName");
+        return new GameSummary(id, white, black, name);
     }
 }
