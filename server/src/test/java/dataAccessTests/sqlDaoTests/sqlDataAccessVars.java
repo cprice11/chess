@@ -14,9 +14,9 @@ public class sqlDataAccessVars {
     static final AuthData a1 = new AuthData("1hu2^7T@YXtJhDuQ2%dg", "antonius");
     static final AuthData a2 = new AuthData("2hu2^7T@YXtJhDuQ2%dg", "death");
 
-    static final GameData g0 = new GameData(1, "myname123", "Antonius", "firstmatch", new ChessGame());
-    static final GameData g1 = new GameData(2, "antonius", "death", "chessgame", new ChessGame());
-    static final GameData g2 = new GameData(3, "death", "myname123", "chessgame", new ChessGame());
+    static final GameData g0 = new GameData(0, "myname123", "Antonius", "firstmatch", new ChessGame());
+    static final GameData g1 = new GameData(1, "antonius", "death", "chessgame", new ChessGame());
+    static final GameData g2 = new GameData(2, "death", "myname123", "chessgame", new ChessGame());
 
     static final UserData u0 = new UserData("myname123", "p@ssword", "email@email.com");
     static final UserData u1 = new UserData("antonius", "G00dK!ght", "email@email.com");

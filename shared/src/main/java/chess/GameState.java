@@ -429,4 +429,17 @@ public class GameState {
     public void setPrint(boolean p) {
         print = p;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameState state = (GameState) o;
+        return print == state.print && whiteCanCastleShort == state.whiteCanCastleShort && whiteCanCastleLong == state.whiteCanCastleLong && blackCanCastleShort == state.blackCanCastleShort && blackCanCastleLong == state.blackCanCastleLong && halfMoveClock == state.halfMoveClock && fullMoveClock == state.fullMoveClock && Objects.equals(board, state.board) && turn == state.turn && Objects.equals(enPassant, state.enPassant) && Objects.equals(history, state.history);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(print, board, turn, whiteCanCastleShort, whiteCanCastleLong, blackCanCastleShort, blackCanCastleLong, enPassant, halfMoveClock, fullMoveClock, history);
+    }
 }

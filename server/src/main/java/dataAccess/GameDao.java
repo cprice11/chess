@@ -13,19 +13,19 @@ public interface GameDao extends Dao<GameData> {
      * Returns all objects in the database
      */
     @Override
-    Collection<GameData> getAll();
+    Collection<GameData> getAll() throws DataAccessException;
 
     /**
      * @param target The object in the database to be removed
      */
     @Override
-    void delete(GameData target);
+    void delete(GameData target) throws DataAccessException;
 
     /**
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    void deleteAll();
+    void deleteAll() throws DataAccessException;
 
     /**
      * @param target The existing object in the database
@@ -46,12 +46,12 @@ public interface GameDao extends Dao<GameData> {
      * @param entry The object to add
      */
     @Override
-    void add(GameData entry) throws AlreadyTakenException;
+    void add(GameData entry) throws AlreadyTakenException, DataAccessException;
 
     /**
      * Gets a list of the summaries of every game in the database
      */
-    Collection<GameSummary> getGameSummaries();
+    Collection<GameSummary> getGameSummaries() throws DataAccessException;
 
     // might move to private in implementation class or move to a utility class to inherit from
 
@@ -60,7 +60,7 @@ public interface GameDao extends Dao<GameData> {
      *
      * @param gameName The object to add
      */
-    int createGame(String gameName);
+    int createGame(String gameName) throws DataAccessException;
 
     /**
      * Confirms that a game is the database
@@ -87,9 +87,9 @@ public interface GameDao extends Dao<GameData> {
 
     GameData getGame(int gameID) throws DataAccessException;
 
-    GameSummary getSummary(GameData game);
+    GameSummary getSummary(GameData game) throws DataAccessException;
 
-    HashSet<GameSummary> getGamesByPlayer(String username);
+    HashSet<GameSummary> getGamesByPlayer(String username) throws DataAccessException;
 
-    HashSet<GameSummary> getGamesByName(String name);
+    HashSet<GameSummary> getGamesByName(String name) throws DataAccessException;
 }

@@ -144,8 +144,12 @@ class GameServiceTest extends ServiceVars {
 
     @Test
     void getGamesByPlayer() {
-        Assertions.assertEquals(new HashSet<>(Arrays.asList(s1, s2)), gameService.getGamesByPlayer("death"));
-        Assertions.assertDoesNotThrow(() -> gameService.getGamesByPlayer("death"));
+        try {
+            Assertions.assertEquals(new HashSet<>(Arrays.asList(s1, s2)), gameService.getGamesByPlayer("death"));
+            Assertions.assertDoesNotThrow(() -> gameService.getGamesByPlayer("death"));
+        } catch (Exception e) {
+            Assertions.fail("Threw unexpected exception");
+        }
     }
 
     @Test

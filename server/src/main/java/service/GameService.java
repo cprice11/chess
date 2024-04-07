@@ -23,7 +23,7 @@ public class GameService {
         this.authService = auth;
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) throws UnauthorizedException {
+    public CreateGameResult createGame(CreateGameRequest request) throws UnauthorizedException, DataAccessException {
         authService.verify(request.authorization());
         return new CreateGameResult(dao.createGame(request.gameName()));
     }
@@ -52,7 +52,7 @@ public class GameService {
         }
     }
 
-    public ListGamesResult listGames(ListGamesRequest request) throws UnauthorizedException {
+    public ListGamesResult listGames(ListGamesRequest request) throws UnauthorizedException, DataAccessException {
         authService.verify(request.authentication());
         return new ListGamesResult(dao.getGameSummaries());
     }
@@ -61,11 +61,11 @@ public class GameService {
         return dao.getGame(gameID);
     }
 
-    public Collection<GameSummary> getGamesByPlayer(String username) {
+    public Collection<GameSummary> getGamesByPlayer(String username) throws DataAccessException{
         return dao.getGamesByPlayer(username);
     }
 
-    public Collection<GameSummary> getGamesByName(String gameName) {
+    public Collection<GameSummary> getGamesByName(String gameName) throws DataAccessException {
         return dao.getGamesByName(gameName);
     }
 }

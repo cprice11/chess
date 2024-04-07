@@ -1,38 +1,108 @@
 package dataAccess.sqlDao;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import dataAccess.GameDao;
+import model.AuthData;
 import model.GameData;
 import model.GameSummary;
 import service.AlreadyTakenException;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class SQLGameDao implements GameDao {
+    private static final String INSERT_STATEMENT = "INSERT INTO games VALUES (?, ?, ?, ?, ?)";
+    private static final String SELECT_STATEMENT = "SELECT * FROM games WHERE gameID=?";
+    private static final String SELECT_SUMMARIES_STATEMENT = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE gameID=?";
+    private static final String DELETE_STATEMENT = "DELETE FROM games WHERE gameID=?";
+    private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE games";
+
+
+    private static GameData selectGame(String gameID) throws DataAccessException {
+        ArrayList<GameData> entries = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
+                preparedStatement.setString(1, gameID);
+                ResultSet res = preparedStatement.executeQuery();
+                while (res.next()) {
+                        int id = res.getInt("gameID");
+                        String white = res.getString("whiteUsername");
+                        String black = res.getString("blackUsername");
+                        String name = res.getString("gameName");
+
+                        String json = res.getString("game");
+                        ChessGame game = new Gson().fromJson(json, ChessGame.class);
+
+                        entries.add(new GameData(id, white, black, name, game));
+                }
+                if(entries.isEmpty()) return null;
+                if(entries.size() > 1) throw new DataAccessException("Multiple matches found.");
+                return entries.getFirst();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
     /**
      * Returns all objects in the database
      */
     @Override
-    public Collection<GameData> getAll() {
-        return null;
+    public Collection<GameData> getAll() throws DataAccessException {
+        Collection<GameData> entries = new HashSet<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT * FROM games")) {
+                ResultSet res = preparedStatement.executeQuery();
+                while (res.next()) {
+                    int id = res.getInt("gameID");
+                    String white = res.getString("whiteUsername");
+                    String black = res.getString("blackUsername");
+                    String name = res.getString("gameName");
+
+                    String json = res.getString("game");
+                    ChessGame game = new Gson().fromJson(json, ChessGame.class);
+
+                    entries.add(new GameData(id, white, black, name, game));
+                }
+                return entries;
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
      * @param target The object in the database to be removed
      */
     @Override
-    public void delete(GameData target) {
-
+    public void delete(GameData target) throws DataAccessException{
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(DELETE_STATEMENT)) {
+                preparedStatement.setInt(1, target.gameID());
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    public void deleteAll() {
-
+    public void deleteAll() throws DataAccessException{
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(TRUNCATE_STATEMENT)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
@@ -59,7 +129,22 @@ public class SQLGameDao implements GameDao {
      * @param entry The object to add
      */
     @Override
-    public void add(GameData entry) throws AlreadyTakenException {
+    public void add(GameData entry) throws AlreadyTakenException, DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()){
+            try (var preparedStatement = conn.prepareStatement(INSERT_STATEMENT)) {
+                preparedStatement.setInt(1, entry.gameID());
+                preparedStatement.setString(2, entry.whiteUsername());
+                preparedStatement.setString(3, entry.blackUsername());
+                preparedStatement.setString(4, entry.gameName());
+
+                String json = new Gson().toJson(entry.game());
+                preparedStatement.setString(5, json);
+
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
 
     }
 
