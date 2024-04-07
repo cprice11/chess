@@ -160,6 +160,7 @@ public class SQLAuthDao implements AuthDao {
                             res.getString("username")
                     ));
                 }
+                if (entries.isEmpty()) throw new DataAccessException("No matches found.");
                 return entries;
             }
         } catch (Exception e) {

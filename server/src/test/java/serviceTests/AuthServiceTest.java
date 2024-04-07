@@ -1,29 +1,54 @@
 package serviceTests;
 
-import dataAccess.DataAccessException;
+import dataAccess.*;
 import dataAccess.memoryDao.MemoryAuthDao;
 import dataAccess.memoryDao.MemoryDatabase;
+import dataAccess.sqlDao.SQLAuthDao;
+import dataAccess.sqlDao.SQLGameDao;
+import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
+import model.GameData;
+import model.UserData;
 import org.junit.jupiter.api.*;
+import server.request.RegisterRequest;
 import service.AuthService;
+import service.GameService;
 import service.UnauthorizedException;
+import service.UserService;
 
 import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AuthServiceTest extends ServiceVars {
-    private static AuthService authService;
+class AuthServiceTest extends SqlServiceVars {
+    private AuthService authService;
+    private GameService gameService;
+    private UserService userService;
+    private AuthDao auth;
+    private GameDao games;
+    private UserDao users;
 
-    private static final MemoryDatabase db = new MemoryDatabase();
 
 
     @BeforeEach
     void buildDatabase() {
-        MemoryDatabase.setAuth(authData);
-        MemoryDatabase.setGames(gameData);
-        MemoryDatabase.setUsers(userData);
-        auth = new MemoryAuthDao();
-        authService = new AuthService(auth);
+        try {
+            DatabaseManager.configureDatabase();
+            DatabaseManager.resetData();
+            auth = new SQLAuthDao();
+            games = new SQLGameDao();
+            users = new SQLUserDao();
+            authService = new AuthService(auth);
+            gameService = new GameService(games, authService);
+            userService = new UserService(users, authService);
+            for (GameData g : gameData) {
+                games.add(g);
+            }
+            for (UserData u : userData) {
+                userService.register(new RegisterRequest(u.username(), u.password(), u.email()));
+            }
+        } catch (Exception e) {
+            Assertions.fail("Threw unexpected exception");
+        }
     }
 
     @Test
@@ -80,7 +105,7 @@ class AuthServiceTest extends ServiceVars {
             String username = "brand-new-user";
             AuthData newAuth = authService.createAuth(username);
             Assertions.assertNotNull(newAuth.authToken(), "returned null authentication");
-            Assertions.assertEquals(t0, newAuth.authToken(), "unexpected token value");
+            Assertions.assertEquals(t3, newAuth.authToken(), "unexpected token value");
             Assertions.assertTrue(auth.getAll().stream().anyMatch(auth -> Objects.equals(auth.authToken(), newAuth.authToken())));
             Assertions.assertDoesNotThrow(() -> authService.verify(newAuth.authToken()), "threw Exception verifying valid request");
         } catch (Exception e) {
@@ -100,9 +125,9 @@ class AuthServiceTest extends ServiceVars {
             Assertions.assertDoesNotThrow(() -> auth.verify(newAuthTwo.authToken()), "Threw Exception on valid second request");
             Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuth.authToken(), username)), "first authData found");
             Assertions.assertTrue(auth.getAll().contains(new AuthData(newAuthTwo.authToken(), username)), "second authData found");
-            Assertions.assertEquals(t0, newAuth.authToken(), "returned unexpected auth token");
+            Assertions.assertEquals(t3, newAuth.authToken(), "returned unexpected auth token");
             Assertions.assertEquals(username, newAuth.username(), "returned unexpected username");
-            Assertions.assertEquals(t1, newAuthTwo.authToken(), "returned unexpected auth token");
+            Assertions.assertEquals(t4, newAuthTwo.authToken(), "returned unexpected auth token");
             Assertions.assertEquals(username, newAuthTwo.username(), "returned unexpected username");
         } catch (Exception e) {
             Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());

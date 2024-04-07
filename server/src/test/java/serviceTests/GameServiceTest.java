@@ -11,10 +11,8 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.InvalidRequestException;
-import service.AlreadyTakenException;
-import service.AuthService;
-import service.GameService;
-import service.UnauthorizedException;
+import server.request.RegisterRequest;
+import service.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,6 +21,7 @@ import java.util.HashSet;
 class GameServiceTest extends SqlServiceVars {
     private AuthService authService;
     private GameService gameService;
+    private UserService userService;
     private AuthDao auth;
     private GameDao games;
     private UserDao users;
@@ -35,17 +34,15 @@ class GameServiceTest extends SqlServiceVars {
             auth = new SQLAuthDao();
             games = new SQLGameDao();
             users = new SQLUserDao();
-            for (AuthData a : authData) {
-                auth.add(a);
-            }
+            authService = new AuthService(auth);
+            gameService = new GameService(games, authService);
+            userService = new UserService(users, authService);
             for (GameData g : gameData) {
                 games.add(g);
             }
             for (UserData u : userData) {
-                users.add(u);
+                userService.register(new RegisterRequest(u.username(), u.password(), u.email()));
             }
-            authService = new AuthService(auth);
-            gameService = new GameService(games, authService);
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
