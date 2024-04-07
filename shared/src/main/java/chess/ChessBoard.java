@@ -1,8 +1,7 @@
 package chess;
 
-import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -33,18 +32,13 @@ public class ChessBoard {
 
     public boolean printSymbols = true;
 
-    private final ChessPiece[][] positions;
-    private final Highlight[][] highlightedPositions;
-
+    private final HashMap<ChessPosition, ChessPiece> positions;
+    private final HashMap<ChessPosition, Highlight> highlightedPositions;
 
     private ChessPosition enPassant = null;
-
-
-    public ChessPiece[][] getPositions() {
+    public HashMap<ChessPosition, ChessPiece> getPositions() {
         return positions;
     }
-
-
     public enum Highlight {
         PRIMARY,
         SECONDARY,
@@ -55,11 +49,8 @@ public class ChessBoard {
 
 
     public ChessBoard() {
-        highlightedPositions = new Highlight[BOARD_SIZE][BOARD_SIZE];
-        for (Highlight[] row : highlightedPositions) {
-            Arrays.fill(row, Highlight.NONE);
-        }
-        positions = new ChessPiece[BOARD_SIZE][BOARD_SIZE];
+        highlightedPositions = new HashMap<>();
+        positions = new HashMap<>();
     }
 
 
@@ -68,21 +59,20 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        if (enPassant == null) return Arrays.deepEquals(positions, that.positions);
+        if (enPassant == null) return positions.equals(that.positions);
 
         // En Passant is handled by placing an extra "Ghost Pawn" on the board
         // this lets the equivalence work as if it weren't there.
         ChessPiece ep = getPiece(enPassant);
         removePiece(enPassant);
-        boolean returnVal = Arrays.deepEquals(positions, that.positions);
+        boolean returnVal = positions.equals(that.positions);
         addPiece(enPassant, ep);
         return returnVal;
     }
 
     @Override
     public int hashCode() {
-
-        return Arrays.deepHashCode(positions);
+        return positions.hashCode();
     }
 
 
@@ -94,25 +84,16 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         if (piece != null && piece.getPieceType() == ChessPiece.PieceType.EN_PASSANT) enPassant = position;
-        positions[position.getRank() - 1][position.getFile() - 1] = piece;
+        positions.put(position, piece);
     }
 
     public ChessPiece removePiece(ChessPosition position) {
-        ChessPiece piece = getPiece(position);
-        positions[position.getRank() - 1][position.getFile() - 1] = null;
-        return piece;
+        return positions.remove(position);
     }
 
-    public void setBoard(ChessPiece[][] newPositions) {
+    public void setBoard(HashMap<ChessPosition, ChessPiece> newPositions) {
         clearBoard();
-        if (newPositions.length != positions.length) throw new RuntimeException("Wrong size");
-        for (int i = 0; i < positions.length; i++) {
-            if (newPositions[i].length != positions[i].length) throw new RuntimeException("Wrong size");
-            for (int j = 0; j < positions[i].length; j++) {
-                if (newPositions[i][j] == null) continue;
-                positions[i][j] = new ChessPiece(newPositions[i][j].getTeamColor(), newPositions[i][j].getPieceType());
-            }
-        }
+        positions.putAll(newPositions);
     }
 
 
@@ -123,21 +104,12 @@ public class ChessBoard {
      * @return Either the piece at the position, or null if no piece is at that position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return positions[position.getRank() - 1][position.getFile() - 1];
+        return positions.get(position);
     }
 
     // If I ever refactor this. This should be state's responsibility.
-    public Dictionary<ChessPosition, ChessPiece> getPieces() {
-        Dictionary<ChessPosition, ChessPiece> pieces = new Hashtable<>() {
-        };
-        for (int i = 0; i < positions.length; i++) {
-            for (int j = 0; j < positions[i].length; j++) {
-                ChessPiece square = positions[i][j];
-                if (square == null) continue;
-                pieces.put(new ChessPosition(i + 1, j + 1), square);
-            }
-        }
-        return pieces;
+    public HashMap<ChessPosition, ChessPiece> getPieces() {
+        return new HashMap<>(positions);
     }
 
     /**
@@ -148,7 +120,7 @@ public class ChessBoard {
      */
     public ChessGame.TeamColor getPieceColor(ChessPosition position) {
         if (getPiece(position) == null) return null;
-        return positions[position.getRank() - 1][position.getFile() - 1].getTeamColor();
+        return positions.get(position).getTeamColor();
     }
 
     /**
@@ -158,7 +130,7 @@ public class ChessBoard {
      * @return The Highlight object specifying the color
      */
     private Highlight getHighlight(ChessPosition position) {
-        return highlightedPositions[position.getRank() - 1][position.getFile() - 1];
+        return highlightedPositions.get(position);
     }
 
     /**
@@ -168,7 +140,7 @@ public class ChessBoard {
      * @param highlightType The color to highlight the square
      */
     public void highlightPosition(ChessPosition position, Highlight highlightType) {
-        highlightedPositions[position.getRank() - 1][position.getFile() - 1] = highlightType;
+        highlightedPositions.put(position, highlightType);
     }
 
     /**
@@ -176,48 +148,45 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        positions[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        positions[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        positions[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        positions[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-        positions[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        positions[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        positions[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        positions[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        Arrays.fill(positions[6], new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        positions.put(new ChessPosition(8, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+        positions.put(new ChessPosition(8, 2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
+        positions.put(new ChessPosition(8, 3), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
+        positions.put(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
+        positions.put(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
+        positions.put(new ChessPosition(8, 6), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
+        positions.put(new ChessPosition(8, 7), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
+        positions.put(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
 
-        positions[5] = new ChessPiece[BOARD_SIZE];
-        positions[4] = new ChessPiece[BOARD_SIZE];
-        positions[3] = new ChessPiece[BOARD_SIZE];
-        positions[2] = new ChessPiece[BOARD_SIZE];
+        for (int i = 1; i <= 8; i++) {
+            positions.put(new ChessPosition(7, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        }
 
-        Arrays.fill(positions[1], new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-        positions[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-        positions[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        positions[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        positions[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-        positions[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-        positions[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        positions[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        positions[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        for (int i = 1; i <= 8; i++) {
+            positions.put(new ChessPosition(2, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+        }
+
+        positions.put(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+        positions.put(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
+        positions.put(new ChessPosition(1, 3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
+        positions.put(new ChessPosition(1, 4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
+        positions.put(new ChessPosition(1, 5), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
+        positions.put(new ChessPosition(1, 6), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
+        positions.put(new ChessPosition(1, 7), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
+        positions.put(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
 
         // Reset highlights as well
         resetHighlight();
     }
 
     public void clearBoard() {
-        for (int i = 0; i < positions.length; i++) {
-            positions[i] = new ChessPiece[BOARD_SIZE];
-        }
+        positions.clear();
     }
 
     /**
      * Removes all highlight marks from board
      */
     public void resetHighlight() {
-        for (Highlight[] highlightedPosition : highlightedPositions) {
-            Arrays.fill(highlightedPosition, Highlight.NONE);
-        }
+        highlightedPositions.clear();
     }
 
     /**
@@ -226,11 +195,11 @@ public class ChessBoard {
     public void print() {
         StringBuilder board = new StringBuilder();
         boolean currentlyHighlighting = false;
-        for (int i = 0; i < positions.length; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             System.out.print(BOARD_SIZE - i);
             System.out.print(' ');
 
-            for (int j = 0; j < positions[i].length; j++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
                 ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
                 ChessPiece piece = getPiece(position);
                 Highlight highlightColor = getHighlight(position);
@@ -263,10 +232,10 @@ public class ChessBoard {
 
     public String prettyToString() {
         StringBuilder board = new StringBuilder();
-        for (int i = 0; i < positions.length; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             board.append(BOARD_SIZE - i);
             board.append(' ');
-            for (int j = 0; j < positions[i].length; j++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
                 ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
                 ChessPiece piece = getPiece(position);
                 Highlight highlightColor = getHighlight(position);
@@ -274,7 +243,9 @@ public class ChessBoard {
                 // set color according to highlights
                 String nextHighlight;
                 // Background
-                if ((i + j) % 2 == 1) {
+                if (highlightColor == null || highlightColor.equals(Highlight.NONE)) {
+                    nextHighlight = ((i + j) % 2 == 1) ? DARK_SQUARE : LIGHT_SQUARE;
+                } else if ((i + j) % 2 == 1) {
                     nextHighlight = switch (highlightColor) {
                         case PRIMARY -> PRIMARY_DARK_SQUARE;
                         case SECONDARY -> SECONDARY_DARK_SQUARE;
@@ -310,21 +281,8 @@ public class ChessBoard {
     }
 
     public String toString() {
-        StringBuilder board = new StringBuilder();
-        for (int i = 0; i < positions.length; i++) {
-            for (int j = 0; j < positions[i].length; j++) {
-                ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
-                ChessPiece piece = getPiece(position);
-                board.append('|');
-                char nextChar = (piece == null) ? ' ' : piece.getCode();
-                board.append(nextChar);
-            }
-            board.append('|');
-            board.append('\n');
-        }
-        board.append("   A B C D E F G H\n");
-        return board.toString();
+        FENParser fen = new FENParser();
+        return fen.getBoardFen(this);
     }
-
 }
 

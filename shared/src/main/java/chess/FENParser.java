@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 public class FENParser extends ChessParser {
@@ -51,7 +52,7 @@ public class FENParser extends ChessParser {
 
     public String getFen(GameState state) {
         String[] fenData = new String[6];
-        ChessPiece[][] pieces = state.board().getPositions();
+        HashMap<ChessPosition, ChessPiece> pieces = state.board().getPositions();
 
         // Piece placement
         Vector<String> rowStrings = getRowStrings(pieces);
@@ -76,12 +77,22 @@ public class FENParser extends ChessParser {
         return String.join(" ", fenData);
     }
 
-    private static Vector<String> getRowStrings(ChessPiece[][] pieces) {
+    public String getBoardFen(ChessBoard board) {
+        String fenData;
+        HashMap<ChessPosition, ChessPiece> pieces = board.getPositions();
+        // Piece placement
+        Vector<String> rowStrings = getRowStrings(pieces);
+        fenData = String.join("/", rowStrings);
+        return fenData;
+    }
+
+    private static Vector<String> getRowStrings(HashMap<ChessPosition, ChessPiece> pieces) {
         Vector<String> rowStrings = new Vector<>();
-        for (int i = pieces.length; i-- > 0; ) {
+        for (int i = 9; i-- > 0; ) {
             int blanks = 0;
             StringBuilder rowString = new StringBuilder();
-            for (ChessPiece piece : pieces[i]) {
+            for (int j = 0; j++ < 8; ) {
+                ChessPiece piece = pieces.get(new ChessPosition(i, j));
                 if (piece == null) {
                     blanks++;
                     continue;

@@ -274,14 +274,11 @@ public class GameState {
     }
 
     private Collection<ChessPosition> getPositionsByColor(ChessGame.TeamColor color) {
-        Dictionary<ChessPosition, ChessPiece> positionDictionary = board.getPieces();
-        Enumeration<ChessPosition> positions = positionDictionary.keys();
-        Collection<ChessPosition> movesWithColor = new HashSet<>();
-        while (positions.hasMoreElements()) {
-            ChessPosition nextPosition = positions.nextElement();
-            if (positionDictionary.get(nextPosition).getTeamColor() == color) movesWithColor.add(nextPosition);
+        Collection<ChessPosition> colorMoves = new ArrayList<>();
+        for (Map.Entry<ChessPosition, ChessPiece> entry : board.getPositions().entrySet()) {
+            if (entry.getValue().getTeamColor() == color) colorMoves.add(entry.getKey());
         }
-        return movesWithColor;
+        return colorMoves;
     }
 
     public void makeMove(ChessMove move) throws InvalidMoveException {
