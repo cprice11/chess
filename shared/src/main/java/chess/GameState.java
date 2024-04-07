@@ -290,7 +290,7 @@ public class GameState {
         try {
             makeMove(move, true);
         } catch (InvalidMoveException e) {
-            System.out.println("This actually shouldn't happen.");
+            System.out.println("This actually shouldn't happen");
         }
     }
 
