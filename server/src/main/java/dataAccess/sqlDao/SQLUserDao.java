@@ -3,7 +3,6 @@ package dataAccess.sqlDao;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.UserDao;
-import model.AuthData;
 import model.UserData;
 import service.AlreadyTakenException;
 
@@ -22,7 +21,7 @@ public class SQLUserDao implements UserDao {
     private static final String SELECT_STATEMENT_USER = "SELECT usersToken, username FROM users WHERE username=?";
 
 
-    private UserData selectUser(String username) throws DataAccessException{
+    private UserData selectUser(String username) throws DataAccessException {
         ArrayList<UserData> entries = new ArrayList<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(SELECT_STATEMENT)) {
@@ -35,8 +34,8 @@ public class SQLUserDao implements UserDao {
                             res.getString("email")
                     ));
                 }
-                if(entries.isEmpty()) return null;
-                if(entries.size() > 1) throw new DataAccessException("Multiple matches found.");
+                if (entries.isEmpty()) return null;
+                if (entries.size() > 1) throw new DataAccessException("Multiple matches found.");
                 return entries.getFirst();
             }
         } catch (Exception e) {
@@ -50,7 +49,7 @@ public class SQLUserDao implements UserDao {
     @Override
     public Collection<UserData> getAll() throws DataAccessException {
         Collection<UserData> userData = new HashSet<>();
-        try (Connection conn = DatabaseManager.getConnection()){
+        try (Connection conn = DatabaseManager.getConnection()) {
             try (var rs = conn.prepareStatement("SELECT * FROM users;").executeQuery()) {
                 while (rs.next()) {
                     userData.add(
@@ -74,7 +73,7 @@ public class SQLUserDao implements UserDao {
      * @param target The object in the database to be removed
      */
     @Override
-    public void delete(UserData target) throws DataAccessException{
+    public void delete(UserData target) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(DELETE_STATEMENT)) {
                 preparedStatement.setString(1, target.username());
@@ -89,7 +88,7 @@ public class SQLUserDao implements UserDao {
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    public void deleteAll() throws DataAccessException{
+    public void deleteAll() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(TRUNCATE_STATEMENT)) {
                 preparedStatement.executeUpdate();
@@ -129,8 +128,8 @@ public class SQLUserDao implements UserDao {
      * @param entry The object to add
      */
     @Override
-    public void add(UserData entry) throws AlreadyTakenException, DataAccessException{
-        try (Connection conn = DatabaseManager.getConnection()){
+    public void add(UserData entry) throws AlreadyTakenException, DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(INSERT_STATEMENT)) {
                 preparedStatement.setString(1, entry.username());
                 preparedStatement.setString(2, entry.password());
@@ -145,32 +144,46 @@ public class SQLUserDao implements UserDao {
     }
 
     /**
-     * @param username 
+     * @param username
      * @return
      * @throws DataAccessException
      */
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        return null;
+        return selectUser(username);
     }
 
     /**
-     * @param username 
+     * @param username
      * @param password
      * @throws DataAccessException
      */
     @Override
     public void editUserPassword(String username, String password) throws DataAccessException {
-
+        UserData existingData = selectUser(username);
+        if (existingData == null) throw new DataAccessException("No user found to update");
+        delete(existingData);
+        try {
+            add(new UserData(username, password, existingData.email()));
+        } catch (AlreadyTakenException e) {
+            throw new DataAccessException("Multiple targets matching that username were found: " + e.getMessage());
+        }
     }
 
     /**
-     * @param username 
+     * @param username
      * @param email
      * @throws DataAccessException
      */
     @Override
     public void editUserEmail(String username, String email) throws DataAccessException {
-
+        UserData existingData = selectUser(username);
+        if (existingData == null) throw new DataAccessException("No user found to update");
+        delete(existingData);
+        try {
+            add(new UserData(username, existingData.password(), email));
+        } catch (AlreadyTakenException e) {
+            throw new DataAccessException("Multiple targets matching that username were found: " + e.getMessage());
+        }
     }
 }
