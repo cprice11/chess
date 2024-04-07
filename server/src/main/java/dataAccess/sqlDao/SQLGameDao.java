@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.GameDao;
+import dataAccess.memoryDao.MemoryDatabase;
 import model.AuthData;
 import model.GameData;
 import model.GameSummary;
@@ -152,8 +153,24 @@ public class SQLGameDao implements GameDao {
      * Gets a list of the summaries of every game in the database
      */
     @Override
-    public Collection<GameSummary> getGameSummaries() {
-        return null;
+    public Collection<GameSummary> getGameSummaries() throws DataAccessException{
+        Collection<GameSummary> entries = new HashSet<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(SELECT_SUMMARIES_STATEMENT)) {
+                ResultSet res = preparedStatement.executeQuery();
+                while (res.next()) {
+                    int id = res.getInt("gameID");
+                    String white = res.getString("whiteUsername");
+                    String black = res.getString("blackUsername");
+                    String name = res.getString("gameName");
+
+                    entries.add(new GameSummary(id, white, black, name));
+                }
+                return entries;
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
