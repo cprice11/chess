@@ -256,7 +256,9 @@ public class SQLGameDao implements GameDao {
      */
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        return selectGame(gameID);
+        GameData game = selectGame(gameID);
+        if (game == null) throw new DataAccessException("Game not found");
+        return game;
     }
 
     /**
