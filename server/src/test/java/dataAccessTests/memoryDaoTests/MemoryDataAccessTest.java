@@ -5,7 +5,7 @@ import org.junit.jupiter.api.*;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MemoryMemoryDataAccessTest extends MemoryDataAccessVars {
+public class MemoryDataAccessTest extends MemoryDataAccessVars {
     @BeforeAll
     static void reset() {
         MemoryDatabase.clearAll();
@@ -14,7 +14,6 @@ public class MemoryMemoryDataAccessTest extends MemoryDataAccessVars {
     @Test
     @Order(1)
     void isInitiated() {
-        Assertions.fail("TEST NOT WRITTEN");
         Assertions.assertTrue(MemoryDatabase.getAuth().isEmpty());
         Assertions.assertTrue(MemoryDatabase.getGames().isEmpty());
         Assertions.assertTrue(MemoryDatabase.getUsers().isEmpty());
