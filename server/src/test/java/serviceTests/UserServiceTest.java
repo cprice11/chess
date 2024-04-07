@@ -37,8 +37,11 @@ class UserServiceTest extends SqlServiceVars {
             auth = new SQLAuthDao();
             games = new SQLGameDao();
             users = new SQLUserDao();
+            authService = new AuthService(auth);
+            gameService = new GameService(games, authService);
+            userService = new UserService(users, authService);
             for (AuthData a : authData) {
-                auth.add(a);
+                auth.createAuth(a.username());
             }
             for (GameData g : gameData) {
                 games.add(g);
@@ -46,8 +49,6 @@ class UserServiceTest extends SqlServiceVars {
             for (UserData u : userData) {
                 users.add(u);
             }
-            authService = new AuthService(auth);
-            gameService = new GameService(games, authService);
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
@@ -58,14 +59,13 @@ class UserServiceTest extends SqlServiceVars {
     @Order(4)
     void testRegister() {
         try {
-            HashSet<UserData> u = MemoryDatabase.getUsers();
+            var a = auth.getAll();
             Assertions.assertDoesNotThrow(() -> userService.register(goodRegisterRequest), "Threw exception on valid register request");
             Assertions.assertTrue(users.getAll().stream().anyMatch(user -> Objects.equals(user.username(), uNew.username())));
             Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(badRegisterRequest));
             Assertions.assertFalse(users.getAll().stream().anyMatch(user ->
                     user.email().equals(uNew.email()) && user.username().equals(u2.username())
             ));
-            u = MemoryDatabase.getUsers();
         } catch (Exception e) {
             Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
         }

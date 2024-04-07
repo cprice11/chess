@@ -72,7 +72,6 @@ public class SqlServiceVars {
     //protected static GameDao games = new SQLGameDao();
     //protected static UserDao users = new SQLUserDao();
 
-
     // register
     static final RegisterRequest goodRegisterRequest = new RegisterRequest(uNew.username(), uNew.password(), uNew.email());
     static final RegisterRequest badRegisterRequest = new RegisterRequest(u2.username(), uNew.password(), uNew.email());
