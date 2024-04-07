@@ -24,6 +24,7 @@ public class SQLGameDao implements GameDao {
     private static final String SELECT_SUMMARIES_STATEMENT = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE gameID=?";
     private static final String DELETE_STATEMENT = "DELETE FROM games WHERE gameID=?";
     private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE games";
+    private static final String UPDATE_STATEMENT = "UPDATE games SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameID=?";
     private final Random randomIdGenerator = new Random(111);
 
 
@@ -113,8 +114,23 @@ public class SQLGameDao implements GameDao {
      * @param value  The object to replace the target object
      */
     @Override
+    // Really should just be ID. Something to fix in the next one.
     public void update(GameData target, GameData value) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()){
+            try (var preparedStatement = conn.prepareStatement(UPDATE_STATEMENT)) {
+                preparedStatement.setString(1, value.whiteUsername());
+                preparedStatement.setString(2, value.blackUsername());
+                preparedStatement.setString(3, value.gameName());
 
+                String json = new Gson().toJson(value.game());
+                preparedStatement.setString(4, json);
+
+                preparedStatement.setInt(5, value.gameID());
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /**
@@ -148,7 +164,6 @@ public class SQLGameDao implements GameDao {
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
-
     }
 
     /**

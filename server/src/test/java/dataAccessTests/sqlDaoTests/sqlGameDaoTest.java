@@ -36,19 +36,9 @@ public class sqlGameDaoTest extends sqlDataAccessVars {
     void setup() {
         try {
             DatabaseManager.resetData();
-            var games = gameDAO.getAll();
             gameDAO.add(g0);
             gameDAO.add(g1);
             gameDAO.add(g2);
-            games = gameDAO.getAll();
-                int i = 0;
-            for (GameData g : games) {
-                var s1 = g.game();
-                var s2 = g0.game();
-                if (s1.equals(s2)) {
-                    i++;
-                } else i--;
-            }
         } catch (Exception e) {
             Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
         }
@@ -99,7 +89,7 @@ public class sqlGameDaoTest extends sqlDataAccessVars {
     @Order(4)
     void update() {
         try {
-            GameData updated = new GameData(5000, "white", "black", "updated", new ChessGame());
+            GameData updated = new GameData(0, "white", "black", "updated", new ChessGame());
             Assertions.assertDoesNotThrow(() -> gameDAO.update(g0, updated));
             HashSet<GameData> allGames = new HashSet<>();
             allGames.add(updated);
