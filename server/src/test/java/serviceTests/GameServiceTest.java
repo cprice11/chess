@@ -1,12 +1,9 @@
 package serviceTests;
 
 import dataAccess.*;
-import dataAccess.memoryDao.MemoryAuthDao;
-import dataAccess.memoryDao.MemoryDatabase;
 import dataAccess.sqlDao.SQLAuthDao;
 import dataAccess.sqlDao.SQLGameDao;
 import dataAccess.sqlDao.SQLUserDao;
-import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -68,22 +65,22 @@ class GameServiceTest extends SqlServiceVars {
 
     @Test
     void testJoinGame() {
-        MemoryDatabase.games.add(gEmpty);
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestWhite));
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestNewPlayerBlack));
         try {
+            games.add(gEmpty);
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestWhite));
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestNewPlayerBlack));
             Assertions.assertEquals(games.getGame(gEmpty.gameID()).whiteUsername(), u1.username(), "User not posted with correct color");
             Assertions.assertEquals(games.getGame(gEmpty.gameID()).blackUsername(), u2.username(), "User not posted with correct color");
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
     }
 
     @Test
     void testJoinFullGame() {
-        MemoryDatabase.games.add(gEmpty);
-        Assertions.assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(goodJoinGameRequestFullGameWhite));
         try {
+            games.add(gEmpty);
+            Assertions.assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(goodJoinGameRequestFullGameWhite));
             Assertions.assertEquals(g1, games.getGame(1), "full game changed after player tried to join");
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
@@ -92,63 +89,67 @@ class GameServiceTest extends SqlServiceVars {
 
     @Test
     void testJoinGameSameColor() {
-        MemoryDatabase.games.add(gEmpty);
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestWhite));
-        Assertions.assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(goodJoinGameRequestNewPlayerWhite));
         try {
+            games.add(gEmpty);
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestWhite));
+            Assertions.assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(goodJoinGameRequestNewPlayerWhite));
             Assertions.assertEquals(games.getGame(gEmpty.gameID()).whiteUsername(), u1.username());
             Assertions.assertNull(games.getGame(gEmpty.gameID()).blackUsername());
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
     }
 
     @Test
     void testJoinGameBlackFirst() {
-        MemoryDatabase.games.add(gEmpty);
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestBlack));
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestNewPlayerWhite));
         try {
+            games.add(gEmpty);
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestBlack));
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestNewPlayerWhite));
             Assertions.assertEquals(games.getGame(gEmpty.gameID()).whiteUsername(), u2.username());
             Assertions.assertEquals(games.getGame(gEmpty.gameID()).blackUsername(), u1.username());
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
     }
 
     @Test
     void testJoinGameNoColor() {
-        MemoryDatabase.games.add(gEmpty);
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestSpectator));
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestNewSpectator));
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestFullGameSpectator));
         try {
+            games.add(gEmpty);
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestSpectator));
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestNewSpectator));
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestFullGameSpectator));
             GameData gameData = games.getGame(gEmpty.gameID());
             Assertions.assertNull(gameData.whiteUsername(), "set spectator as player");
             Assertions.assertNull(gameData.blackUsername(), "set spectator as player");
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
     }
 
     @Test
     void testJoinGameSamePlayer() {
-        MemoryDatabase.games.add(gEmpty);
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestWhite));
-        Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestSamePlayerBlack));
         try {
+            games.add(gEmpty);
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestWhite));
+            Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestSamePlayerBlack));
             Assertions.assertEquals(games.getGame(gEmpty.gameID()).whiteUsername(), u1.username());
             Assertions.assertEquals(games.getGame(gEmpty.gameID()).blackUsername(), u1.username());
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
     }
 
     @Test
     void badJoinGameRequests() {
-        MemoryDatabase.games.add(gEmpty);
-        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.joinGame(badJoinGameRequestBadToken));
-        Assertions.assertThrows(InvalidRequestException.class, () -> gameService.joinGame(badJoinGameRequestWrongId));
+        try {
+            games.add(gEmpty);
+            Assertions.assertThrows(UnauthorizedException.class, () -> gameService.joinGame(badJoinGameRequestBadToken));
+            Assertions.assertThrows(InvalidRequestException.class, () -> gameService.joinGame(badJoinGameRequestWrongId));
+        } catch (Exception e) {
+            Assertions.fail("Threw unexpected exception");
+        }
     }
 
 
