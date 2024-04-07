@@ -109,11 +109,7 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
     @Test
     @Order(5)
     void verify() {
-        try {
-            authDao.update(a0, a1);
-        } catch (DataAccessException e) {
-            Assertions.fail(e.getMessage());
-        }
+        Assertions.assertThrows(DataAccessException.class, () -> authDao.update(a0, a1));
         Assertions.assertThrows(DataAccessException.class, () -> authDao.verify(a0));
         Assertions.assertThrows(DataAccessException.class, () -> authDao.verify(a0.authToken()));
         Assertions.assertDoesNotThrow(() -> authDao.verify(a2));
