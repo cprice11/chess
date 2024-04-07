@@ -43,9 +43,7 @@ public class sqlAuthDaoTest extends sqlDataAccessVars {
     @BeforeEach
     void setup() {
         try {
-            var u = authDao.getAll();
             DatabaseManager.resetData();
-            u = authDao.getAll();
             authDao.add(a0);
             authDao.add(a1);
             authDao.add(a2);

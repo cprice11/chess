@@ -15,11 +15,24 @@ import java.util.HashSet;
 public class sqlUserDaoTest extends sqlDataAccessVars {
     UserDao userDAO = new SQLUserDao();
 
+    @BeforeAll
+    @Order(1)
+    static void initialize() {
+        try {
+            DatabaseManager.configureDatabase();
+            DatabaseManager.resetData();
+        } catch (DataAccessException e) {
+            Assertions.fail("Could not set up database: " + e.getMessage());
+        }
+    }
+
     @BeforeEach
     void setup() {
         try {
-            // DatabaseManager.createDatabase();
             DatabaseManager.resetData();
+            userDAO.add(u0);
+            userDAO.add(u1);
+            userDAO.add(u2);
         } catch (Exception e) {
             Assertions.fail("Unable to setup database for tests. Exception: " + e.getMessage());
         }
@@ -28,59 +41,83 @@ public class sqlUserDaoTest extends sqlDataAccessVars {
     @Test
     @Order(1)
     void getAll() {
-        Collection<UserData> allUsers = userDAO.getAll();
-        Assertions.assertEquals(allUsers, userData);
-        Assertions.assertDoesNotThrow(DatabaseManager::resetData);
-        allUsers = userDAO.getAll();
-        Assertions.assertTrue(allUsers.isEmpty());
+        try {
+            Collection<UserData> allUsers = userDAO.getAll();
+            Assertions.assertEquals(userData, allUsers);
+            Assertions.assertDoesNotThrow(DatabaseManager::resetData);
+            allUsers = userDAO.getAll();
+            Assertions.assertTrue(allUsers.isEmpty());
+        } catch (Exception e) {
+            Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
+        }
     }
 
     @Test
     @Order(2)
     void delete() {
-        userDAO.delete(u0);
-        HashSet<UserData> smallerSet = new HashSet<>();
-        smallerSet.add(u1);
-        smallerSet.add(u2);
-        Assertions.assertEquals(smallerSet, userDAO.getAll());
+        try {
+            userDAO.delete(u0);
+            HashSet<UserData> smallerSet = new HashSet<>();
+            smallerSet.add(u1);
+            smallerSet.add(u2);
+            Assertions.assertEquals(smallerSet, userDAO.getAll());
+        } catch (Exception e) {
+            Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
+        }
     }
 
     @Test
     @Order(3)
     void deleteAll() {
-        userDAO.deleteAll();
-        Collection<UserData> allUsers = userDAO.getAll();
-        Assertions.assertTrue(allUsers.isEmpty());
+        try {
+            userDAO.deleteAll();
+            Collection<UserData> allUsers = userDAO.getAll();
+            Assertions.assertTrue(allUsers.isEmpty());
+        } catch (Exception e) {
+            Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
+        }
     }
 
     @Test
     @Order(4)
     void update() {
-        UserData newGuy = new UserData("jeff", "1234", "not.an@email");
-        HashSet<UserData> withNewGuy = new HashSet<>();
-        withNewGuy.add(newGuy);
-        withNewGuy.add(u1);
-        withNewGuy.add(u2);
-        Assertions.assertDoesNotThrow(() -> userDAO.update(u0, newGuy));
-        Assertions.assertEquals(withNewGuy, userDAO.getAll());
+        try {
+            UserData newGuy = new UserData("jeff", "1234", "not.an@email");
+            HashSet<UserData> withNewGuy = new HashSet<>();
+            withNewGuy.add(newGuy);
+            withNewGuy.add(u1);
+            withNewGuy.add(u2);
+            Assertions.assertDoesNotThrow(() -> userDAO.update(u0, newGuy));
+            Assertions.assertEquals(withNewGuy, userDAO.getAll());
+        } catch (Exception e) {
+            Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
+        }
     }
 
     @Test
     @Order(5)
     void verify() {
+        try {
         userDAO.delete(u0);
         Assertions.assertThrows(DataAccessException.class, () -> userDAO.verify(u0));
         Assertions.assertDoesNotThrow(() -> userDAO.verify(u2));
+        } catch (Exception e) {
+            Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
+        }
     }
 
     @Test
     @Order(6)
     void add() {
+        try {
         userDAO.deleteAll();
         Assertions.assertDoesNotThrow(() -> userDAO.add(u0));
         HashSet<UserData> justOne = new HashSet<>();
         justOne.add(u0);
         Assertions.assertEquals(justOne, userDAO.getAll());
+        } catch (Exception e) {
+            Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
+        }
     }
 
     @Test

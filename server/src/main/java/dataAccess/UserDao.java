@@ -10,19 +10,19 @@ public interface UserDao extends Dao<UserData> {
      * Returns all objects in the database
      */
     @Override
-    Collection<UserData> getAll();
+    Collection<UserData> getAll() throws DataAccessException;
 
     /**
      * @param target The object in the database to be removed
      */
     @Override
-    void delete(UserData target);
+    void delete(UserData target) throws DataAccessException;
 
     /**
      * Deletes all objects in the database, leaving the tables
      */
     @Override
-    void deleteAll();
+    void deleteAll() throws DataAccessException;
 
     /**
      * @param target The existing object in the database
@@ -44,7 +44,7 @@ public interface UserDao extends Dao<UserData> {
      * @param entry The object to add
      */
     @Override
-    void add(UserData entry) throws AlreadyTakenException;
+    void add(UserData entry) throws AlreadyTakenException, DataAccessException;
 
     UserData getUser(String username) throws DataAccessException;
 

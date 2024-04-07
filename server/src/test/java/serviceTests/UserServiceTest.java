@@ -44,14 +44,18 @@ class UserServiceTest extends ServiceVars {
     @Test
     @Order(4)
     void testRegister() {
-        HashSet<UserData> u = MemoryDatabase.getUsers();
-        Assertions.assertDoesNotThrow(() -> userService.register(goodRegisterRequest), "Threw exception on valid register request");
-        Assertions.assertTrue(users.getAll().stream().anyMatch(user -> Objects.equals(user.username(), uNew.username())));
-        Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(badRegisterRequest));
-        Assertions.assertFalse(users.getAll().stream().anyMatch(user ->
-                user.email().equals(uNew.email()) && user.username().equals(u2.username())
-        ));
-        u = MemoryDatabase.getUsers();
+        try {
+            HashSet<UserData> u = MemoryDatabase.getUsers();
+            Assertions.assertDoesNotThrow(() -> userService.register(goodRegisterRequest), "Threw exception on valid register request");
+            Assertions.assertTrue(users.getAll().stream().anyMatch(user -> Objects.equals(user.username(), uNew.username())));
+            Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(badRegisterRequest));
+            Assertions.assertFalse(users.getAll().stream().anyMatch(user ->
+                    user.email().equals(uNew.email()) && user.username().equals(u2.username())
+            ));
+            u = MemoryDatabase.getUsers();
+        } catch (Exception e) {
+            Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
+        }
     }
 
     @Test

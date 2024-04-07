@@ -7,6 +7,9 @@ import dataAccess.memoryDao.MemoryAuthDao;
 import dataAccess.memoryDao.MemoryDatabase;
 import dataAccess.memoryDao.MemoryGameDao;
 import dataAccess.memoryDao.MemoryUserDao;
+import dataAccess.sqlDao.SQLAuthDao;
+import dataAccess.sqlDao.SQLGameDao;
+import dataAccess.sqlDao.SQLUserDao;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import server.request.InvalidRequestException;
 import server.result.Result;
@@ -14,10 +17,10 @@ import service.*;
 import spark.Response;
 
 public abstract class Handler {
-    protected static MemoryDatabase db = new MemoryDatabase();
-    protected static AuthDao authDAO = new MemoryAuthDao();
-    protected static GameDao gameDAO = new MemoryGameDao();
-    protected static UserDao userDAO = new MemoryUserDao();
+    protected static DatabaseManager db = new DatabaseManager();
+    protected static AuthDao authDAO = new SQLAuthDao();
+    protected static GameDao gameDAO = new SQLGameDao();
+    protected static UserDao userDAO = new SQLUserDao();
     protected static DevService dev = new DevService(authDAO, gameDAO, userDAO);
     protected static AuthService auth = new AuthService(authDAO);
     protected static GameService games = new GameService(gameDAO, auth);
