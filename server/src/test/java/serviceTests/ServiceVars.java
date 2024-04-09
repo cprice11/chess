@@ -20,16 +20,19 @@ public class ServiceVars {
     static final String t3 = "=KvKo6MeU4x*i%s=MLaU,<.Uo7_7zun>!7Yv\"(w_";
     static final String t4 = "CvgjPN6^e_\\3>>M)U1\\c@Mao<0%z/|[Y*Y[/*DzM";
 
-    static final int id0 = 950830939;
-    static final int id1 = 506326292;
-    static final int id2 = 1639761914;
-    static final int id3 = 1389273394;
-    static final int id4 = 683937171;
-    static final int id5 = 506057841;
-    static final int id6 = 1092644569;
-    static final int id7 = 412721225;
-    static final int id8 = 902295195;
-    static final int id9 = 886779931;
+    /*
+    the first 10 pseudo random gameIDs (seed = 111)
+    950830939
+    506326292
+    1639761914
+    1389273394
+    683937171
+    506057841
+    1092644569
+    412721225
+    902295195
+    886779931
+    */
 
     static final AuthData a0 = new AuthData(t0, "myname123");
     static final AuthData a1 = new AuthData(t1, "antonius");
