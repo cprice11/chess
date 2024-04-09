@@ -251,9 +251,8 @@ public class SQLGameDao implements GameDao {
     }
 
     /**
-     * @param gameID
-     * @return
-     * @throws DataAccessException
+     * @param gameID the integer gameID of a game in the database.
+     * @throws DataAccessException if the specified game is not found.
      */
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
@@ -263,8 +262,8 @@ public class SQLGameDao implements GameDao {
     }
 
     /**
-     * @param username
-     * @return
+     * @param username the username of a chess player
+     * @return A hashset of GameSummary objects representing all games in the database with the given player
      */
     @Override
     public HashSet<GameSummary> getGamesByPlayer(String username) throws DataAccessException {
@@ -285,8 +284,8 @@ public class SQLGameDao implements GameDao {
     }
 
     /**
-     * @param name
-     * @return
+     * @param name the gameName string of a chess game
+     * @return A hashset of GameSummary objects representing all games in the database with the given game name.
      */
     @Override
     public HashSet<GameSummary> getGamesByName(String name) throws DataAccessException {
