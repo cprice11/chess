@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.HashMap;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -36,9 +35,11 @@ public class ChessBoard {
     private final HashMap<ChessPosition, Highlight> highlightedPositions;
 
     private ChessPosition enPassant = null;
+
     public HashMap<ChessPosition, ChessPiece> getPositions() {
         return new HashMap<>(positions);
     }
+
     public enum Highlight {
         PRIMARY,
         SECONDARY,

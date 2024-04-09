@@ -1,8 +1,6 @@
 package serviceTests;
 
 import dataAccess.*;
-import dataAccess.memoryDao.MemoryAuthDao;
-import dataAccess.memoryDao.MemoryDatabase;
 import dataAccess.sqlDao.SQLAuthDao;
 import dataAccess.sqlDao.SQLGameDao;
 import dataAccess.sqlDao.SQLUserDao;

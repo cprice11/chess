@@ -1,12 +1,6 @@
 package serviceTests;
 
 import chess.ChessGame;
-import dataAccess.AuthDao;
-import dataAccess.GameDao;
-import dataAccess.UserDao;
-import dataAccess.memoryDao.MemoryAuthDao;
-import dataAccess.memoryDao.MemoryGameDao;
-import dataAccess.memoryDao.MemoryUserDao;
 import model.AuthData;
 import model.GameData;
 import model.GameSummary;

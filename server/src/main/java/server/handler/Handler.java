@@ -2,15 +2,13 @@ package server.handler;
 
 
 import com.google.gson.Gson;
-import dataAccess.*;
-import dataAccess.memoryDao.MemoryAuthDao;
-import dataAccess.memoryDao.MemoryDatabase;
-import dataAccess.memoryDao.MemoryGameDao;
-import dataAccess.memoryDao.MemoryUserDao;
+import dataAccess.AuthDao;
+import dataAccess.DataAccessException;
+import dataAccess.GameDao;
+import dataAccess.UserDao;
 import dataAccess.sqlDao.SQLAuthDao;
 import dataAccess.sqlDao.SQLGameDao;
 import dataAccess.sqlDao.SQLUserDao;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import server.request.InvalidRequestException;
 import server.result.Result;
 import service.*;
@@ -26,7 +24,7 @@ public abstract class Handler {
     protected static UserService users;
     protected static Gson serializer = new Gson();
 
-    protected static void initialize() throws DataAccessException{
+    protected static void initialize() throws DataAccessException {
         if (dev != null && games != null && users != null) {
             return;
         }
