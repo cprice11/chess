@@ -9,6 +9,7 @@ import spark.Response;
 public class CreateGameHandler extends Handler {
     public static String handleRequest(Request req, Response res) {
         try {
+            initialize();
             String authToken = req.headers("authorization");
             CreateGameRequest parsedRequest = new CreateGameRequest(
                     authToken,

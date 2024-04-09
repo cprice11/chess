@@ -10,6 +10,7 @@ public class ListGamesHandler extends Handler {
     // Throwing invalid request is technically undefined behavior
     public static String handleRequest(Request req, Response res) {
         try {
+            initialize();
             String authToken = req.headers("authorization");
             if (authToken == null) throw new InvalidRequestException("Auth or nothin'");
             ListGamesResult result = games.listGames(new ListGamesRequest(authToken));

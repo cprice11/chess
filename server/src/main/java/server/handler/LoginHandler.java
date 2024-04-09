@@ -9,6 +9,7 @@ public class LoginHandler extends Handler {
 
     public static String handleRequest(Request req, Response res) {
         try {
+            initialize();
             LoginRequest parsedRequest = serializer.fromJson(req.body(), LoginRequest.class);
             LoginResult result = users.login(parsedRequest);
             return success(res, serializer.toJson(result, LoginResult.class));

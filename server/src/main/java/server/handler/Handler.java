@@ -25,21 +25,18 @@ public abstract class Handler {
     protected static GameService games;
     protected static UserService users;
     protected static Gson serializer = new Gson();
-    protected static BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public Handler() {
-        try {
-            authDAO = new SQLAuthDao();
-            gameDAO = new SQLGameDao();
-            userDAO = new SQLUserDao();
-            dev = new DevService(authDAO, gameDAO, userDAO);
-            auth = new AuthService(authDAO);
-            games = new GameService(gameDAO, auth);
-            users = new UserService(userDAO, auth);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("UNABLE TO INITIALIZE DATABASE: " + e.getMessage());
+    protected static void initialize() throws DataAccessException{
+        if (dev != null && games != null && users != null) {
+            return;
         }
-
+        authDAO = new SQLAuthDao();
+        gameDAO = new SQLGameDao();
+        userDAO = new SQLUserDao();
+        dev = new DevService(authDAO, gameDAO, userDAO);
+        auth = new AuthService(authDAO);
+        games = new GameService(gameDAO, auth);
+        users = new UserService(userDAO, auth);
     }
 
     protected static String success(Response res, String jsonBody) {

@@ -8,6 +8,7 @@ import spark.Response;
 public class JoinGameHandler extends Handler {
     public static String handleRequest(Request req, Response res) {
         try {
+            initialize();
             String authToken = req.headers("authorization");
             JoinGameRequest parsedRequest = serializer.fromJson(req.body(), JoinGameRequest.class);
             parsedRequest = new JoinGameRequest(authToken, parsedRequest.playerColor(), parsedRequest.gameID());

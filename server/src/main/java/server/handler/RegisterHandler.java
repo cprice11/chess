@@ -9,6 +9,7 @@ import spark.Response;
 public class RegisterHandler extends Handler {
     public static String handleRequest(Request req, Response res) {
         try {
+            initialize();
             RegisterRequest parsedRequest = serializer.fromJson(req.body(), RegisterRequest.class);
             if (parsedRequest.password() == null) throw new InvalidRequestException("No password");
             RegisterResult result = users.register(parsedRequest);
