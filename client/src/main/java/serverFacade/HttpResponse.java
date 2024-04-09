@@ -1,4 +1,8 @@
 package serverFacade;
 
-public record HttpResponse (int status, String message, String Body){
+import server.result.Result;
+
+import java.io.InputStreamReader;
+
+public record HttpResponse (int status, String message){
 }

@@ -1,8 +1,10 @@
 package clientTests;
 
 import dataAccess.AuthDao;
+import dataAccess.DataAccessException;
 import dataAccess.GameDao;
 import dataAccess.UserDao;
+import dataAccess.memoryDao.MemoryDatabase;
 import dataAccess.sqlDao.SQLAuthDao;
 import dataAccess.sqlDao.SQLGameDao;
 import dataAccess.sqlDao.SQLUserDao;
@@ -25,23 +27,27 @@ public class ServerFacadeTests {
     public static void init() {
         server = new Server();
         port = server.run(0);
+
         serverFacade = new ServerFacade(port, "http://localhost:");
         try {
             auth = new SQLAuthDao();
             games = new SQLGameDao();
             users = new SQLUserDao();
+            auth.deleteAll();
+            users.deleteAll();
+            var a = auth.getAll();
+            var u = users.getAll();
             System.out.println("Started test HTTP server on " + port);
-            serverFacade.register("user0", "0spas", "zero@site.com");
         } catch (Exception e) {
             Assertions.fail("Unexpected exception in setup: " + e.getMessage());
         }
     }
 
 
-
     @Test
     @Order(1)
     public void registerCorrectly() throws Exception {
+        var a = auth.getAll();
         String authToken = serverFacade.register("user0", "0spas", "zero@site.com");
         Assertions.assertTrue(auth.getAll().contains(new AuthData(authToken, "user0")));
     }
@@ -56,25 +62,33 @@ public class ServerFacadeTests {
     @Test
     @Order(3)
     public void loginCorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        String authToken = serverFacade.login("user0", "0spas");
+        Assertions.assertEquals(2, auth.getAll().size());
     }
 
     @Test
     @Order(4)
     public void loginIncorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        Assertions.assertEquals(null, serverFacade.login("user0", "badpass"));
     }
 
     @Test
     @Order(5)
     public void logoutCorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        var a = auth.getAll();
+        String authToken = serverFacade.register("user1", "onepaas", "one@site.com");
+        Assertions.assertEquals(3, auth.getAll().size());
+        serverFacade.logout(authToken);
+        var b = auth.getAll();
+        Assertions.assertEquals(a, auth.getAll());
     }
 
     @Test
     @Order(6)
     public void logoutIncorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        var a = auth.getAll();
+        serverFacade.logout("0spas");
+        Assertions.assertEquals(a, auth.getAll());
     }
 
     @Test

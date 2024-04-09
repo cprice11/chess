@@ -2,17 +2,15 @@ package serverFacade;
 
 import com.google.gson.Gson;
 import model.GameSummary;
-import model.UserData;
+import server.request.LoginRequest;
 import server.request.RegisterRequest;
+import server.result.LoginResult;
 import server.result.RegisterResult;
-import server.result.Result;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.util.Collection;
 
 public class ServerFacade {
@@ -27,27 +25,27 @@ public class ServerFacade {
         urlPath = urlString + portNum;
     }
 
-    public HttpResponse getRequest(String urlString) throws Exception {
+    public HttpURLConnection getRequest(String urlString) throws Exception {
         return request("GET", urlString, null, null);
     }
 
-    public HttpResponse postRequest(String urlString) throws Exception {
+    public HttpURLConnection postRequest(String urlString) throws Exception {
         return request("POST", urlString, null, null);
     }
 
-    public HttpResponse deleteRequest(String urlString) throws Exception {
+    public HttpURLConnection deleteRequest(String urlString) throws Exception {
         return request("DELETE", urlString, null, null);
     }
 
-    public HttpResponse request(String method, String urlString) throws Exception {
+    public HttpURLConnection request(String method, String urlString) throws Exception {
         return request(method, urlString, null, null);
     }
 
-    public HttpResponse request(String method, String urlString, String header) throws Exception {
+    public HttpURLConnection request(String method, String urlString, String header) throws Exception {
         return request(method, urlString, header, null);
     }
 
-    public HttpResponse request(String method, String urlString, String header, String body) throws Exception {
+    public HttpURLConnection request(String method, String urlString, String header, String body) throws Exception {
         HttpURLConnection connection = getConnection(urlString);
         connection.setRequestMethod(method);
         if (header != null) {
@@ -64,16 +62,7 @@ public class ServerFacade {
                 outputStream.write(body.getBytes());
             }
         }
-        connection.connect();
-        int code = connection.getResponseCode();
-        String message = connection.getResponseMessage();
-        try (InputStream respBody = connection.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            return new HttpResponse(
-                    code,
-                    message,
-                    inputStreamReader.toString());
-        }
+        return connection;
     }
 
     private static HttpURLConnection getConnection(String uri) throws Exception {
@@ -84,7 +73,42 @@ public class ServerFacade {
     }
 
     public String login(String username, String password) {
-        throw new RuntimeException("NOT IMPLEMENTED");
+        LoginRequest loginRequest = new LoginRequest(username, password);
+        String json = serializer.toJson(loginRequest);
+        try {
+            HttpURLConnection connection = request("POST", urlPath + "/session", null, json);
+            int code = connection.getResponseCode();
+            String message = connection.getResponseMessage();
+            try (InputStream respBody = connection.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                HttpResponse response = new HttpResponse(code, message);
+                LoginResult result = serializer.fromJson(inputStreamReader, LoginResult.class);
+                if (response.status() != 200) {
+                    handleError(response);
+                    return null;
+                }
+                return result.authToken();
+            }
+        } catch (Exception e) {
+            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public void logout(String authToken) {
+        try {
+            HttpURLConnection connection = request("DELETE", urlPath + "/session");
+            connection.setDoOutput(true);
+            connection.addRequestProperty("authorization", authToken);
+            int code = connection.getResponseCode();
+            String message = connection.getResponseMessage();
+            HttpResponse response = new HttpResponse(code, message);
+            if (response.status() != 200) {
+                handleError(response);
+            }
+        } catch (Exception e) {
+            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+        }
     }
 
     public Collection<GameSummary> listGames(String authToken) {
@@ -95,13 +119,20 @@ public class ServerFacade {
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
         String json = serializer.toJson(registerRequest);
         try {
-            HttpResponse response = postRequest(urlPath + "/user");
-            if (response.status() != 200) {
-                handleError(response);
-                return null;
+            HttpURLConnection connection = request("POST", urlPath + "/user", null, json);
+            int code = connection.getResponseCode();
+            String message = connection.getResponseMessage();
+            RegisterResult body;
+            try (InputStream respBody = connection.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                HttpResponse response = new HttpResponse(code, message);
+                RegisterResult result = serializer.fromJson(inputStreamReader, RegisterResult.class);
+                if (response.status() != 200) {
+                    handleError(response);
+                    return null;
+                }
+                return result.authToken();
             }
-            RegisterResult result = serializer.fromJson(response.Body(), RegisterResult.class);
-            return result.authToken();
         } catch (Exception e) {
             System.out.println("AN EXCEPTION!!!: " + e.getMessage());
             return null;
