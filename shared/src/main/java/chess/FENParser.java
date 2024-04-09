@@ -88,7 +88,7 @@ public class FENParser extends ChessParser {
 
     private static Vector<String> getRowStrings(HashMap<ChessPosition, ChessPiece> pieces) {
         Vector<String> rowStrings = new Vector<>();
-        for (int i = 9; i-- > 0; ) {
+        for (int i = 8; i > 0; i--) {
             int blanks = 0;
             StringBuilder rowString = new StringBuilder();
             for (int j = 0; j++ < 8; ) {

@@ -274,9 +274,14 @@ public class GameState {
     }
 
     private Collection<ChessPosition> getPositionsByColor(ChessGame.TeamColor color) {
-        Collection<ChessPosition> colorMoves = new ArrayList<>();
-        for (Map.Entry<ChessPosition, ChessPiece> entry : board.getPositions().entrySet()) {
-            if (entry.getValue().getTeamColor() == color) colorMoves.add(entry.getKey());
+        Collection<ChessPosition> colorMoves = new HashSet<>();
+        Set<ChessPosition> allPositions;
+        allPositions = board.getPositions().keySet();
+        for (ChessPosition position : allPositions) {
+            ChessPiece p = getPiece(position);
+            if (p != null && p.getTeamColor() == color) {
+                colorMoves.add(position);
+            }
         }
         return colorMoves;
     }

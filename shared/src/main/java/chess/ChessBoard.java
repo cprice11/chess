@@ -37,7 +37,7 @@ public class ChessBoard {
 
     private ChessPosition enPassant = null;
     public HashMap<ChessPosition, ChessPiece> getPositions() {
-        return positions;
+        return new HashMap<>(positions);
     }
     public enum Highlight {
         PRIMARY,
@@ -130,7 +130,9 @@ public class ChessBoard {
      * @return The Highlight object specifying the color
      */
     private Highlight getHighlight(ChessPosition position) {
-        return highlightedPositions.get(position);
+        Highlight h = highlightedPositions.get(position);
+        if (h == null) return Highlight.NONE;
+        return h;
     }
 
     /**
@@ -158,11 +160,11 @@ public class ChessBoard {
         positions.put(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
 
         for (int i = 1; i <= 8; i++) {
-            positions.put(new ChessPosition(7, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+            positions.put(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
         }
 
         for (int i = 1; i <= 8; i++) {
-            positions.put(new ChessPosition(2, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            positions.put(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
         }
 
         positions.put(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
@@ -196,9 +198,8 @@ public class ChessBoard {
         StringBuilder board = new StringBuilder();
         boolean currentlyHighlighting = false;
         for (int i = 0; i < BOARD_SIZE; i++) {
-            System.out.print(BOARD_SIZE - i);
-            System.out.print(' ');
-
+            board.append(BOARD_SIZE - i);
+            board.append(" ");
             for (int j = 0; j < BOARD_SIZE; j++) {
                 ChessPosition position = new ChessPosition(BOARD_SIZE - i, j + 1);
                 ChessPiece piece = getPiece(position);
