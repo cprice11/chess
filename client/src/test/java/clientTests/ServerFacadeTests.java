@@ -35,6 +35,7 @@ public class ServerFacadeTests {
             users = new SQLUserDao();
             auth.deleteAll();
             users.deleteAll();
+            games.deleteAll();
             var a = auth.getAll();
             var u = users.getAll();
             System.out.println("Started test HTTP server on " + port);
@@ -92,6 +93,26 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @Order(9)
+    public void createCorrectly() throws Exception {
+        String authToken = serverFacade.register("John", "lucy", "@");
+        String authToken2 = serverFacade.register("Paul", "in", "@");
+        Assertions.assertEquals(0, games.getAll().size());
+        serverFacade.createGame(authToken,"I'm a game");
+        serverFacade.createGame(authToken2,"I'm a game");
+        serverFacade.createGame(authToken,"I'm another game");
+        Assertions.assertEquals(3, games.getAll().size());
+    }
+
+    @Test
+    @Order(10)
+    public void createIncorrectly() throws Exception {
+        Assertions.assertEquals(3, games.getAll().size());
+        serverFacade.createGame("asd", "name");
+        Assertions.assertEquals(3, games.getAll().size());
+    }
+
+    @Test
     @Order(7)
     public void listCorrectly() throws Exception {
         Assertions.fail("NOT WRITTEN");
@@ -100,18 +121,6 @@ public class ServerFacadeTests {
     @Test
     @Order(8)
     public void listIncorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
-    }
-
-    @Test
-    @Order(9)
-    public void createCorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
-    }
-
-    @Test
-    @Order(10)
-    public void createIncorrectly() throws Exception {
         Assertions.fail("NOT WRITTEN");
     }
 

@@ -2,8 +2,10 @@ package serverFacade;
 
 import com.google.gson.Gson;
 import model.GameSummary;
+import server.request.CreateGameRequest;
 import server.request.LoginRequest;
 import server.request.RegisterRequest;
+import server.result.CreateGameResult;
 import server.result.LoginResult;
 import server.result.RegisterResult;
 
@@ -25,36 +27,13 @@ public class ServerFacade {
         urlPath = urlString + portNum;
     }
 
-    public HttpURLConnection getRequest(String urlString) throws Exception {
-        return request("GET", urlString, null, null);
-    }
-
-    public HttpURLConnection postRequest(String urlString) throws Exception {
-        return request("POST", urlString, null, null);
-    }
-
-    public HttpURLConnection deleteRequest(String urlString) throws Exception {
-        return request("DELETE", urlString, null, null);
-    }
-
     public HttpURLConnection request(String method, String urlString) throws Exception {
-        return request(method, urlString, null, null);
+        return request(method, urlString, null);
     }
 
-    public HttpURLConnection request(String method, String urlString, String header) throws Exception {
-        return request(method, urlString, header, null);
-    }
-
-    public HttpURLConnection request(String method, String urlString, String header, String body) throws Exception {
+    public HttpURLConnection request(String method, String urlString, String body) throws Exception {
         HttpURLConnection connection = getConnection(urlString);
         connection.setRequestMethod(method);
-        if (header != null) {
-            connection.setDoOutput(true);
-            connection.addRequestProperty("Content-Type", "application/json");
-            try (var outputStream = connection.getOutputStream()) {
-                outputStream.write(header.getBytes());
-            }
-        }
         if (body != null) {
             connection.setDoOutput(true);
             connection.addRequestProperty("Content-Type", "application/json");
@@ -76,7 +55,7 @@ public class ServerFacade {
         LoginRequest loginRequest = new LoginRequest(username, password);
         String json = serializer.toJson(loginRequest);
         try {
-            HttpURLConnection connection = request("POST", urlPath + "/session", null, json);
+            HttpURLConnection connection = request("POST", urlPath + "/session", json);
             int code = connection.getResponseCode();
             String message = connection.getResponseMessage();
             try (InputStream respBody = connection.getInputStream()) {
@@ -111,6 +90,35 @@ public class ServerFacade {
         }
     }
 
+    public int createGame(String authToken, String gameName) {
+        CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
+        String json = serializer.toJson(createGameRequest);
+        try {
+            HttpURLConnection connection = request("POST", urlPath + "/game");
+            connection.setDoOutput(true);
+            connection.addRequestProperty("authorization", authToken);
+            connection.addRequestProperty("Content-Type", "application/json");
+            try (var outputStream = connection.getOutputStream()) {
+                outputStream.write(json.getBytes());
+            }
+            int code = connection.getResponseCode();
+            String message = connection.getResponseMessage();
+            try (InputStream respBody = connection.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                HttpResponse response = new HttpResponse(code, message);
+                CreateGameResult result = serializer.fromJson(inputStreamReader, CreateGameResult.class);
+                if (response.status() != 200) {
+                    handleError(response);
+                    return -1;
+                }
+                return result.gameID();
+            }
+        } catch (Exception e) {
+            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+            return -1;
+        }
+    }
+
     public Collection<GameSummary> listGames(String authToken) {
         throw new RuntimeException("NOT IMPLEMENTED");
     }
@@ -119,7 +127,7 @@ public class ServerFacade {
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
         String json = serializer.toJson(registerRequest);
         try {
-            HttpURLConnection connection = request("POST", urlPath + "/user", null, json);
+            HttpURLConnection connection = request("POST", urlPath + "/user", json);
             int code = connection.getResponseCode();
             String message = connection.getResponseMessage();
             RegisterResult body;
