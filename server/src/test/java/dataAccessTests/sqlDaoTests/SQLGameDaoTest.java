@@ -3,10 +3,10 @@ package dataAccessTests.sqlDaoTests;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
-import dataAccess.*;
-import dataAccess.sqlDao.SQLAuthDao;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
+import dataAccess.GameDao;
 import dataAccess.sqlDao.SQLGameDao;
-import dataAccess.sqlDao.SQLUserDao;
 import model.GameData;
 import model.GameSummary;
 import org.junit.jupiter.api.*;
@@ -17,16 +17,12 @@ import java.util.HashSet;
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLGameDaoTest extends sqlDataAccessVars {
-    private static AuthDao authDao;
     private static GameDao gameDao;
-    private static UserDao userDao;
 
     @BeforeEach
     void setup() {
         try {
-            authDao = new SQLAuthDao();
             gameDao = new SQLGameDao();
-            userDao = new SQLUserDao();
             DatabaseManager.resetData();
         } catch (DataAccessException e) {
             Assertions.fail("Could not set up database: " + e.getMessage());
@@ -193,7 +189,7 @@ public class SQLGameDaoTest extends sqlDataAccessVars {
     @Test
     void getGamesByName() {
         try {
-            HashSet<GameSummary> games = gameDao.getGamesByName("chessgame");
+            HashSet<GameSummary> games = gameDao.getGamesByName(g1.gameName());
             Assertions.assertNotNull(games);
             Assertions.assertEquals(2, games.size());
             Assertions.assertFalse(games.contains(s0));
