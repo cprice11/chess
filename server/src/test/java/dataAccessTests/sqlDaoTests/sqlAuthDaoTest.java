@@ -12,36 +12,20 @@ import java.util.*;
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class sqlAuthDaoTest extends sqlDataAccessVars {
-    private static final AuthDao authDao = new SQLAuthDao();
-    private static final GameDao gamesDao = new SQLGameDao();
-    private static final UserDao userDao = new SQLUserDao();
+    private static AuthDao authDao;
+    private static GameDao gamesDao;
+    private static UserDao userDao;
 
-    @BeforeAll
-    @Order(1)
-    static void initialize() {
+    @BeforeEach
+    void setup() {
         try {
-            DatabaseManager.configureDatabase();
+            authDao = new SQLAuthDao();
+            gamesDao = new SQLGameDao();
+            userDao = new SQLUserDao();
             DatabaseManager.resetData();
         } catch (DataAccessException e) {
             Assertions.fail("Could not set up database: " + e.getMessage());
         }
-    }
-
-    @BeforeAll
-    @Order(2)
-    static void basicAdd() {
-        try {
-            var u = authDao.getAll();
-            DatabaseManager.resetData();
-            u = authDao.getAll();
-            authDao.add(a0);
-        } catch (Exception e) {
-            Assertions.fail("Could not set up database: " + e.getMessage());
-        }
-    }
-
-    @BeforeEach
-    void setup() {
         try {
             DatabaseManager.resetData();
             authDao.add(a0);
