@@ -1,5 +1,7 @@
 package ui;
 
+import serverFacade.ServerFacade;
+
 import java.util.Arrays;
 
 public class SelectionUi extends UI {
@@ -13,11 +15,11 @@ public class SelectionUi extends UI {
                 whitespace.
             """;
     private static final String HELP_HELP = """
-            HELP"
+            HELP
                 [H|h]
                     To see this help menu enter 'h' on the navigation screen.
                     
-                -[COMMAND]"
+                -[COMMAND]
                         To see explanations of an individual command try entering
                         'h [COMMAND]' to see more details (e.g. 'h join').
             """;
@@ -25,10 +27,10 @@ public class SelectionUi extends UI {
             SEARCH
                 [S|s]
                     Brings up the search bar and shows a list of random games
-            
+                
                 -u [user]
                       Brings up games where the given user is participating
-            
+                
                 -g [gameName]
                       Brings up games with the given name.
                       (e.g. 's -g "Friday morning match" ')
@@ -56,18 +58,18 @@ public class SelectionUi extends UI {
                 [J|j]
                     Attempts To join a game. Either GameID, color, or both can be specified.
                     Entering 'j' alone will prompt for the gameID and color preference
-            
+                
                 -[color]
                     will attempt to join an existing game as the specified color
                     (w)hite, (b)lack, (e)ither, (o)bserver, or (a)ny
                     'e' will only attempt join a game as a player while 'a' will join as an
                     observer if the game is full.
-        
-               -[gameID] -[color]
+                
+                -[gameID] -[color]
                    If a gameID is specified the program will attempt to join that game as the
                    given color.
-        
-               -[gameID]
+                
+                -[gameID]
                    If only gameID is specified it will default to the 'a' option and join or
                    observe if the game is full.
             """;
@@ -75,10 +77,10 @@ public class SelectionUi extends UI {
             LIST
                 [L|l]
                     brings a list of all games on the server.
-                    
+                        
                 -j
                     Lists games that are available to join.
-                    
+                        
                 -o
                     Lists games that are available to observer
             """;
@@ -88,36 +90,40 @@ public class SelectionUi extends UI {
                     Will attempt to log the user out and return to the login screen.
             """;
 
-    private static final String ALL_HELP = HELP_INTRO + HELP_HELP + HELP_SEARCH + HELP_JOIN + HELP_CREATE + HELP_QUIT;
+    private static final String ALL_HELP = HELP_INTRO + HELP_HELP + HELP_SEARCH + HELP_LIST + HELP_JOIN + HELP_CREATE + HELP_QUIT;
 
     public void mainMenu() {
+        eraseScreen();
         banner("HOME");
-        putBlock(0, TERMINAL_HEIGHT - 4, """
-                - (L)ist games
-                - (J)oin games
-                - (C)reate game
-                - (H)elp
-                - (Q)uit;
+        putBlock(0, TOP_OF_WINDOW - 2, """
+                1 (L)ist games
+                2 (S)earch games
+                3 (J)oin games
+                4 (C)reate game
+                5 (H)elp
+                6 (Q)uit;
                 """);
         prompt(null, "please select an option");
         updateScreen();
         String[] input = scanner.nextLine().split("\\s");
-        switch (input[0].charAt(0)) {
-            case 's', 'S':
-                search();
-                break;
-            case 'l', 'L':
+        String command = input[0];
+        if (command.isEmpty()) command = "*";
+        switch (command.charAt(0)) {
+            case '1', 'l', 'L':
                 list();
                 break;
-            case 'j', 'J':
+            case '2', 's', 'S':
+                search();
+                break;
+            case '3', 'j', 'J':
                 join();
                 break;
-            case 'c', 'C':
+            case '4', 'c', 'C':
                 create();
                 break;
-            case 'q', 'Q', 'x', 'X', 'e', 'E':
+            case '6','q', 'Q', 'x', 'X', 'e', 'E':
                 quit();
-            case 'h', 'H':
+            case '5', 'h', 'H':
             default:
                 help(input);
         }
@@ -127,46 +133,63 @@ public class SelectionUi extends UI {
     public void help(String[] input) {
         String requestedDoc;
         eraseScreen();
-        banner("HELP");
+        prompt(null, "press enter to exit");
+        banner("HELP", 2, NEGATIVE);
         if (input.length < 2) {
             requestedDoc = ALL_HELP;
         }
         else {
-            switch (Character.toUpperCase(input[0].charAt(0))) {
-                case 'H', 'M':
-                    requestedDoc = switch (Character.toUpperCase(input[1].charAt(0))){
-                        case 'J' -> HELP_JOIN;
-                        case 'C' -> HELP_CREATE;
-                        case 'L' -> HELP_LIST;
-                        case 'S' -> HELP_SEARCH;
-                        case 'Q', 'X', 'E' -> HELP_QUIT;
-                        default -> HELP_HELP;
-                    };
-                default:
-                    requestedDoc = HELP_HELP;
-                }
+            requestedDoc = switch (Character.toUpperCase(input[1].charAt(0))) {
+                case 'J' -> HELP_JOIN;
+                case 'C' -> HELP_CREATE;
+                case 'L' -> HELP_LIST;
+                case 'S' -> HELP_SEARCH;
+                case 'Q', 'X', 'E' -> HELP_QUIT;
+                default -> HELP_HELP;
+            };
         }
-        if (countLines(requestedDoc) > TERMINAL_HEIGHT - 4) {
+        if (countLines(requestedDoc) > terminalHeight - 4) {
             chunkPages(requestedDoc);
-            return;
+            mainMenu();
         }
-        putBlock(1, 4, requestedDoc);
+        putBlock(0, TOP_OF_WINDOW, requestedDoc);
         updateScreen();
+        scanner.nextLine();
+        mainMenu();
     }
 
     private void chunkPages(String doc) {
-        int window = TERMINAL_HEIGHT - 4;
         int top = 0;
+        int bottom = WINDOW_HEIGHT;
         int jumpDist = 3;
-        String[] rows = doc.split("\\n");
-        String chunk = String.join("\n", Arrays.copyOfRange(rows, top, window));
-        putBlock(0, TERMINAL_HEIGHT - 4, chunk);
+        boolean atBottom = false;
+        String[] rows = doc.split("\\n", 300);
+        String chunk = String.join("\n", Arrays.copyOfRange(rows, top, bottom));
         prompt(null, "press enter to scroll [q|x] to exit", 0);
-        while ("xXqQ".indexOf(scanner.nextLine().charAt(0)) != -1 ) {
-            if (window + jumpDist > rows.length)
-                chunk = String.join("\n", Arrays.copyOfRange(rows, rows.length - TER, rows.length));
+        putBlock(0, TOP_OF_WINDOW, chunk);
+        updateScreen();
+        String input = scanner.nextLine();
+        while (input == null || input.isEmpty() || "xXqQ".indexOf(input.charAt(0)) == -1 ) {
+            if (atBottom) {
+                top = 0;
+                bottom = WINDOW_HEIGHT;
+                chunk = String.join("\n", Arrays.copyOfRange(rows, top, bottom));
+                atBottom = false;
+            } else if (bottom + jumpDist > rows.length) {
+                chunk = String.join("\n", Arrays.copyOfRange(rows, rows.length - WINDOW_HEIGHT, rows.length));
+                atBottom = true;
+            } else {
+                top += jumpDist;
+                bottom += jumpDist;
+                chunk = String.join("\n", Arrays.copyOfRange(rows, top, bottom));
+            }
+            eraseScreen();
+            banner("HELP", TITLE, NEGATIVE);
+            prompt(null, "press enter to scroll [q|x] to exit", 0);
+            putBlock(0, TOP_OF_WINDOW, chunk);
+            updateScreen();
+            input = scanner.nextLine();
         }
-
     }
 
     private void search() {
@@ -184,7 +207,7 @@ public class SelectionUi extends UI {
         throw new RuntimeException("NOT IMPLEMENTED");
     }
     private void quit() {
-        throw new RuntimeException("NOT IMPLEMENTED");
+
     }
 
     public static int countLines(String str) {

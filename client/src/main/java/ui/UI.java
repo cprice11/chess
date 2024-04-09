@@ -11,25 +11,26 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class UI {
-    static int TERMINAL_WIDTH = 150;
-    static int TERMINAL_HEIGHT = 23;
-    private static final int TOP_OF_WINDOW = TERMINAL_HEIGHT - 4;
+    static int terminalWidth = 150;
+    static int terminalHeight = 23;
+    static int topPad = 3;
+    // window padding is the way to madness.
+    protected static int WINDOW_HEIGHT = terminalHeight - 5;
+    protected static int TOP_OF_WINDOW = terminalHeight - 5;
+    protected static int TITLE = 2;
     static int promptY = 5;
     protected static String promptMessage;
     protected static String promptMessage2;
-    ServerFacade server = new ServerFacade();
     protected static String authToken;
 
-    static enum color {
-        BG_DARKEST, BG_DARKER, BG_DARK, FG_DARKER, FG_DARK, FG_LIGHT, FG_LIGHTER, BG_LIGHT, BG_LIGHTER, BG_LIGHTEST, PRIMARY, SECONDARY, TERNARY, NEGATIVE,
-    }
-
-    static final int[] BG_DARK2 = {0, 43, 54};
-    static final int[] BG_DARK = {7, 54, 66};
-    static final int[] FG_DARK = {101, 123, 131};
-    static final int[] FG_LIGHT = {147, 161, 161};
-    static final int[] BG_LIGHT = {238, 232, 213};
-    static final int[] BG_LIGHT2 = {253, 246, 227};
+    static final int[] DARK_3 = {0, 43, 54};
+    static final int[] DARK_2 = {7, 54, 66};
+    static final int[] DARK_1 = {88, 110, 117};
+    static final int[] DARK_0 = {101, 123, 131};
+    static final int[] LIGHT_0 = {147, 161, 161};
+    static final int[] LIGHT_1 = {238, 232, 213};
+    static final int[] LIGHT_2 = {253, 246, 227};
+    static final int[] LIGHT_3 = {253, 246, 227};
 
     static final int[] LIGHT_PIECE = {255, 255, 255};
     static final int[] DARK_PIECE = {255, 255, 255};
@@ -43,7 +44,7 @@ public class UI {
     static final String BACK_ARROW = "\ue0b2";
     static final int cursorX = 5;
     static final int cursorY = 5;
-    static String[] screen = new String[TERMINAL_HEIGHT];
+    static String[] screen = new String[terminalHeight];
 
     public static void prompt(String message) {
         promptMessage2 = message;
@@ -63,9 +64,9 @@ public class UI {
     public static String prompt() {
         StringBuilder s = new StringBuilder();
         if (promptMessage == null && promptMessage2 == null) {
-            s.append(setColor(null, BG_DARK));
+            s.append(setColor(null, DARK_2));
             s.append(ARROW);
-            s.append(setColor(null, FG_LIGHT));
+            s.append(setColor(null, LIGHT_0));
         }
         if (promptMessage != null) {
             s.append(setColor(SECONDARY, LIGHT_PIECE));
@@ -77,24 +78,24 @@ public class UI {
                 s.append(setColor(null, SECONDARY));
                 s.append(ARROW);
                 s.append(RESET_BG_COLOR);
-                s.append(setForeground(FG_LIGHT));
+                s.append(setForeground(LIGHT_0));
             } else {
-                s.append(setColor(BG_DARK, SECONDARY));
+                s.append(setColor(DARK_2, SECONDARY));
                 s.append(ARROW);
-                s.append(setColor(BG_DARK, FG_DARK));
+                s.append(setColor(DARK_2, DARK_0));
             }
         }
         if (promptMessage2 != null) {
-            s.append(setColor(BG_DARK, FG_DARK));
+            s.append(setColor(DARK_2, DARK_0));
             s.append(" ");
             s.append(promptMessage2);
             s.append(" ");
             s.append(RESET_BG_COLOR);
-            s.append(setColor(null, BG_DARK));
+            s.append(setColor(null, DARK_2));
             s.append(ARROW);
             s.append(RESET_TEXT_COLOR);
         }
-        s.append(setColor(null, BG_LIGHT));
+        s.append(setColor(null, LIGHT_1));
         s.append(" ");
         return s.toString();
     }
@@ -121,13 +122,18 @@ public class UI {
     }
 
     public static void banner(String message) {
-        banner(message, 2);
+        banner(message, 2, PRIMARY);
     }
 
     public static void banner(String message, int y) {
-        String title = setColor(BG_DARK2, PRIMARY) + BACK_ARROW + setColor(PRIMARY, LIGHT_PIECE) + "   " + message + "   " + RESET_BG_COLOR + setColor(null, PRIMARY) + ARROW + RESET_TEXT_COLOR;
-        centerText(TERMINAL_HEIGHT - y, title);
+        banner(message, y, PRIMARY);
     }
+
+    public static void banner(String message, int y, int[] color) {
+        String title = setColor(null, color) + BACK_ARROW + setColor(color, LIGHT_PIECE) + "   " + message + "   " + RESET_BG_COLOR + setColor(null, color) + ARROW + RESET_TEXT_COLOR;
+        centerText(terminalHeight - y, title);
+    }
+
 
     public enum HttpResponse {
         _200, _401, _403, _500
@@ -146,9 +152,9 @@ public class UI {
     public static void updateScreen() {
         System.out.print(ERASE_SCREEN);
         System.out.print(moveCursorToLocation(0, 0));
-        for (int i = 0; i < TERMINAL_HEIGHT && i < TERMINAL_HEIGHT - promptY && i < screen.length; i++) {
-            String row = (screen[TERMINAL_HEIGHT - (i + 1) ] == null) ? setColor(null, FG_LIGHT) + " " : screen[TERMINAL_HEIGHT - (i + 1)];
-            System.out.printf("%-" + TERMINAL_WIDTH + "s%n", setColor(null, FG_LIGHT) + row);
+        for (int i = 0; i < terminalHeight && i < terminalHeight - promptY && i < screen.length; i++) {
+            String row = (screen[terminalHeight - (i + 1) ] == null) ? setColor(null, LIGHT_0) + " " : screen[terminalHeight - (i + 1)];
+            System.out.printf("%-" + terminalWidth + "s%n", setColor(null, LIGHT_0) + row);
         }
         System.out.print(prompt());
     }
@@ -161,15 +167,15 @@ public class UI {
     }
 
     public static void putText(int x, int y, String text) {
-        if ((x > TERMINAL_WIDTH || y > TERMINAL_HEIGHT) || (x < 0 || y < 0)) return;
-        if (printLength(text) + x > TERMINAL_WIDTH) return;
+        if ((x > terminalWidth || y > terminalHeight) || (x < 0 || y < 0)) return;
+        if (printLength(text) + x > terminalWidth) return;
         String currRow = (screen[y] == null) ? " " : screen[y];
         if (x > 0) {
             int preLen = Math.min(x, currRow.length());
             String pre = String.format("%-" + x + "s", getPrintSub(0, preLen, currRow));
             text = pre + text;
         }
-        text = text + getPrintSub(printLength(text), TERMINAL_WIDTH, currRow);
+        text = text + getPrintSub(printLength(text), terminalWidth, currRow);
         screen[y] = text;
     }
 
@@ -234,7 +240,7 @@ public class UI {
 
     public static void centerText(int y, String text) {
         int len = printLength(text);
-        putText(((TERMINAL_WIDTH - len) / 2), y, text);
+        putText(((terminalWidth - len) / 2), y, text);
     }
 
     public static void eraseScreen() {
@@ -251,8 +257,8 @@ public class UI {
             int width = Integer.parseInt(reader.readLine());
             int height = Integer.parseInt(reader.readLine());
 
-            TERMINAL_WIDTH = width;
-            TERMINAL_HEIGHT = height;
+            terminalWidth = width;
+            terminalHeight = height;
             screen = new String[height];
         } catch (IOException | NumberFormatException e) {
             System.out.println("Unable to get window size. using default values");
