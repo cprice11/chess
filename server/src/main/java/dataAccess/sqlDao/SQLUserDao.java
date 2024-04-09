@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class SQLUserDao implements UserDao {
+public class SQLUserDao extends SQLDaoHelpers implements UserDao {
     private static final String INSERT_STATEMENT = "INSERT INTO users VALUES (?, ?, ?)";
     private static final String SELECT_STATEMENT = "SELECT * FROM users WHERE username=?";
     private static final String DELETE_STATEMENT = "DELETE FROM users WHERE username=?";
@@ -91,13 +91,7 @@ public class SQLUserDao implements UserDao {
      */
     @Override
     public void deleteAll() throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(TRUNCATE_STATEMENT)) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
-        }
+        executePreparedStatement(TRUNCATE_STATEMENT);
     }
 
     /**

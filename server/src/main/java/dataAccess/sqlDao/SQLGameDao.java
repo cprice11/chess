@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 
-public class SQLGameDao implements GameDao {
+public class SQLGameDao extends SQLDaoHelpers implements GameDao {
     private static final String INSERT_STATEMENT = "INSERT INTO games VALUES (?, ?, ?, ?, ?)";
     private static final String SELECT_STATEMENT = "SELECT * FROM games WHERE gameID=?";
     private static final String SELECT_SUMMARIES_STATEMENT = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
@@ -101,13 +101,7 @@ public class SQLGameDao implements GameDao {
      */
     @Override
     public void deleteAll() throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(TRUNCATE_STATEMENT)) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
-        }
+        executePreparedStatement(TRUNCATE_STATEMENT);
     }
 
     /**

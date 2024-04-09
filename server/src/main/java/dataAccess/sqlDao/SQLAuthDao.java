@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 
-public class SQLAuthDao implements AuthDao {
+public class SQLAuthDao extends SQLDaoHelpers implements AuthDao {
     private static final String INSERT_STATEMENT = "INSERT INTO auth VALUES (?, ?)";
     private static final String SELECT_STATEMENT = "SELECT authToken, username FROM auth WHERE authToken=?";
     private static final String DELETE_STATEMENT = "DELETE FROM auth WHERE authToken=?";
@@ -88,13 +88,7 @@ public class SQLAuthDao implements AuthDao {
      */
     @Override
     public void deleteAll() throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(TRUNCATE_STATEMENT)) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
-        }
+        executePreparedStatement(TRUNCATE_STATEMENT);
     }
 
     /**
