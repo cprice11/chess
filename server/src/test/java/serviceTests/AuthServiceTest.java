@@ -1,48 +1,35 @@
 package serviceTests;
 
-import dataAccess.*;
+import dataAccess.AuthDao;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
+import dataAccess.GameDao;
 import dataAccess.sqlDao.SQLAuthDao;
 import dataAccess.sqlDao.SQLGameDao;
-import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 import org.junit.jupiter.api.*;
-import server.request.RegisterRequest;
 import service.AuthService;
-import service.GameService;
 import service.UnauthorizedException;
-import service.UserService;
 
 import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthServiceTest extends SqlServiceVars {
     private AuthService authService;
-    private GameService gameService;
-    private UserService userService;
     private AuthDao auth;
-    private GameDao games;
-    private UserDao users;
 
 
     @BeforeEach
     void buildDatabase() {
         try {
             auth = new SQLAuthDao();
-            games = new SQLGameDao();
-            users = new SQLUserDao();
+            GameDao games = new SQLGameDao();
             DatabaseManager.resetData();
             authService = new AuthService(auth);
-            gameService = new GameService(games, authService);
-            userService = new UserService(users, authService);
             for (GameData g : gameData) {
                 games.add(g);
             }
-            for (UserData u : userData) {   // Registering creates authToken data
-                userService.register(new RegisterRequest(u.username(), u.password(), u.email()));
-            }
-            int i = 0;
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
