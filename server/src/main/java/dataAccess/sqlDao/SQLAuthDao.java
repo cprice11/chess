@@ -147,9 +147,8 @@ public class SQLAuthDao implements AuthDao {
     }
 
     /**
-     * @param username
-     * @return
-     * @throws DataAccessException
+     * @return All AuthData objects for the given user
+     * @throws DataAccessException if no AuthToken is found in the database
      */
     @Override
     public Collection<AuthData> getAuthFromUser(String username) throws DataAccessException {
@@ -173,9 +172,7 @@ public class SQLAuthDao implements AuthDao {
     }
 
     /**
-     * @param authToken
-     * @return
-     * @throws DataAccessException
+     * @return the username paired with the given authToken
      */
     @Override
     public String getUsername(String authToken) throws DataAccessException {
@@ -184,8 +181,8 @@ public class SQLAuthDao implements AuthDao {
     }
 
     /**
-     * @param username
-     * @return
+     * @param username the user to create an auth token for
+     * @return the AuthData object created and added to the database
      */
     @Override
     public AuthData createAuth(String username) throws DataAccessException {
@@ -195,9 +192,8 @@ public class SQLAuthDao implements AuthDao {
     }
 
     /**
-     * @param authToken
-     * @return
-     * @throws DataAccessException
+     * @return the AuthData object with the given authToken
+     * @throws DataAccessException if the authToken is not valid
      */
     @Override
     public AuthData getAuthFromToken(String authToken) throws DataAccessException {
