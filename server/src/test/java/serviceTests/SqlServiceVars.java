@@ -1,10 +1,6 @@
 package serviceTests;
 
 import chess.ChessGame;
-import dataAccess.GameDao;
-import dataAccess.UserDao;
-import dataAccess.sqlDao.SQLGameDao;
-import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
 import model.GameData;
 import model.GameSummary;
@@ -29,31 +25,34 @@ public class SqlServiceVars {
     static final String t8 = "v[KSAS1$^1!MX|{3JWwwS&xI+?jW,ASJ/pgSh]!t";
     static final String t9 = "|y[*R8\\r*8%|do5kp,2bvkga0W/W({-yc!k7(q7z";
 
-    static final int id0 = 950830939;
-    static final int id1 = 506326292;
-    static final int id2 = 1639761914;
-    static final int id3 = 1389273394;
-    static final int id4 = 683937171;
-    static final int id5 = 506057841;
-    static final int id6 = 1092644569;
-    static final int id7 = 412721225;
-    static final int id8 = 902295195;
-    static final int id9 = 886779931;
+    /*
+    the first 10 pseudo random gameIDs (seed = 111)
+    950830939
+    506326292
+    1639761914
+    1389273394
+    683937171
+    506057841
+    1092644569
+    412721225
+    902295195
+    886779931
+    */
 
-    static final AuthData a0 = new AuthData(t0, "myname123");
+    static final AuthData a0 = new AuthData(t0, "myName123");
     static final AuthData a1 = new AuthData(t1, "antonius");
     static final AuthData a2 = new AuthData(t2, "death");
 
     static final AuthData aNew = new AuthData("3hu2^7T@YXtJhDuQ2%dg", "Magnus");
 
-    static final GameData g0 = new GameData(0, "myname123", "Antonius", "firstmatch", new ChessGame());
-    static final GameData g1 = new GameData(1, "antonius", "death", "chessgame", new ChessGame());
-    static final GameData g2 = new GameData(2, "death", "myname123", "chessgame", new ChessGame());
+    static final GameData g0 = new GameData(0, "myName123", "Antonius", "firstMatch", new ChessGame());
+    static final GameData g1 = new GameData(1, "antonius", "death", "chessGame", new ChessGame());
+    static final GameData g2 = new GameData(2, "death", "myName123", "chessGame", new ChessGame());
 
     static final GameData gNew = new GameData(4, "Magnus", null, "partialMatch", new ChessGame());
     static final GameData gEmpty = new GameData(5, null, null, "partialMatch", new ChessGame());
 
-    static final UserData u0 = new UserData("myname123", "p@ssword", "email@email.com");
+    static final UserData u0 = new UserData("myName123", "p@ssword", "email@email.com");
     static final UserData u1 = new UserData("antonius", "G00dK!ght", "email@email.com");
     static final UserData u2 = new UserData("death", "humor0us", "email@email.com");
 
@@ -67,10 +66,6 @@ public class SqlServiceVars {
     static final GameSummary s1 = new GameSummary(g1.gameID(), g1.whiteUsername(), g1.blackUsername(), g1.gameName());
     static final GameSummary s2 = new GameSummary(g2.gameID(), g2.whiteUsername(), g2.blackUsername(), g2.gameName());
     static final HashSet<GameSummary> gameSummaries = new HashSet<>(Arrays.asList(s0, s1, s2));
-
-    //protected static AuthDao auth = new SQLAuthDao();
-    //protected static GameDao games = new SQLGameDao();
-    //protected static UserDao users = new SQLUserDao();
 
     // register
     static final RegisterRequest goodRegisterRequest = new RegisterRequest(uNew.username(), uNew.password(), uNew.email());

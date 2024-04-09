@@ -41,11 +41,11 @@ class UserServiceTest extends SqlServiceVars {
             authService = new AuthService(auth);
             gameService = new GameService(games, authService);
             userService = new UserService(users, authService);
+            userService.register(new RegisterRequest(u0.username(), u0.password(), u0.email()));
+            userService.register(new RegisterRequest(u1.username(), u1.password(), u1.email()));
+            userService.register(new RegisterRequest(u2.username(), u2.password(), u2.email()));
             for (GameData g : gameData) {
                 games.add(g);
-            }
-            for (UserData u : userData) {
-                userService.register(new RegisterRequest(u.username(), u.password(), u.email()));
             }
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");

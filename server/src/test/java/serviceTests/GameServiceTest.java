@@ -34,11 +34,11 @@ class GameServiceTest extends SqlServiceVars {
             authService = new AuthService(auth);
             gameService = new GameService(games, authService);
             userService = new UserService(users, authService);
+            userService.register(new RegisterRequest(u0.username(), u0.password(), u0.email()));
+            userService.register(new RegisterRequest(u1.username(), u1.password(), u1.email()));
+            userService.register(new RegisterRequest(u2.username(), u2.password(), u2.email()));
             for (GameData g : gameData) {
                 games.add(g);
-            }
-            for (UserData u : userData) {
-                userService.register(new RegisterRequest(u.username(), u.password(), u.email()));
             }
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
@@ -69,8 +69,8 @@ class GameServiceTest extends SqlServiceVars {
             games.add(gEmpty);
             Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestWhite));
             Assertions.assertDoesNotThrow(() -> gameService.joinGame(goodJoinGameRequestNewPlayerBlack));
-            Assertions.assertEquals(games.getGame(gEmpty.gameID()).whiteUsername(), u1.username(), "User not posted with correct color");
-            Assertions.assertEquals(games.getGame(gEmpty.gameID()).blackUsername(), u2.username(), "User not posted with correct color");
+            Assertions.assertEquals(u1.username(), games.getGame(gEmpty.gameID()).whiteUsername(), "User not posted with correct color");
+            Assertions.assertEquals(u2.username(), games.getGame(gEmpty.gameID()).blackUsername(), "User not posted with correct color");
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }

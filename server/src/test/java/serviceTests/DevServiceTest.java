@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.DevService;
 
-class DevServiceTest extends ServiceVars {
+class DevServiceTest extends SqlServiceVars{
     private static final AuthDao auth = new MemoryAuthDao();
     private static final GameDao games = new MemoryGameDao();
     private static final UserDao users = new MemoryUserDao();

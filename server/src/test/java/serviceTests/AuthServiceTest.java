@@ -3,11 +3,8 @@ package serviceTests;
 import dataAccess.AuthDao;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
-import dataAccess.GameDao;
 import dataAccess.sqlDao.SQLAuthDao;
-import dataAccess.sqlDao.SQLGameDao;
 import model.AuthData;
-import model.GameData;
 import org.junit.jupiter.api.*;
 import service.AuthService;
 import service.UnauthorizedException;
@@ -24,12 +21,11 @@ class AuthServiceTest extends SqlServiceVars {
     void buildDatabase() {
         try {
             auth = new SQLAuthDao();
-            GameDao games = new SQLGameDao();
             DatabaseManager.resetData();
             authService = new AuthService(auth);
-            for (GameData g : gameData) {
-                games.add(g);
-            }
+            auth.createAuth(a0.username());
+            auth.createAuth(a1.username());
+            auth.createAuth(a2.username());
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
@@ -46,6 +42,7 @@ class AuthServiceTest extends SqlServiceVars {
     @Order(1)
     void getAuthByUsername() {
         try {
+            var a = auth.getAll();
             Assertions.assertTrue(authService.getAuthByUsername(a0.username()).contains(a0), "Did not return expected AuthData");
             Assertions.assertTrue(authService.getAuthByUsername(a1.username()).contains(a1), "Did not return expected AuthData");
             Assertions.assertTrue(authService.getAuthByUsername(a2.username()).contains(a2), "Did not return expected AuthData");
