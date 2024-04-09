@@ -163,7 +163,8 @@ public class SelectionUi extends UI {
         putBlock(0, TERMINAL_HEIGHT - 4, chunk);
         prompt(null, "press enter to scroll [q|x] to exit", 0);
         while ("xXqQ".indexOf(scanner.nextLine().charAt(0)) != -1 ) {
-            if (window + jumpDist > top += 6;
+            if (window + jumpDist > rows.length)
+                chunk = String.join("\n", Arrays.copyOfRange(rows, rows.length - TER, rows.length));
         }
 
     }
