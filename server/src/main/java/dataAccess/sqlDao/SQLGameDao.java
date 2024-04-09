@@ -2,6 +2,7 @@ package dataAccess.sqlDao;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
 import dataAccess.GameDao;
@@ -25,6 +26,8 @@ public class SQLGameDao implements GameDao {
     private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE games";
     private static final String UPDATE_STATEMENT = "UPDATE games SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameID=?";
     private final Random randomIdGenerator = new Random(111);
+    Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
+
 
     public SQLGameDao() throws DataAccessException{
         DatabaseManager.configureDatabase();
@@ -74,7 +77,7 @@ public class SQLGameDao implements GameDao {
         String name = res.getString("gameName");
 
         String json = res.getString("game");
-        ChessGame game = new Gson().fromJson(json, ChessGame.class);
+        ChessGame game = gson.fromJson(json, ChessGame.class);
         return new GameData(id, white, black, name, game);
     }
 
@@ -155,7 +158,7 @@ public class SQLGameDao implements GameDao {
                 preparedStatement.setString(3, entry.blackUsername());
                 preparedStatement.setString(4, entry.gameName());
 
-                String json = new Gson().toJson(entry.game());
+                String json = gson.toJson(entry.game());
                 preparedStatement.setString(5, json);
 
                 preparedStatement.executeUpdate();

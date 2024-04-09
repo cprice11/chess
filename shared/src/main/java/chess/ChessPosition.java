@@ -10,15 +10,13 @@ import java.util.Objects;
  */
 public class ChessPosition {
     int rank;
-    int row;
     int file;
-    int col;
     char fileLetter;
 
 
     public ChessPosition(int rank, int file) {
-        this.row = this.rank = rank;
-        this.col = this.file = file;
+        this.rank = rank;
+        this.file = file;
         switch (this.file) {
             case 1:
                 fileLetter = 'a';
@@ -65,22 +63,6 @@ public class ChessPosition {
     @Override
     public int hashCode() {
         return Objects.hash(rank, file);
-    }
-
-    /**
-     * @return which row this position is in
-     * 1 codes for the bottom row
-     */
-    public int getRow() {
-        return row;
-    }
-
-    /**
-     * @return which column this position is in
-     * 1 codes for the left row
-     */
-    public int getColumn() {
-        return col;
     }
 
     /**
