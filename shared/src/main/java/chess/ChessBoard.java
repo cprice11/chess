@@ -108,10 +108,6 @@ public class ChessBoard {
         return positions.get(position);
     }
 
-    // If I ever refactor this. This should be state's responsibility.
-    public HashMap<ChessPosition, ChessPiece> getPieces() {
-        return new HashMap<>(positions);
-    }
 
     /**
      * Gets the color of a piece on the chessboard
@@ -245,7 +241,7 @@ public class ChessBoard {
                 // set color according to highlights
                 String nextHighlight;
                 // Background
-                if (highlightColor == null || highlightColor.equals(Highlight.NONE)) {
+                if (highlightColor == null) {
                     nextHighlight = ((i + j) % 2 == 1) ? DARK_SQUARE : LIGHT_SQUARE;
                 } else if ((i + j) % 2 == 1) {
                     nextHighlight = switch (highlightColor) {
