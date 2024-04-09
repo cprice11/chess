@@ -1,8 +1,8 @@
 package dataAccessTests.sqlDaoTests;
 
-import dataAccess.*;
-import dataAccess.sqlDao.SQLAuthDao;
-import dataAccess.sqlDao.SQLGameDao;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
+import dataAccess.UserDao;
 import dataAccess.sqlDao.SQLUserDao;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -13,16 +13,12 @@ import java.util.HashSet;
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLUserDaoTest extends sqlDataAccessVars {
-    private static AuthDao authDao;
-    private static GameDao gamesDao;
     private static UserDao userDao;
 
     @BeforeAll
     @Order(1)
     static void initialize() {
         try {
-            authDao = new SQLAuthDao();
-            gamesDao = new SQLGameDao();
             userDao = new SQLUserDao();
             DatabaseManager.resetData();
         } catch (DataAccessException e) {
@@ -102,9 +98,9 @@ public class SQLUserDaoTest extends sqlDataAccessVars {
     @Order(5)
     void verify() {
         try {
-        userDao.delete(u0);
-        Assertions.assertThrows(DataAccessException.class, () -> userDao.verify(u0));
-        Assertions.assertDoesNotThrow(() -> userDao.verify(u2));
+            userDao.delete(u0);
+            Assertions.assertThrows(DataAccessException.class, () -> userDao.verify(u0));
+            Assertions.assertDoesNotThrow(() -> userDao.verify(u2));
         } catch (Exception e) {
             Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
         }
@@ -114,11 +110,11 @@ public class SQLUserDaoTest extends sqlDataAccessVars {
     @Order(6)
     void add() {
         try {
-        userDao.deleteAll();
-        Assertions.assertDoesNotThrow(() -> userDao.add(u0));
-        HashSet<UserData> justOne = new HashSet<>();
-        justOne.add(u0);
-        Assertions.assertEquals(justOne, userDao.getAll());
+            userDao.deleteAll();
+            Assertions.assertDoesNotThrow(() -> userDao.add(u0));
+            HashSet<UserData> justOne = new HashSet<>();
+            justOne.add(u0);
+            Assertions.assertEquals(justOne, userDao.getAll());
         } catch (Exception e) {
             Assertions.fail("Failed due to an unexpected exception: " + e.getMessage());
         }
