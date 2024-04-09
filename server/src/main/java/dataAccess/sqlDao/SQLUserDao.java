@@ -18,7 +18,6 @@ public class SQLUserDao implements UserDao {
     private static final String SELECT_STATEMENT = "SELECT * FROM users WHERE username=?";
     private static final String DELETE_STATEMENT = "DELETE FROM users WHERE username=?";
     private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE users";
-    private static final String SELECT_STATEMENT_USER = "SELECT usersToken, username FROM users WHERE username=?";
 
     public SQLUserDao() throws DataAccessException {
         DatabaseManager.configureDatabase();
@@ -147,9 +146,8 @@ public class SQLUserDao implements UserDao {
     }
 
     /**
-     * @param username
-     * @return
-     * @throws DataAccessException
+     * @return UserData object for the given username
+     * @throws DataAccessException If user is not found
      */
     @Override
     public UserData getUser(String username) throws DataAccessException {
@@ -159,9 +157,9 @@ public class SQLUserDao implements UserDao {
     }
 
     /**
-     * @param username
-     * @param password
-     * @throws DataAccessException
+     * @param username the string username of the user to edit
+     * @param password the updated password to use
+     * @throws DataAccessException if not user is found with that username
      */
     @Override
     public void editUserPassword(String username, String password) throws DataAccessException {
@@ -176,9 +174,9 @@ public class SQLUserDao implements UserDao {
     }
 
     /**
-     * @param username
-     * @param email
-     * @throws DataAccessException
+     * @param username the string username of the user to edit
+     * @param email the updated password to use
+     * @throws DataAccessException if not user is found with that username
      */
     @Override
     public void editUserEmail(String username, String email) throws DataAccessException {
