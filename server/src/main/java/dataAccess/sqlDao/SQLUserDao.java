@@ -20,6 +20,9 @@ public class SQLUserDao implements UserDao {
     private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE users";
     private static final String SELECT_STATEMENT_USER = "SELECT usersToken, username FROM users WHERE username=?";
 
+    public SQLUserDao() throws DataAccessException {
+        DatabaseManager.configureDatabase();
+    }
 
     private UserData selectUser(String username) throws DataAccessException {
         ArrayList<UserData> entries = new ArrayList<>();
@@ -150,7 +153,7 @@ public class SQLUserDao implements UserDao {
      */
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        UserData user =  selectUser(username);
+        UserData user = selectUser(username);
         if (user == null) throw new DataAccessException("User not found");
         return user;
     }

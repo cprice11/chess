@@ -17,16 +17,30 @@ import service.*;
 import spark.Response;
 
 public abstract class Handler {
-    protected static DatabaseManager db = new DatabaseManager();
-    protected static AuthDao authDAO = new SQLAuthDao();
-    protected static GameDao gameDAO = new SQLGameDao();
-    protected static UserDao userDAO = new SQLUserDao();
-    protected static DevService dev = new DevService(authDAO, gameDAO, userDAO);
-    protected static AuthService auth = new AuthService(authDAO);
-    protected static GameService games = new GameService(gameDAO, auth);
-    protected static UserService users = new UserService(userDAO, auth);
+    protected static AuthDao authDAO;
+    protected static GameDao gameDAO;
+    protected static UserDao userDAO;
+    protected static DevService dev;
+    protected static AuthService auth;
+    protected static GameService games;
+    protected static UserService users;
     protected static Gson serializer = new Gson();
     protected static BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    public Handler() {
+        try {
+            authDAO = new SQLAuthDao();
+            gameDAO = new SQLGameDao();
+            userDAO = new SQLUserDao();
+            dev = new DevService(authDAO, gameDAO, userDAO);
+            auth = new AuthService(authDAO);
+            games = new GameService(gameDAO, auth);
+            users = new UserService(userDAO, auth);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("UNABLE TO INITIALIZE DATABASE: " + e.getMessage());
+        }
+
+    }
 
     protected static String success(Response res, String jsonBody) {
         res.status(200);

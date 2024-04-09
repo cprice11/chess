@@ -26,6 +26,9 @@ public class SQLGameDao implements GameDao {
     private static final String UPDATE_STATEMENT = "UPDATE games SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameID=?";
     private final Random randomIdGenerator = new Random(111);
 
+    public SQLGameDao() throws DataAccessException{
+        DatabaseManager.configureDatabase();
+    }
 
     private GameData selectGame(int gameID) throws DataAccessException {
         ArrayList<GameData> entries = new ArrayList<>();

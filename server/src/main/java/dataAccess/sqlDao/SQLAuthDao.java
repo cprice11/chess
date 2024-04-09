@@ -20,7 +20,11 @@ public class SQLAuthDao implements AuthDao {
     private static final String TRUNCATE_STATEMENT = "TRUNCATE TABLE auth";
     private static final String SELECT_STATEMENT_USER = "SELECT authToken, username FROM auth WHERE username=?";
     private static final int AUTH_TOKEN_LENGTH = 40;
-    private Random randomTokenGenerator = new Random(111);
+    private static final Random randomTokenGenerator = new Random(111);
+
+    public SQLAuthDao() throws DataAccessException{
+        DatabaseManager.configureDatabase();
+    }
 
 
     private AuthData selectAuth(String authToken) throws DataAccessException {
