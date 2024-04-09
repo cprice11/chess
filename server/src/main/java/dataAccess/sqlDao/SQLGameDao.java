@@ -123,7 +123,7 @@ public class SQLGameDao implements GameDao {
                 preparedStatement.setString(2, value.blackUsername());
                 preparedStatement.setString(3, value.gameName());
 
-                String json = new Gson().toJson(value.game());
+                String json = gson.toJson(value.game());
                 preparedStatement.setString(4, json);
 
                 preparedStatement.setInt(5, value.gameID());
@@ -229,7 +229,7 @@ public class SQLGameDao implements GameDao {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("UPDATE games SET game=? WHERE gameID=?")) {
 
-                String json = new Gson().toJson(game);
+                String json = gson.toJson(game);
                 preparedStatement.setString(1, json);
 
                 preparedStatement.setInt(2, gameID);

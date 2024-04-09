@@ -165,13 +165,15 @@ public class sqlGameDaoTest extends sqlDataAccessVars {
                         new ChessPosition(2, 1),
                         new ChessPosition(3, 1),
                         null)));
-        Assertions.assertDoesNotThrow(() -> {
+        try {
             GameData dbGame = gameDao.getGame(g1.gameID());
             Assertions.assertNotEquals(newGameState, dbGame.game());
             Assertions.assertDoesNotThrow(() -> gameDao.setGameState(g1.gameID(), newGameState));
             dbGame = gameDao.getGame(g1.gameID());
             Assertions.assertEquals(newGameState, dbGame.game());
-        });
+        } catch (DataAccessException e) {
+            Assertions.fail("Unexpected Exception thrown: " + e.getMessage());
+        }
     }
 
     @Test
