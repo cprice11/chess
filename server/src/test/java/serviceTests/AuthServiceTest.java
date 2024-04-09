@@ -28,24 +28,23 @@ class AuthServiceTest extends SqlServiceVars {
     private UserDao users;
 
 
-
     @BeforeEach
     void buildDatabase() {
         try {
-            DatabaseManager.configureDatabase();
-            DatabaseManager.resetData();
             auth = new SQLAuthDao();
             games = new SQLGameDao();
             users = new SQLUserDao();
+            DatabaseManager.resetData();
             authService = new AuthService(auth);
             gameService = new GameService(games, authService);
             userService = new UserService(users, authService);
             for (GameData g : gameData) {
                 games.add(g);
             }
-            for (UserData u : userData) {
+            for (UserData u : userData) {   // Registering creates authToken data
                 userService.register(new RegisterRequest(u.username(), u.password(), u.email()));
             }
+            int i = 0;
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
