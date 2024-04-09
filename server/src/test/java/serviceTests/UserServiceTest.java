@@ -2,31 +2,26 @@ package serviceTests;
 
 import dataAccess.AuthDao;
 import dataAccess.DatabaseManager;
-import dataAccess.GameDao;
 import dataAccess.UserDao;
-import dataAccess.memoryDao.MemoryDatabase;
 import dataAccess.sqlDao.SQLAuthDao;
-import dataAccess.sqlDao.SQLGameDao;
 import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
-import model.GameData;
-import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.LogoutRequest;
 import server.request.RegisterRequest;
 import server.result.LoginResult;
-import service.*;
+import service.AlreadyTakenException;
+import service.AuthService;
+import service.UnauthorizedException;
+import service.UserService;
 
-import java.util.HashSet;
 import java.util.Objects;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceTest extends SqlServiceVars {
     private AuthService authService;
-    private GameService gameService;
     private UserService userService;
     private AuthDao auth;
-    private GameDao games;
     private UserDao users;
 
 
@@ -36,17 +31,12 @@ class UserServiceTest extends SqlServiceVars {
             DatabaseManager.configureDatabase();
             DatabaseManager.resetData();
             auth = new SQLAuthDao();
-            games = new SQLGameDao();
             users = new SQLUserDao();
             authService = new AuthService(auth);
-            gameService = new GameService(games, authService);
             userService = new UserService(users, authService);
             userService.register(new RegisterRequest(u0.username(), u0.password(), u0.email()));
             userService.register(new RegisterRequest(u1.username(), u1.password(), u1.email()));
             userService.register(new RegisterRequest(u2.username(), u2.password(), u2.email()));
-            for (GameData g : gameData) {
-                games.add(g);
-            }
         } catch (Exception e) {
             Assertions.fail("Threw unexpected exception");
         }
@@ -88,7 +78,6 @@ class UserServiceTest extends SqlServiceVars {
     void testLogout() {
         try {
             userService.logout(goodLogoutRequest);
-            var a = auth.getAll();
             Assertions.assertFalse(auth.getAll().contains(a0), "AuthData remained after logout");
             Assertions.assertTrue(auth.getAll().contains(a1), "incorrect AuthData dropped after logout");
             Assertions.assertThrows(UnauthorizedException.class, () -> userService.logout(badLogoutRequest), "No error thrown on invalid request");

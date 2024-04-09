@@ -42,7 +42,6 @@ class AuthServiceTest extends SqlServiceVars {
     @Order(1)
     void getAuthByUsername() {
         try {
-            var a = auth.getAll();
             Assertions.assertTrue(authService.getAuthByUsername(a0.username()).contains(a0), "Did not return expected AuthData");
             Assertions.assertTrue(authService.getAuthByUsername(a1.username()).contains(a1), "Did not return expected AuthData");
             Assertions.assertTrue(authService.getAuthByUsername(a2.username()).contains(a2), "Did not return expected AuthData");

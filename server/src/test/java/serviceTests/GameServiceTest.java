@@ -5,7 +5,6 @@ import dataAccess.sqlDao.SQLAuthDao;
 import dataAccess.sqlDao.SQLGameDao;
 import dataAccess.sqlDao.SQLUserDao;
 import model.GameData;
-import model.UserData;
 import org.junit.jupiter.api.*;
 import server.request.InvalidRequestException;
 import server.request.RegisterRequest;
@@ -16,24 +15,20 @@ import java.util.HashSet;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class GameServiceTest extends SqlServiceVars {
-    private AuthService authService;
     private GameService gameService;
-    private UserService userService;
-    private AuthDao auth;
     private GameDao games;
-    private UserDao users;
 
     @BeforeEach
     void buildDatabase() {
         try {
             DatabaseManager.configureDatabase();
             DatabaseManager.resetData();
-            auth = new SQLAuthDao();
+            AuthDao auth = new SQLAuthDao();
             games = new SQLGameDao();
-            users = new SQLUserDao();
-            authService = new AuthService(auth);
+            UserDao users = new SQLUserDao();
+            AuthService authService = new AuthService(auth);
             gameService = new GameService(games, authService);
-            userService = new UserService(users, authService);
+            UserService userService = new UserService(users, authService);
             userService.register(new RegisterRequest(u0.username(), u0.password(), u0.email()));
             userService.register(new RegisterRequest(u1.username(), u1.password(), u1.email()));
             userService.register(new RegisterRequest(u2.username(), u2.password(), u2.email()));
@@ -175,6 +170,6 @@ class GameServiceTest extends SqlServiceVars {
 
     @Test
     void getGamesByName() {
-        Assertions.assertDoesNotThrow(() -> gameService.getGamesByName("chessgame"));
+        Assertions.assertDoesNotThrow(() -> gameService.getGamesByName("chessGame"));
     }
 }
