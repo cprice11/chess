@@ -11,7 +11,7 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class sqlAuthDaoTest extends sqlDataAccessVars {
+public class SQLAuthDaoTest extends sqlDataAccessVars {
     private static AuthDao authDao;
     private static GameDao gamesDao;
     private static UserDao userDao;

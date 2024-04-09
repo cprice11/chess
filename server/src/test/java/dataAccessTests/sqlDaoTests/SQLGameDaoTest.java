@@ -16,7 +16,7 @@ import java.util.HashSet;
 
 @SuppressWarnings("unused")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class sqlGameDaoTest extends sqlDataAccessVars {
+public class SQLGameDaoTest extends sqlDataAccessVars {
     private static AuthDao authDao;
     private static GameDao gameDao;
     private static UserDao userDao;
