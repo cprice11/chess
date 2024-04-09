@@ -1,9 +1,9 @@
 package dataAccessTests.sqlDaoTests;
 
-import dataAccess.*;
+import dataAccess.AuthDao;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import dataAccess.sqlDao.SQLAuthDao;
-import dataAccess.sqlDao.SQLGameDao;
-import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 
@@ -13,15 +13,11 @@ import java.util.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLAuthDaoTest extends sqlDataAccessVars {
     private static AuthDao authDao;
-    private static GameDao gamesDao;
-    private static UserDao userDao;
 
     @BeforeEach
     void setup() {
         try {
             authDao = new SQLAuthDao();
-            gamesDao = new SQLGameDao();
-            userDao = new SQLUserDao();
             DatabaseManager.resetData();
         } catch (DataAccessException e) {
             Assertions.fail("Could not set up database: " + e.getMessage());
@@ -116,7 +112,9 @@ public class SQLAuthDaoTest extends sqlDataAccessVars {
     @Test
     void getAuthToken() {
         try {
-            Assertions.assertEquals(new ArrayList<>(Arrays.asList(a0)), authDao.getAuthFromUser(a0.username()));
+            Collection<AuthData> allAuth = authDao.getAuthFromUser(a0.username());
+            Assertions.assertEquals(1, allAuth.size());
+            Assertions.assertEquals(a0, allAuth.toArray()[0]);
         } catch (Exception e) {
             Assertions.fail("Unexpected exception was thrown during test. Exception: " + e.getMessage());
         }
