@@ -1,32 +1,27 @@
 package ui;
 
+import serverFacade.ServerFacade;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
 public class UI {
-    static final int TERMINAL_WIDTH = 150;
-    static final int TERMINAL_HEIGHT = 23;
+    static int TERMINAL_WIDTH = 150;
+    static int TERMINAL_HEIGHT = 23;
+    private static final int TOP_OF_WINDOW = TERMINAL_HEIGHT - 4;
     static int promptY = 5;
     protected static String promptMessage;
     protected static String promptMessage2;
+    ServerFacade server = new ServerFacade();
+    protected static String authToken;
 
     static enum color {
-        BG_DARKEST,
-        BG_DARKER,
-        BG_DARK,
-        FG_DARKER,
-        FG_DARK,
-        FG_LIGHT,
-        FG_LIGHTER,
-        BG_LIGHT,
-        BG_LIGHTER,
-        BG_LIGHTEST,
-        PRIMARY,
-        SECONDARY,
-        TERNARY,
-        NEGATIVE,
+        BG_DARKEST, BG_DARKER, BG_DARK, FG_DARKER, FG_DARK, FG_LIGHT, FG_LIGHTER, BG_LIGHT, BG_LIGHTER, BG_LIGHTEST, PRIMARY, SECONDARY, TERNARY, NEGATIVE,
     }
 
     static final int[] BG_DARK2 = {0, 43, 54};
@@ -130,23 +125,12 @@ public class UI {
     }
 
     public static void banner(String message, int y) {
-        String title = setColor(BG_DARK2, PRIMARY) +
-                BACK_ARROW +
-                setColor(PRIMARY, LIGHT_PIECE) +
-                "   " +
-                message +
-                "   " +
-                RESET_BG_COLOR +
-                setColor(null, PRIMARY) +
-                ARROW + RESET_TEXT_COLOR;
+        String title = setColor(BG_DARK2, PRIMARY) + BACK_ARROW + setColor(PRIMARY, LIGHT_PIECE) + "   " + message + "   " + RESET_BG_COLOR + setColor(null, PRIMARY) + ARROW + RESET_TEXT_COLOR;
         centerText(TERMINAL_HEIGHT - y, title);
     }
 
     public enum HttpResponse {
-        _200,
-        _401,
-        _403,
-        _500
+        _200, _401, _403, _500
     }
 
     protected HttpResponse get() {
@@ -162,9 +146,9 @@ public class UI {
     public static void updateScreen() {
         System.out.print(ERASE_SCREEN);
         System.out.print(moveCursorToLocation(0, 0));
-        for (int i = TERMINAL_HEIGHT; i-- > promptY + 1; ) {
-            String row = (screen[i] == null) ? setColor(null, FG_LIGHT) + " " : screen[i];
-            System.out.println(String.format("%-" + TERMINAL_WIDTH + "s", setColor(null, FG_LIGHT) + row));
+        for (int i = 0; i < TERMINAL_HEIGHT && i < TERMINAL_HEIGHT - promptY && i < screen.length; i++) {
+            String row = (screen[TERMINAL_HEIGHT - (i + 1) ] == null) ? setColor(null, FG_LIGHT) + " " : screen[TERMINAL_HEIGHT - (i + 1)];
+            System.out.printf("%-" + TERMINAL_WIDTH + "s%n", setColor(null, FG_LIGHT) + row);
         }
         System.out.print(prompt());
     }
@@ -216,6 +200,7 @@ public class UI {
         }
         return cleanLen;
     }
+
     private static String getPrintSub(int start, int length, String text) {
         StringBuilder cleanText = new StringBuilder();
         boolean escape = false;
@@ -249,15 +234,29 @@ public class UI {
 
     public static void centerText(int y, String text) {
         int len = printLength(text);
-        putText(
-                ((TERMINAL_WIDTH - len) / 2),
-                y,
-                text
-        );
+        putText(((TERMINAL_WIDTH - len) / 2), y, text);
     }
 
     public static void eraseScreen() {
         Arrays.fill(screen, "");
+    }
+
+
+    public static void getDimeensions() {
+        try {
+            String[] command = {"/bin/sh", "-c", "tput cols && tput lines"};
+            Process process = Runtime.getRuntime().exec(command);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            int width = Integer.parseInt(reader.readLine());
+            int height = Integer.parseInt(reader.readLine());
+
+            TERMINAL_WIDTH = width;
+            TERMINAL_HEIGHT = height;
+            screen = new String[height];
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Unable to get window size. using default values");
+        }
     }
 
 }
