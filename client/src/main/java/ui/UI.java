@@ -14,10 +14,9 @@ public class UI {
     static int terminalWidth = 150;
     static int terminalHeight = 23;
     static int topPad = 3;
-    // window padding is the way to madness.
     protected static int WINDOW_HEIGHT = terminalHeight - 5;
     protected static int TOP_OF_WINDOW = terminalHeight - 5;
-    protected static int TITLE = 2;
+    protected static int TITLE = terminalHeight - 2;
     static int promptY = 5;
     protected static String promptMessage;
     protected static String promptMessage2;
@@ -45,6 +44,7 @@ public class UI {
     static final int cursorX = 5;
     static final int cursorY = 5;
     static String[] screen = new String[terminalHeight];
+    static ServerFacade facade = new ServerFacade(8080, "http://localhost:");
 
     public static void prompt(String message) {
         promptMessage2 = message;
@@ -122,7 +122,7 @@ public class UI {
     }
 
     public static void banner(String message) {
-        banner(message, 2, PRIMARY);
+        banner(message, terminalHeight - 2, PRIMARY);
     }
 
     public static void banner(String message, int y) {
@@ -131,7 +131,7 @@ public class UI {
 
     public static void banner(String message, int y, int[] color) {
         String title = setColor(null, color) + BACK_ARROW + setColor(color, LIGHT_PIECE) + "   " + message + "   " + RESET_BG_COLOR + setColor(null, color) + ARROW + RESET_TEXT_COLOR;
-        centerText(terminalHeight - y, title);
+        centerText(y, title);
     }
 
 

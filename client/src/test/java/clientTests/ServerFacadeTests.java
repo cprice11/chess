@@ -22,26 +22,22 @@ public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade serverFacade;
-    private static int port;
     private static AuthDao auth;
     private static GameDao games;
-    private static UserDao users;
 
     @BeforeAll
     public static void init() {
         server = new Server();
-        port = server.run(0);
+        int port = server.run(0);
 
         serverFacade = new ServerFacade(port, "http://localhost:");
         try {
             auth = new SQLAuthDao();
             games = new SQLGameDao();
-            users = new SQLUserDao();
+            UserDao users = new SQLUserDao();
             auth.deleteAll();
             users.deleteAll();
             games.deleteAll();
-            var a = auth.getAll();
-            var u = users.getAll();
             System.out.println("Started test HTTP server on " + port);
         } catch (Exception e) {
             Assertions.fail("Unexpected exception in setup: " + e.getMessage());

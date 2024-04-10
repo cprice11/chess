@@ -11,6 +11,7 @@ import server.result.CreateGameResult;
 import server.result.ListGamesResult;
 import server.result.LoginResult;
 import server.result.RegisterResult;
+import ui.ErrorUi;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -66,7 +67,7 @@ public class ServerFacade {
                 HttpResponse response = new HttpResponse(code, message);
                 LoginResult result = serializer.fromJson(inputStreamReader, LoginResult.class);
                 if (response.status() != 200) {
-                    handleError(response);
+                    // handleError(response);
                     return null;
                 }
                 return result.authToken();
@@ -86,7 +87,6 @@ public class ServerFacade {
             String message = connection.getResponseMessage();
             HttpResponse response = new HttpResponse(code, message);
             if (response.status() != 200) {
-                handleError(response);
             }
         } catch (Exception e) {
             System.out.println("AN EXCEPTION!!!: " + e.getMessage());
@@ -111,7 +111,7 @@ public class ServerFacade {
                 HttpResponse response = new HttpResponse(code, message);
                 CreateGameResult result = serializer.fromJson(inputStreamReader, CreateGameResult.class);
                 if (response.status() != 200) {
-                    handleError(response);
+
                     return -1;
                 }
                 return result.gameID();
@@ -137,7 +137,7 @@ public class ServerFacade {
             String message = connection.getResponseMessage();
             HttpResponse response = new HttpResponse(code, message);
             if (response.status() != 200) {
-                handleError(response);
+
             }
         } catch (
                 Exception e) {
@@ -158,7 +158,7 @@ public class ServerFacade {
                 HttpResponse response = new HttpResponse(code, message);
                 ListGamesResult result = serializer.fromJson(inputStreamReader, ListGamesResult.class);
                 if (response.status() != 200) {
-                    handleError(response);
+
                     return null;
                 }
                 return result.games();
@@ -173,27 +173,31 @@ public class ServerFacade {
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
         String json = serializer.toJson(registerRequest);
         try {
-            HttpURLConnection connection = request("POST", urlPath + "/user", json);
+            HttpURLConnection connection = request("POST", urlPath + "/user");
+            connection.setDoOutput(true);
+            connection.addRequestProperty("Content-Type", "application/json");
+            try (var outputStream = connection.getOutputStream()) {
+                outputStream.write(json.getBytes());
+            }
             int code = connection.getResponseCode();
             String message = connection.getResponseMessage();
-            RegisterResult body;
             try (InputStream respBody = connection.getInputStream()) {
                 InputStreamReader inputStreamReader = new InputStreamReader(respBody);
                 HttpResponse response = new HttpResponse(code, message);
                 RegisterResult result = serializer.fromJson(inputStreamReader, RegisterResult.class);
                 if (response.status() != 200) {
-                    handleError(response);
                     return null;
                 }
                 return result.authToken();
             }
         } catch (Exception e) {
-            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+            System.out.println(e.getMessage());
             return null;
         }
     }
 
-    public String handleError(HttpResponse response) {
-        throw new RuntimeException("NOT IMPLEMENTED");
+    public void handleError(HttpResponse response) {
+        ErrorUi err = new ErrorUi();
+        err.displayError(response.status(), response.message());
     }
 }

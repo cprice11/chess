@@ -1,7 +1,8 @@
 package ui;
 
-import serverFacade.ServerFacade;
+import model.GameSummary;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SelectionUi extends UI {
@@ -11,8 +12,8 @@ public class SelectionUi extends UI {
             """
             MENU MANUAL
                 From this menu you can lookup starting or ongoing games as well as create a
-                game or log out. All commands are case insensitive but should be separated by
-                whitespace.
+                game or log out. All commands are case insensitive but should be separated 
+                by whitespace.
             """;
     private static final String HELP_HELP = """
             HELP
@@ -94,8 +95,8 @@ public class SelectionUi extends UI {
 
     public void mainMenu() {
         eraseScreen();
-        banner("HOME");
-        putBlock(0, TOP_OF_WINDOW - 2, """
+        banner("HOME", terminalHeight - 2);
+        putBlock(3, TOP_OF_WINDOW - 3, """
                 1 (L)ist games
                 2 (S)earch games
                 3 (J)oin games
@@ -103,7 +104,10 @@ public class SelectionUi extends UI {
                 5 (H)elp
                 6 (Q)uit;
                 """);
-        prompt(null, "please select an option");
+        updateScreen();
+        var a = screen;
+        prompt(null, "please select an option", 1);
+        updateScreen();
         updateScreen();
         String[] input = scanner.nextLine().split("\\s");
         String command = input[0];
@@ -123,6 +127,7 @@ public class SelectionUi extends UI {
                 break;
             case '6','q', 'Q', 'x', 'X', 'e', 'E':
                 quit();
+                break;
             case '5', 'h', 'H':
             default:
                 help(input);
@@ -134,7 +139,7 @@ public class SelectionUi extends UI {
         String requestedDoc;
         eraseScreen();
         prompt(null, "press enter to exit");
-        banner("HELP", 2, NEGATIVE);
+        banner("HELP", terminalHeight - 2, NEGATIVE);
         if (input.length < 2) {
             requestedDoc = ALL_HELP;
         }
@@ -197,7 +202,17 @@ public class SelectionUi extends UI {
     }
 
     private void list() {
-        throw new RuntimeException("NOT IMPLEMENTED");
+        ArrayList<GameSummary> sums = new ArrayList<>(facade.listGames(authToken));
+        int numEntries = WINDOW_HEIGHT / 2;
+        banner("Showing " + numEntries + "/" + sums.size() + "Games");
+        for (int i = 0; i < WINDOW_HEIGHT / 2; i++ ) {
+            GameSummary sum = sums.get(i);
+            String white = (sum.whiteUsername() == null)? "-" : sum.whiteUsername();
+            String black = (sum.blackUsername() == null)? "-" : sum.blackUsername();
+            String name = (sum.gameName() == null)? "-" : sum.gameName();
+            int id = sum.gameID();
+            putText(0, TOP_OF_WINDOW - (2 * i), Integer.toString(i)+ white + black + name + id);
+        }
     }
     private void join() {
         throw new RuntimeException("NOT IMPLEMENTED");
@@ -207,7 +222,9 @@ public class SelectionUi extends UI {
         throw new RuntimeException("NOT IMPLEMENTED");
     }
     private void quit() {
-
+        facade.logout(authToken);
+        authToken = null;
+        System.exit(0);
     }
 
     public static int countLines(String str) {

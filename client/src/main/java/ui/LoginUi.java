@@ -13,9 +13,10 @@ public class LoginUi extends UI {
     }
 
     public void start() {
+        eraseScreen();
         getDimeensions();
         if (terminalHeight > 25 && terminalWidth > 100) banner("   ♟ Welcome to the 240 chess client ♟   ", 23);
-        else banner("   ♟ Welcome to the 240 chess client ♟   ");
+        else banner("   ♟ Welcome to the 240 chess client ♟   ", terminalHeight - 2);
         if (terminalHeight > 20 && terminalWidth > 68) {
             centerText(terminalHeight - 4, "         ⣠⠄     ");
             centerText(terminalHeight - 5, "     ⡠⣴⣆⣾⡟      ");
@@ -34,10 +35,11 @@ public class LoginUi extends UI {
             centerText(terminalHeight - 18, " ⢠⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣄ ");
             centerText(terminalHeight - 19, " ⠸⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿ ");
         }
-        putText(0, 9, "Press enter to quit, or type");
-        putText(0, 8, "'h' to see more information.");
-        putText(0, 5, "1. Register");
-        putText(0, 4, "2. Login");
+        int menu = (terminalHeight + 4) / 2;
+        putText(0, menu, "Press enter to quit, or type");
+        putText(0, menu- 1, "'h' to see more information.");
+        putText(0, menu -3, "1. Register");
+        putText(0, menu-4, "2. Login");
         prompt(null, "Choose an option", 1);
         updateScreen();
         String choice = scanner.nextLine();
@@ -82,11 +84,12 @@ public class LoginUi extends UI {
         putText(0, terminalHeight - 5, prompt() + password.replaceAll("\\S", "*"));
         prompt(null, "loading", terminalHeight - 7);
         updateScreen();
-        //ServerFacade.login(username, password);
-        boolean successful = true;
-        if (successful) {
+        authToken = facade.login(username, password);
+        if (authToken != null) {
             SelectionUi selection = new SelectionUi();
             selection.mainMenu();
+        } else {
+            start();
         }
 
     }
@@ -114,12 +117,12 @@ public class LoginUi extends UI {
     private void register() {
         eraseScreen();
         banner("register");
-        prompt(null, "Username", terminalHeight - 4);
+        prompt(null, "Username", 1);
         updateScreen();
         String username = scanner.nextLine();
         putText(0, terminalHeight - 4, prompt() + username);
         String userPrompt = prompt();
-        prompt("Password", null, terminalHeight - 5);
+        prompt("Password", null, 1);
         updateScreen();
         eraseScreen();
         banner("register");
@@ -127,25 +130,24 @@ public class LoginUi extends UI {
         String passPrompt = prompt();
         putText(0, terminalHeight - 4, userPrompt + username);
         putText(0, terminalHeight - 5, prompt() + password.replaceAll("\\S", "*"));
-        prompt(null, "Email", terminalHeight - 6);
+        prompt(null, "Email", 1);
+        String emailPrompt = prompt();
         updateScreen();
         eraseScreen();
         banner("register");
         String email = scanner.nextLine();
         putText(0, terminalHeight - 4, userPrompt + username);
         putText(0, terminalHeight - 5, passPrompt + password.replaceAll("\\S", "*"));
-        prompt(null, "loading", terminalHeight - 6);
+        putText(0, terminalHeight - 6, emailPrompt + email);
+        prompt(null, "loading", 1);
         updateScreen();
-        boolean successful = true;
-        if (successful) {
+        authToken = facade.register(username, password, email);
+        if (authToken != null) {
             SelectionUi selectionUi = new SelectionUi();
             selectionUi.mainMenu();
         } else {
-            System.exit(-1);
+            start();
         }
-        System.out.println(username);
-        System.out.println(password);
-        System.out.println(email);
     }
 
 }
