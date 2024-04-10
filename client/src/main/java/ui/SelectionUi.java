@@ -8,6 +8,8 @@ import java.util.Arrays;
 
 public class SelectionUi extends UI {
     private static boolean first = true;
+    TerminalWindow window = new TerminalWindow(Screen.terminalWidth, Screen.terminalHeight - 1);
+    Screen screen = new Screen();
 
     private static final String HELP_INTRO =
             """
@@ -95,9 +97,44 @@ public class SelectionUi extends UI {
     private static final String ALL_HELP = HELP_INTRO + HELP_HELP + HELP_SEARCH + HELP_LIST + HELP_JOIN + HELP_CREATE + HELP_QUIT;
 
     public void mainMenu() {
-        eraseScreen();
-        banner("HOME", terminalHeight - 2);
-        putBlock(3, TOP_OF_WINDOW - 3, """
+        mainMenuLayout();
+        String[] input = scanner.nextLine().split("\\s");
+        while(getInput(input)) {
+            String command = input[0];
+            if (command.isEmpty()) command = "*";
+            switch (command.charAt(0)) {
+                case '1', 'l', 'L':
+                    list(input);
+                    break;
+                case '2', 's', 'S':
+                    search(input);
+                    break;
+                case '3', 'j', 'J':
+                    join(input);
+                    break;
+                case '4', 'c', 'C':
+                    create(input);
+                    break;
+                case '6', 'q', 'Q', 'x', 'X', 'e', 'E':
+                    quit();
+                    break;
+                case '5', 'h', 'H':
+                default:
+                    help(input);
+            }
+            mainMenuLayout();
+        }
+    }
+
+    private boolean getInput(String[] input) {
+        input = scanner.nextLine().split("\\s");
+        return true;
+    }
+
+    private void mainMenuLayout() {
+        Screen.clear();
+        window.banner("HOME", 1);
+        window.putBlock(3, 3, """
                 1 (L)ist games
                 2 (S)earch games
                 3 (J)oin games
@@ -105,42 +142,15 @@ public class SelectionUi extends UI {
                 5 (H)elp
                 6 (Q)uit;
                 """);
-        updateScreen();
-        var a = screen;
-        prompt(null, "please select an option", 1);
-        updateScreen();
-        updateScreen();
-        String[] input = scanner.nextLine().split("\\s");
-        String command = input[0];
-        if (command.isEmpty()) command = "*";
-        switch (command.charAt(0)) {
-            case '1', 'l', 'L':
-                list(input);
-                break;
-            case '2', 's', 'S':
-                search(input);
-                break;
-            case '3', 'j', 'J':
-                join(input);
-                break;
-            case '4', 'c', 'C':
-                create(input);
-                break;
-            case '6','q', 'Q', 'x', 'X', 'e', 'E':
-                quit();
-                break;
-            case '5', 'h', 'H':
-            default:
-                help(input);
-        }
-
+        screen.prompt("please select an option", null);
+        Screen.refresh();
     }
 
     public void help(String[] input) {
         String requestedDoc;
-        eraseScreen();
-        prompt(null, "press enter to exit");
-        banner("HELP", terminalHeight - 2, NEGATIVE);
+        Screen.clear();
+        Screen.prompt("press enter to exit");
+        window.banner("HELP", 1, NEGATIVE);
         if (input.length < 2) {
             requestedDoc = ALL_HELP;
         }
@@ -154,48 +164,14 @@ public class SelectionUi extends UI {
                 default -> HELP_HELP;
             };
         }
-        if (countLines(requestedDoc) > terminalHeight - 4) {
-            chunkPages(requestedDoc);
+        if (countLines(requestedDoc) > window.height - 4) {
+//            chunkPages(requestedDoc);
             mainMenu();
         }
-        putBlock(0, TOP_OF_WINDOW, requestedDoc);
-        updateScreen();
+        window.putBlock(0, 2, requestedDoc);
+        Screen.refresh();
+        Screen.prompt("Press enter to return to menu");
         scanner.nextLine();
-        mainMenu();
-    }
-
-    private void chunkPages(String doc) {
-        int top = 0;
-        int bottom = WINDOW_HEIGHT;
-        int jumpDist = 3;
-        boolean atBottom = false;
-        String[] rows = doc.split("\\n", 300);
-        String chunk = String.join("\n", Arrays.copyOfRange(rows, top, bottom));
-        prompt(null, "press enter to scroll [q|x] to exit", 0);
-        putBlock(0, TOP_OF_WINDOW, chunk);
-        updateScreen();
-        String input = scanner.nextLine();
-        while (input == null || input.isEmpty() || "xXqQ".indexOf(input.charAt(0)) == -1 ) {
-            if (atBottom) {
-                top = 0;
-                bottom = WINDOW_HEIGHT;
-                chunk = String.join("\n", Arrays.copyOfRange(rows, top, bottom));
-                atBottom = false;
-            } else if (bottom + jumpDist > rows.length) {
-                chunk = String.join("\n", Arrays.copyOfRange(rows, rows.length - WINDOW_HEIGHT, rows.length));
-                atBottom = true;
-            } else {
-                top += jumpDist;
-                bottom += jumpDist;
-                chunk = String.join("\n", Arrays.copyOfRange(rows, top, bottom));
-            }
-            eraseScreen();
-            banner("HELP", TITLE, NEGATIVE);
-            prompt(null, "press enter to scroll [q|x] to exit", 0);
-            putBlock(0, TOP_OF_WINDOW, chunk);
-            updateScreen();
-            input = scanner.nextLine();
-        }
     }
 
     private void search(String[] input) {
@@ -203,7 +179,7 @@ public class SelectionUi extends UI {
     }
 
     private void list(String[] input) {
-        eraseScreen();
+        Screen.clear();
         ArrayList<GameSummary> sums = new ArrayList<>(facade.listGames(authToken));
         if (input.length > 1) {
             char c = firstAlphabetical(input[1]);
@@ -213,14 +189,14 @@ public class SelectionUi extends UI {
                 // this is identical for now
             }
         }
-        banner("Games");
-        int numEntries = WINDOW_HEIGHT / 2;
+        window.banner("Games");
+        int numEntries = window.height / 2;
         numEntries = Math.min(numEntries, sums.size());
-        banner("Showing " + numEntries + "/" + sums.size() + "Games");
+        window.banner("Showing " + numEntries + "/" + sums.size() + "Games");
         if (sums.isEmpty()) {
-            centerText((terminalHeight + 4) / 2, "It doesn't seem like there's any games here.");
-            centerText((terminalHeight + 2) / 2, "Return to the main menu to start a new one by pressing enter.");
-            updateScreen();
+            window.centerText((window.height + 4) / 2, "It doesn't seem like there's any games here.");
+            window.centerText((window.height + 2) / 2, "Return to the main menu to start a new one by pressing enter.");
+            Screen.refresh();
             scanner.nextLine();
             mainMenu();
         }
@@ -230,15 +206,14 @@ public class SelectionUi extends UI {
             String black = (sum.blackUsername() == null)? "-" : sum.blackUsername();
             String name = (sum.gameName() == null)? "-" : sum.gameName();
             int id = sum.gameID();
-            putText(1, TOP_OF_WINDOW - (2 * i), Integer.toString(i));
-            putText(3, TOP_OF_WINDOW - (2 * i), white);
-            putText(23, TOP_OF_WINDOW - (2 * i), black);
-            putText(43, TOP_OF_WINDOW - (2 * i), name);
-            putText(63, TOP_OF_WINDOW - (2 * i), Integer.toString(id));
+            window.putText(1, (2 * i), Integer.toString(i));
+            window.putText(3, (2 * i), white);
+            window.putText(23, (2 * i), black);
+            window.putText(43, (2 * i), name);
+            window.putText(63, (2 * i), Integer.toString(id));
         }
-        updateScreen();
+        Screen.refresh();
         scanner.nextLine();
-        mainMenu();
     }
     private void join(String[] input) {
         throw new RuntimeException("NOT IMPLEMENTED");
@@ -274,18 +249,24 @@ public class SelectionUi extends UI {
                 }
             }
         }
-        eraseScreen();
-        banner("CREATE GAME");
+        gameName = (gameName == null)? createGamePrompt() : gameName;
         if (gameName == null) {
-            prompt("Enter a name for this match");
-            updateScreen();
-            gameName = scanner.nextLine();
+            ErrorUi err = new ErrorUi();
+            err.displayError(0, "Game name cannot be empty");
+            return;
         }
         int gameID = facade.createGame(authToken, gameName);
-        prompt(gameName, Integer.toString(gameID), 1);
-        updateScreen();
+        Screen.prompt(gameName, Integer.toString(gameID));
+        Screen.refresh();
         scanner.nextLine();
-        mainMenu();
+    }
+
+    public String createGamePrompt() {
+        Screen.clear();
+        window.banner("CREATE GAME");
+        screen.prompt("Enter a name for this match", null);
+        Screen.refresh();
+        return scanner.nextLine();
     }
     private void quit() {
         facade.logout(authToken);
