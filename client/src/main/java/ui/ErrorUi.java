@@ -1,5 +1,7 @@
 package ui;
 
+import static ui.EscapeSequences.*;
+
 public class ErrorUi extends UI {
     TerminalWindow popUp;
 
@@ -9,11 +11,28 @@ public class ErrorUi extends UI {
     }
 
     public void displayError(int code, String message) {
-        if (code == -1) {
-            popUp.banner("Error", 1,  NEGATIVE);
-        } else {
-            popUp.banner("Error " + code, 2, NEGATIVE);
-        }
+        String title = (code == -1)? "ERROR" : "ERROR" + code;
+        int leftWidth = ((popUp.width ) / 2 ) -12;
+        int rightWidth = ((popUp.width + 2)/ 2 ) -12;
+        String left = UI.setBackground(NEGATIVE) +
+                SET_TEXT_COLOR_BLACK +
+                padLeft(BACK_ARROW, leftWidth, ' ') +
+                RESET_BG_COLOR + RESET_TEXT_COLOR;
+        String middle = setColor(null, NEGATIVE) +
+                BACK_ARROW +
+                setColor(NEGATIVE, LIGHT_PIECE) +
+                "   " + code + "   " +
+                RESET_BG_COLOR +
+                setColor(null, NEGATIVE) +
+                ARROW +
+                RESET_TEXT_COLOR;
+        String right = setBackground(NEGATIVE) +
+                SET_TEXT_COLOR_BLACK +
+                padRight(ARROW, rightWidth, ' ') +
+                RESET_BG_COLOR + RESET_TEXT_COLOR;
+        String paddedRight = padLeft(right, popUp.width - printLength(left), ' ');
+        popUp.bar(0,  left + middle + right);
+
         popUp.putText(1, (popUp.height - 1) / 2, message);
         Screen.prompt(null, "press enter to continue");
         if (!message.isEmpty()) {

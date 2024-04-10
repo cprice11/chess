@@ -9,8 +9,8 @@ import java.util.Arrays;
 import static ui.EscapeSequences.*;
 
 public class Screen extends UI {
-    static int terminalWidth = 150;
-    static int terminalHeight = 23;
+    public static int terminalWidth = 80;
+    public static int terminalHeight = 23;
     private static int[] promptPrimary = PRIMARY;
     private static int[] promptSecondary = DARK_2;
     protected static String promptMessage;
@@ -22,7 +22,7 @@ public class Screen extends UI {
     private static final ArrayList<TerminalWindow> windows = new ArrayList<>();
 
     public Screen() {
-        getDimensions();
+        // getDimensions();
     }
 
     public static void addWindow(TerminalWindow window) {
@@ -37,6 +37,7 @@ public class Screen extends UI {
         clear();
         windows.forEach(Screen::paintValues);
         System.out.print(ERASE_SCREEN);
+        System.out.println();
         System.out.print(moveCursorToLocation(0, terminalHeight));
         for (String row : values) {
             System.out.println(row);

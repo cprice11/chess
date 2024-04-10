@@ -96,29 +96,19 @@ public class UI {
     }
 
     protected static int printLength(String text) {
-        StringBuilder cleanText = new StringBuilder();
         boolean escape = false;
         char[] textArr = text.toCharArray();
-        int lastPrint = 0;
         int cleanLen = 0;
-        for (int i = 0; i < textArr.length; i++) {
-            char c = textArr[i];
+        for (char c : textArr) {
             if (escape && c == 'm') {
                 escape = false;
-                cleanText.append(" ");
                 continue;
             }
             if (!escape && c == '\u001b') {
                 escape = true;
-                cleanText.append(" ");
                 continue;
-            } else if (escape) {
-                cleanText.append(" ");
-                continue;
-            }
-            cleanText.append(c);
+            } else if (escape) continue;
             cleanLen++;
-            lastPrint = (Character.isWhitespace(c)) ? lastPrint : i;
         }
         return cleanLen;
     }
@@ -127,13 +117,29 @@ public class UI {
         StringBuilder cleanText = new StringBuilder();
         boolean escape = false;
         if (text == null) {
-            return text;
+            return "";
         }
         char[] textArr = text.toCharArray();
-        int lastPrint = 0;
         int cleanLen = 0;
-        if (start > textArr.length) return "";
-        for (int i = 0; cleanLen < length && i < textArr.length; i++) {
+        if (start >= textArr.length) return "";
+        int startIndex = 0;
+        while (cleanLen < start && startIndex < textArr.length) {
+            char c = textArr[startIndex];
+            startIndex++;
+            if (escape && c == 'm') {
+                escape = false;
+                continue;
+            }
+            if (!escape && c == '\u001b') {
+                escape = true;
+                continue;
+            } else if (escape) {
+                continue;
+            }
+            cleanLen++;
+        }
+        cleanLen = 0;
+        for (int i = startIndex; cleanLen < length && i < textArr.length; i++) {
             char c = textArr[i];
             if (escape && c == 'm') {
                 escape = false;
@@ -148,11 +154,9 @@ public class UI {
                 cleanText.append(c);
                 continue;
             }
-            cleanText.append(c);
             cleanLen++;
-            lastPrint = i;
+            cleanText.append(c);
         }
-        if (lastPrint == 0) return "";
         return cleanText.toString();
     }
 

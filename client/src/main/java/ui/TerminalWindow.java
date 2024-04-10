@@ -5,6 +5,7 @@ import java.util.Arrays;
 import static ui.EscapeSequences.RESET_BG_COLOR;
 import static ui.EscapeSequences.RESET_TEXT_COLOR;
 
+
 public class TerminalWindow extends UI {
     public int xStart = 0;
     public int yStart = 0;
@@ -45,12 +46,12 @@ public class TerminalWindow extends UI {
         if ((x > width || y > height) || (x < 0 || y < 0)) return;
         String currRow = (values[y] == null) ? " " : values[y];
         if (x > 0) {
-            int preLen = Math.min(x, currRow.length());
-            String pre = String.format("%-" + x + "s", getPrintSub(0, preLen, currRow));
-            text = pre + text;
+            text = getPrintSub(0, x, currRow) + text;
         }
-        text = text + getPrintSub(printLength(text), width, currRow);
-        values[y] = text;
+        text = getPrintSub(0, width, text);
+        int problem = printLength(text);
+        String rem = getPrintSub(problem, width - printLength(text), currRow);
+        values[y] = text + rem;
     }
 
     protected void banner(String message) {
@@ -66,6 +67,15 @@ public class TerminalWindow extends UI {
         String title = setColor(null, color) + BACK_ARROW + setColor(color, LIGHT_PIECE) + "   " + message + "   " + RESET_BG_COLOR + setColor(null, color) + ARROW + RESET_TEXT_COLOR;
         centerText(y, title);
     }
+    public void topBar(int[] background, int[] forground, String fill) {
+        values[0] = setColor(background, forground) + fill + RESET_BG_COLOR + RESET_TEXT_COLOR;
+    }
 
+    public void bar(int row, String fill) {
+        values[row] = fill;
+    }
 
+    public void border(int[] color) {
+
+    }
 }
