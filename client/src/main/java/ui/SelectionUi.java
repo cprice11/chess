@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import model.GameSummary;
 
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public class SelectionUi extends UI {
                     Lists games that are available to join.
                         
                 -o
-                    Lists games that are available to observer
+                    Lists games that are available to observers
             """;
     private static final String HELP_QUIT = """
             QUIT
@@ -114,16 +115,16 @@ public class SelectionUi extends UI {
         if (command.isEmpty()) command = "*";
         switch (command.charAt(0)) {
             case '1', 'l', 'L':
-                list();
+                list(input);
                 break;
             case '2', 's', 'S':
-                search();
+                search(input);
                 break;
             case '3', 'j', 'J':
-                join();
+                join(input);
                 break;
             case '4', 'c', 'C':
-                create();
+                create(input);
                 break;
             case '6','q', 'Q', 'x', 'X', 'e', 'E':
                 quit();
@@ -197,34 +198,109 @@ public class SelectionUi extends UI {
         }
     }
 
-    private void search() {
+    private void search(String[] input) {
         throw new RuntimeException("NOT IMPLEMENTED");
     }
 
-    private void list() {
+    private void list(String[] input) {
+        eraseScreen();
         ArrayList<GameSummary> sums = new ArrayList<>(facade.listGames(authToken));
+        if (input.length > 1) {
+            char c = firstAlphabetical(input[1]);
+            if (c == 'j') {
+                sums.removeIf(g -> g.whiteUsername() != null && g.blackUsername() != null);
+            } else if (c == 'o') {
+                // this is identical for now
+            }
+        }
+        banner("Games");
         int numEntries = WINDOW_HEIGHT / 2;
+        numEntries = Math.min(numEntries, sums.size());
         banner("Showing " + numEntries + "/" + sums.size() + "Games");
-        for (int i = 0; i < WINDOW_HEIGHT / 2; i++ ) {
+        if (sums.isEmpty()) {
+            centerText((terminalHeight + 4) / 2, "It doesn't seem like there's any games here.");
+            centerText((terminalHeight + 2) / 2, "Return to the main menu to start a new one by pressing enter.");
+            updateScreen();
+            scanner.nextLine();
+            mainMenu();
+        }
+        for (int i = 0; i < numEntries; i++ ) {
             GameSummary sum = sums.get(i);
             String white = (sum.whiteUsername() == null)? "-" : sum.whiteUsername();
             String black = (sum.blackUsername() == null)? "-" : sum.blackUsername();
             String name = (sum.gameName() == null)? "-" : sum.gameName();
             int id = sum.gameID();
-            putText(0, TOP_OF_WINDOW - (2 * i), Integer.toString(i)+ white + black + name + id);
+            putText(1, TOP_OF_WINDOW - (2 * i), Integer.toString(i));
+            putText(3, TOP_OF_WINDOW - (2 * i), white);
+            putText(23, TOP_OF_WINDOW - (2 * i), black);
+            putText(43, TOP_OF_WINDOW - (2 * i), name);
+            putText(63, TOP_OF_WINDOW - (2 * i), Integer.toString(id));
         }
+        updateScreen();
+        scanner.nextLine();
+        mainMenu();
     }
-    private void join() {
+    private void join(String[] input) {
         throw new RuntimeException("NOT IMPLEMENTED");
     }
 
-    private void create() {
-        throw new RuntimeException("NOT IMPLEMENTED");
+    private void create(String[] input) {
+        String gameName = null;
+        ChessGame.TeamColor color = null;
+        boolean tryBoth = false;
+        boolean observer = false;
+        if (input.length > 1) {
+            gameName = input[1];
+            if (input.length == 3) {
+                char c = firstAlphabetical(input[1]);
+                switch (Character.toUpperCase(c)) {
+                    case 'B':
+                        color = ChessGame.TeamColor.BLACK;
+                        break;
+                    case 'W':
+                        color = ChessGame.TeamColor.BLACK;
+                        break;
+                    case 'E':
+                        tryBoth = true;
+                        break;
+                    case 'O':
+                        color = null;
+                        observer = true;
+                        break;
+                    case 'A':
+                        tryBoth = true;
+                        observer = true;
+                        break;
+                }
+            }
+        }
+        eraseScreen();
+        banner("CREATE GAME");
+        if (gameName == null) {
+            prompt("Enter a name for this match");
+            updateScreen();
+            gameName = scanner.nextLine();
+        }
+        int gameID = facade.createGame(authToken, gameName);
+        prompt(gameName, Integer.toString(gameID), 1);
+        updateScreen();
+        scanner.nextLine();
+        mainMenu();
     }
     private void quit() {
         facade.logout(authToken);
         authToken = null;
         System.exit(0);
+    }
+
+    public static char firstAlphabetical(String str) {
+        for (char ch : str.toCharArray()) {
+            if (Character.isLetter(ch)) {
+                return ch;
+            }
+        }
+        // If no alphabetical character found, return a default value, such as '\0' (null character)
+        return '\0';
     }
 
     public static int countLines(String str) {
