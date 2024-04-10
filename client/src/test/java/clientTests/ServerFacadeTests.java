@@ -1,20 +1,19 @@
 package clientTests;
 
+import chess.ChessGame;
 import dataAccess.AuthDao;
-import dataAccess.DataAccessException;
 import dataAccess.GameDao;
 import dataAccess.UserDao;
-import dataAccess.memoryDao.MemoryDatabase;
 import dataAccess.sqlDao.SQLAuthDao;
 import dataAccess.sqlDao.SQLGameDao;
 import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
+import model.GameData;
 import model.GameSummary;
 import org.junit.jupiter.api.*;
 import server.Server;
 import serverFacade.ServerFacade;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -103,9 +102,9 @@ public class ServerFacadeTests {
         String authToken = serverFacade.register("John", "lucy", "@");
         String authToken2 = serverFacade.register("Paul", "in", "@");
         Assertions.assertEquals(0, games.getAll().size());
-        serverFacade.createGame(authToken,"I'm a game");
-        serverFacade.createGame(authToken2,"I'm a game");
-        serverFacade.createGame(authToken,"I'm another game");
+        serverFacade.createGame(authToken, "I'm a game");
+        serverFacade.createGame(authToken2, "I'm a game");
+        serverFacade.createGame(authToken, "I'm another game");
         Assertions.assertEquals(3, games.getAll().size());
     }
 
@@ -131,8 +130,8 @@ public class ServerFacadeTests {
     @Order(10)
     public void listIncorrectly() throws Exception {
         String authToken = serverFacade.register("kieth", "with", "@");
-        serverFacade.createGame(authToken,"I'm a game");
-        serverFacade.createGame(authToken,"I'm a game");
+        serverFacade.createGame(authToken, "I'm a game");
+        serverFacade.createGame(authToken, "I'm a game");
         Collection<GameSummary> sums = serverFacade.listGames(authToken);
         HashSet<GameSummary> hashedSums = new HashSet<>(sums);
         Assertions.assertEquals(sums.size(), hashedSums.size());
@@ -142,20 +141,37 @@ public class ServerFacadeTests {
     @Order(11)
     public void joinCorrectly() throws Exception {
         String authToken = serverFacade.register("calvin", "diamonods", "@");
-        serverFacade.createGame(authToken,"I'm a game");
-        serverFacade.j
+        String authToken2 = serverFacade.register("hobbes", "yesterday", "@");
+        int gameID = serverFacade.createGame(authToken, "I'm a game");
+        serverFacade.joinGame(authToken, gameID, ChessGame.TeamColor.WHITE);
+        serverFacade.joinGame(authToken2, gameID, ChessGame.TeamColor.BLACK);
+        Assertions.assertEquals(games.getGame(gameID).game(), new ChessGame());
     }
 
     @Test
     @Order(12)
     public void joinIncorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        String authToken = serverFacade.register("locke", "all", "@");
+        String authToken2 = serverFacade.register("kant", "my", "@");
+        int gameID = serverFacade.createGame(authToken, "I'm a game");
+        serverFacade.joinGame(authToken, gameID, ChessGame.TeamColor.BLACK);
+        serverFacade.joinGame(authToken2, gameID, ChessGame.TeamColor.BLACK);
+        GameData game = games.getGame(gameID);
+        Assertions.assertNull(game.whiteUsername());
     }
 
     @Test
     @Order(13)
     public void joinObserve() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        String authToken = serverFacade.register("marx", "troubles", "@");
+        String authToken2 = serverFacade.register("thoreau", "seemed", "@");
+        String authToken3 = serverFacade.register("Kierkegaard", "seemed", "@");
+        int gameID = serverFacade.createGame(authToken, "I'm a game");
+        serverFacade.joinGame(authToken, gameID, ChessGame.TeamColor.WHITE);
+        serverFacade.joinGame(authToken2, gameID, null);
+        serverFacade.joinGame(authToken3, gameID, ChessGame.TeamColor.BLACK);
+        Assertions.assertNotEquals("thoreau", games.getGame(gameID).whiteUsername());
+        Assertions.assertNotEquals("thoreau", games.getGame(gameID).whiteUsername());
     }
 
     @AfterAll

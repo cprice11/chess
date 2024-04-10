@@ -1,8 +1,10 @@
 package serverFacade;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameSummary;
 import server.request.CreateGameRequest;
+import server.request.JoinGameRequest;
 import server.request.LoginRequest;
 import server.request.RegisterRequest;
 import server.result.CreateGameResult;
@@ -120,11 +122,11 @@ public class ServerFacade {
         }
     }
 
-    public int joinGame(String authToken, String gameName) {
-        CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
-        String json = serializer.toJson(createGameRequest);
+    public void joinGame(String authToken, int gameId, ChessGame.TeamColor color) {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color, gameId);
+        String json = serializer.toJson(joinGameRequest);
         try {
-            HttpURLConnection connection = request("POST", urlPath + "/game");
+            HttpURLConnection connection = request("PUT", urlPath + "/game");
             connection.setDoOutput(true);
             connection.addRequestProperty("authorization", authToken);
             connection.addRequestProperty("Content-Type", "application/json");
@@ -133,20 +135,15 @@ public class ServerFacade {
             }
             int code = connection.getResponseCode();
             String message = connection.getResponseMessage();
-            try (InputStream respBody = connection.getInputStream()) {
-                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-                HttpResponse response = new HttpResponse(code, message);
-                CreateGameResult result = serializer.fromJson(inputStreamReader, CreateGameResult.class);
-                if (response.status() != 200) {
-                    handleError(response);
-                    return -1;
-                }
-                return result.gameID();
+            HttpResponse response = new HttpResponse(code, message);
+            if (response.status() != 200) {
+                handleError(response);
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             System.out.println("AN EXCEPTION!!!: " + e.getMessage());
-            return -1;
         }
+
     }
 
     public Collection<GameSummary> listGames(String authToken) {
