@@ -9,9 +9,14 @@ import dataAccess.sqlDao.SQLAuthDao;
 import dataAccess.sqlDao.SQLGameDao;
 import dataAccess.sqlDao.SQLUserDao;
 import model.AuthData;
+import model.GameSummary;
 import org.junit.jupiter.api.*;
 import server.Server;
 import serverFacade.ServerFacade;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerFacadeTests {
@@ -93,7 +98,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @Order(9)
+    @Order(7)
     public void createCorrectly() throws Exception {
         String authToken = serverFacade.register("John", "lucy", "@");
         String authToken2 = serverFacade.register("Paul", "in", "@");
@@ -105,7 +110,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @Order(10)
+    @Order(8)
     public void createIncorrectly() throws Exception {
         Assertions.assertEquals(3, games.getAll().size());
         serverFacade.createGame("asd", "name");
@@ -113,21 +118,32 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     public void listCorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        String authToken = serverFacade.register("george", "the", "@");
+        String authToken2 = serverFacade.register("ringo", "sky", "@");
+        Collection<GameSummary> sums = serverFacade.listGames(authToken);
+        Collection<GameSummary> sums2 = serverFacade.listGames(authToken2);
+        Assertions.assertEquals(sums, sums2);
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     public void listIncorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        String authToken = serverFacade.register("kieth", "with", "@");
+        serverFacade.createGame(authToken,"I'm a game");
+        serverFacade.createGame(authToken,"I'm a game");
+        Collection<GameSummary> sums = serverFacade.listGames(authToken);
+        HashSet<GameSummary> hashedSums = new HashSet<>(sums);
+        Assertions.assertEquals(sums.size(), hashedSums.size());
     }
 
     @Test
     @Order(11)
     public void joinCorrectly() throws Exception {
-        Assertions.fail("NOT WRITTEN");
+        String authToken = serverFacade.register("calvin", "diamonods", "@");
+        serverFacade.createGame(authToken,"I'm a game");
+        serverFacade.j
     }
 
     @Test
