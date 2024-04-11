@@ -1,13 +1,13 @@
 package serverFacade;
 
-import java.util.Scanner;
+import javax.websocket.*;
 import java.net.URI;
-import javax.websocket.*
+import java.util.Scanner;
 
-public class WebSocketFacade extends Endpoint{
+public class WebSocketClient extends Endpoint {
 
     public static void main(String[] args) throws Exception {
-        var ws = new ();
+        var ws = new WebSocketClient();
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter a message you want to echo");
@@ -16,7 +16,7 @@ public class WebSocketFacade extends Endpoint{
 
     public Session session;
 
-    public WSClient() throws Exception {
+    public WebSocketClient() throws Exception {
         URI uri = new URI("ws://localhost:8080/connect");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);

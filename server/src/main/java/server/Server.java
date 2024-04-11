@@ -6,7 +6,6 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.handler.*;
 import spark.Spark;
 
-@WebSocket
 public class Server {
 
 
@@ -38,11 +37,5 @@ public class Server {
         Spark.get("/game", ListGamesHandler::handleRequest);
         Spark.post("/game", CreateGameHandler::handleRequest);
         Spark.put("/game", JoinGameHandler::handleRequest);
-    }
-
-    @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws Exception {
-        System.out.printf("Received: %s", message);
-        session.getRemote().sendString("WebSocket response: " + message);
     }
 }
