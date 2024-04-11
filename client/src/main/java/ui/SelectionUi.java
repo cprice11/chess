@@ -34,7 +34,7 @@ public class SelectionUi extends UI {
             case '2':
             case 's':
             case 'S':
-                search(input);
+//                search(input);
                 break;
             case '3':
             case 'j':
@@ -109,9 +109,9 @@ public class SelectionUi extends UI {
         scanner.nextLine();
     }
 
-    private void search(String[] input) {
-        throw new RuntimeException("NOT IMPLEMENTED");
-    }
+//    private void search(String[] input) {
+//        throw new RuntimeException("NOT IMPLEMENTED");
+//    }
 
     private void list(String[] input) {
         window.clear();
