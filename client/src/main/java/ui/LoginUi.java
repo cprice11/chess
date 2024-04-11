@@ -45,11 +45,12 @@ public class LoginUi extends UI {
                     help();
                     Screen.clear();
             }
+            setLoginScreen();
         }
     }
 
     private void login() {
-        Screen.clear();
+        window.clear();
         window.banner("login", 1);
         Screen.prompt(null, "Username");
         Screen.refresh();
@@ -74,6 +75,7 @@ public class LoginUi extends UI {
     }
 
     private void setLoginScreen() {
+        window.clear();
         if (window.height > 25 && window.width > 100) window.banner("   ♟ Welcome to the 240 chess client ♟   ", 23);
         else window.banner("   ♟ Welcome to the 240 chess client ♟   ", 1);
         if (window.height > 20 && window.width > 68) {

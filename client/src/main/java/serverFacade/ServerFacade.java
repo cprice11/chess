@@ -67,13 +67,13 @@ public class ServerFacade {
                 HttpResponse response = new HttpResponse(code, message);
                 LoginResult result = serializer.fromJson(inputStreamReader, LoginResult.class);
                 if (response.status() != 200) {
-                    // handleError(response);
+                    new ErrorUi().displayError(response.status(), response.message());
                     return null;
                 }
                 return result.authToken();
             }
         } catch (Exception e) {
-            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+            new ErrorUi().displayError(e.getMessage());
             return null;
         }
     }
@@ -87,9 +87,10 @@ public class ServerFacade {
             String message = connection.getResponseMessage();
             HttpResponse response = new HttpResponse(code, message);
             if (response.status() != 200) {
+                new ErrorUi().displayError(response.status(), response.message());
             }
         } catch (Exception e) {
-            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+            new ErrorUi().displayError(e.getMessage());
         }
     }
 
@@ -111,13 +112,13 @@ public class ServerFacade {
                 HttpResponse response = new HttpResponse(code, message);
                 CreateGameResult result = serializer.fromJson(inputStreamReader, CreateGameResult.class);
                 if (response.status() != 200) {
-
+                    new ErrorUi().displayError(response.status(), response.message());
                     return -1;
                 }
                 return result.gameID();
             }
         } catch (Exception e) {
-            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+            new ErrorUi().displayError(e.getMessage());
             return -1;
         }
     }
@@ -137,11 +138,10 @@ public class ServerFacade {
             String message = connection.getResponseMessage();
             HttpResponse response = new HttpResponse(code, message);
             if (response.status() != 200) {
-
+                new ErrorUi().displayError(response.status(), response.message());
             }
-        } catch (
-                Exception e) {
-            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+        } catch (Exception e) {
+            new ErrorUi().displayError(e.getMessage());
         }
 
     }
@@ -158,13 +158,13 @@ public class ServerFacade {
                 HttpResponse response = new HttpResponse(code, message);
                 ListGamesResult result = serializer.fromJson(inputStreamReader, ListGamesResult.class);
                 if (response.status() != 200) {
-
+                    new ErrorUi().displayError(response.status(), response.message());
                     return null;
                 }
                 return result.games();
             }
         } catch (Exception e) {
-            System.out.println("AN EXCEPTION!!!: " + e.getMessage());
+            new ErrorUi().displayError(e.getMessage());
             return null;
         }
     }
@@ -186,12 +186,12 @@ public class ServerFacade {
                 HttpResponse response = new HttpResponse(code, message);
                 RegisterResult result = serializer.fromJson(inputStreamReader, RegisterResult.class);
                 if (response.status() != 200) {
+                    new ErrorUi().displayError(response.status(), response.message());
                     return null;
                 }
                 return result.authToken();
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             new ErrorUi().displayError(e.getMessage());
             return null;
         }
