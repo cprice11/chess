@@ -1,45 +1,59 @@
 package ui;
 
+import java.util.ArrayList;
+
 import static ui.EscapeSequences.*;
 
 public class ErrorUi extends UI {
     TerminalWindow popUp;
 
     public ErrorUi() {
-        popUp = new TerminalWindow(3, 3, Screen.terminalWidth - 6, Screen.terminalHeight - 6);
+        popUp = new TerminalWindow(Screen.terminalWidth / 4, Screen.terminalHeight / 4, Screen.terminalWidth / 2, Screen.terminalHeight / 2);
         Screen.addWindow(popUp);
     }
 
+    public void displayError(String message) {
+        displayError(-1, message);
+    }
     public void displayError(int code, String message) {
-        String title = (code == -1)? "ERROR" : "ERROR" + code;
-        int leftWidth = ((popUp.width ) / 2 ) -12;
-        int rightWidth = ((popUp.width + 2)/ 2 ) -12;
-        String left = UI.setBackground(NEGATIVE) +
+        popUp.border(UI.color);
+        String title = (code == -1)? "ERROR" : "ERROR " + code;
+        int titleWidth = 8 + title.length();
+        int leftWidth = (popUp.width - titleWidth) / 2;
+        int rightWidth = (popUp.width - titleWidth + 1)/ 2;
+        String left = UI.setBackground(color) +
                 SET_TEXT_COLOR_BLACK +
                 padLeft(BACK_ARROW, leftWidth, ' ') +
                 RESET_BG_COLOR + RESET_TEXT_COLOR;
-        String middle = setColor(null, NEGATIVE) +
+        String middle = setColor(null, color) +
                 BACK_ARROW +
-                setColor(NEGATIVE, LIGHT_PIECE) +
-                "   " + code + "   " +
+                setColor(color, LIGHT_PIECE) +
+                "   " + title + "   " +
                 RESET_BG_COLOR +
-                setColor(null, NEGATIVE) +
+                setColor(null, color) +
                 ARROW +
                 RESET_TEXT_COLOR;
-        String right = setBackground(NEGATIVE) +
+        String right = setBackground(color) +
                 SET_TEXT_COLOR_BLACK +
                 padRight(ARROW, rightWidth, ' ') +
                 RESET_BG_COLOR + RESET_TEXT_COLOR;
-        String paddedRight = padLeft(right, popUp.width - printLength(left), ' ');
         popUp.bar(0,  left + middle + right);
-
-        popUp.putText(1, (popUp.height - 1) / 2, message);
         Screen.prompt(null, "press enter to continue");
         if (!message.isEmpty()) {
-            popUp.putText(2, 2, setColor(null, NEGATIVE) + message);
+            ArrayList<String> lines = wordWrap(message, popUp.width - 6);
+            if (lines.size() > popUp.height - 3) {
+                // pager
+            }
+            else {
+                int y = 2;
+                for (String s : lines) {
+                    popUp.putText(3, y++, s);
+                }
+            }
         }
         Screen.refresh();
         scanner.nextLine();
         Screen.removeWindow(popUp);
+        Screen.refresh();
     }
 }

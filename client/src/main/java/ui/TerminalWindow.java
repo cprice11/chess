@@ -16,7 +16,6 @@ public class TerminalWindow extends UI {
 
     public TerminalWindow(int width, int height) {
         this(0, 0, width, height);
-
     }
     public TerminalWindow(int xStart, int yStart, int width, int height) {
         this.xStart = xStart;
@@ -46,7 +45,7 @@ public class TerminalWindow extends UI {
         if ((x > width || y > height) || (x < 0 || y < 0)) return;
         String currRow = (values[y] == null) ? " " : values[y];
         if (x > 0) {
-            text = getPrintSub(0, x, currRow) + text;
+            text = padRight(getPrintSub(0, x, currRow), x, ' ') + text;
         }
         text = getPrintSub(0, width, text);
         int problem = printLength(text);
@@ -55,7 +54,7 @@ public class TerminalWindow extends UI {
     }
 
     protected void banner(String message) {
-        banner(message, height - 2, PRIMARY);
+        banner(message, 1, PRIMARY);
     }
 
 
@@ -67,15 +66,20 @@ public class TerminalWindow extends UI {
         String title = setColor(null, color) + BACK_ARROW + setColor(color, LIGHT_PIECE) + "   " + message + "   " + RESET_BG_COLOR + setColor(null, color) + ARROW + RESET_TEXT_COLOR;
         centerText(y, title);
     }
-    public void topBar(int[] background, int[] forground, String fill) {
-        values[0] = setColor(background, forground) + fill + RESET_BG_COLOR + RESET_TEXT_COLOR;
-    }
 
     public void bar(int row, String fill) {
         values[row] = fill;
     }
 
     public void border(int[] color) {
+        for (int i = 1; i < values.length - 1; i++) {
+            values[i] = padRight(setForeground(color) + "█" + RESET_TEXT_COLOR, width - 1,' ') + setForeground(color) + "█" + RESET_TEXT_COLOR;
+        }
+        values[0] = padRight(setForeground(color) + "█", width - 1,'▀') + "█" + RESET_TEXT_COLOR;
+        values[values.length - 1] = padRight(setForeground(color) + "█", width - 1,'▄') + "█" + RESET_TEXT_COLOR;
+    }
 
+    public void clear() {
+        Arrays.fill(values, " ");
     }
 }

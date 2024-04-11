@@ -9,7 +9,7 @@ import java.util.Arrays;
 import static ui.EscapeSequences.*;
 
 public class Screen extends UI {
-    public static int terminalWidth = 80;
+    public static int terminalWidth = 79;
     public static int terminalHeight = 23;
     private static int[] promptPrimary = PRIMARY;
     private static int[] promptSecondary = DARK_2;
@@ -49,18 +49,23 @@ public class Screen extends UI {
         String[] windowValues = window.getValues();
         if (windowValues.length == 0) return;
         int xStart = Math.max(window.xStart, 0);
-        int xEnd = Math.min(xStart + window.width, terminalWidth);
+        int xEnd = Math.min(xStart + window.width - 1, terminalWidth - 1);
         int yStart = Math.max(window.yStart, 0);
-        int yEnd = Math.min(yStart + window.height, terminalHeight);
-        int effectiveWidth = xEnd - xStart;
+        int yEnd = Math.min(yStart + window.height, terminalHeight - 1);
+        int effectiveWidth = ( xEnd + 1 )- xStart;
 
-        for (int y = 0; y < yEnd - yStart; y++) {
+        for (int y = 0; y + yStart < yEnd; y++) {
             String pre = "";
             String post = "";
             if (xStart > 0) pre = getPrintSub(0, xStart, values[y + yStart]);
             if (terminalWidth - xEnd > 1)
                 post = getPrintSub(xEnd, terminalWidth - xEnd, values[y + yStart]);
-            values[y + yStart] = pre + padRight(windowValues[y], effectiveWidth, ' ') + post;
+            values[y + yStart] =
+                    pre +
+                    RESET_TEXT_COLOR + RESET_BG_COLOR +
+                    padRight(windowValues[y], effectiveWidth, ' ') +
+                    RESET_TEXT_COLOR + RESET_BG_COLOR +
+                    post;
         }
     }
 

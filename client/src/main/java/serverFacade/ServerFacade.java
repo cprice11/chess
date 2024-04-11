@@ -192,6 +192,7 @@ public class ServerFacade {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            new ErrorUi().displayError(e.getMessage());
             return null;
         }
     }

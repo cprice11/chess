@@ -32,7 +32,7 @@ public class pager extends UI{
                 chunk = String.join("\n", Arrays.copyOfRange(rows, top, bottom));
             }
             Screen.clear();
-            window.banner("HELP",1, NEGATIVE);
+            window.banner("HELP",1, color);
             Screen.prompt(null, "press enter to scroll [q|x] to exit");
             window.putBlock(0, 0, chunk);
             Screen.refresh();

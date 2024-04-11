@@ -4,12 +4,11 @@ import chess.ChessGame;
 import model.GameSummary;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SelectionUi extends UI {
     private static boolean first = true;
     TerminalWindow window = new TerminalWindow(Screen.terminalWidth, Screen.terminalHeight - 1);
-    Screen screen = new Screen();
+
 
     private static final String HELP_INTRO =
             """
@@ -97,22 +96,33 @@ public class SelectionUi extends UI {
     private static final String ALL_HELP = HELP_INTRO + HELP_HELP + HELP_SEARCH + HELP_LIST + HELP_JOIN + HELP_CREATE + HELP_QUIT;
 
     public void mainMenu() {
+        Screen.addWindow(window);
         mainMenuLayout();
-        String[] input = scanner.nextLine().split("\\s");
-        while(getInput(input)) {
+        String[] input = null;
+        boolean loop = true;
+        while(true) {
+            input = scanner.nextLine().split("\\s");
             String command = input[0];
             if (command.isEmpty()) command = "*";
             switch (command.charAt(0)) {
-                case '1', 'l', 'L':
+                case '1':
+                case 'l':
+                case 'L':
                     list(input);
                     break;
-                case '2', 's', 'S':
+                case '2':
+                case 's':
+                case 'S':
                     search(input);
                     break;
-                case '3', 'j', 'J':
+                case '3':
+                case 'j':
+                case 'J':
                     join(input);
                     break;
-                case '4', 'c', 'C':
+                case '4':
+                case 'c':
+                case 'C':
                     create(input);
                     break;
                 case '6', 'q', 'Q', 'x', 'X', 'e', 'E':
@@ -126,10 +136,7 @@ public class SelectionUi extends UI {
         }
     }
 
-    private boolean getInput(String[] input) {
-        input = scanner.nextLine().split("\\s");
-        return true;
-    }
+
 
     private void mainMenuLayout() {
         Screen.clear();
@@ -142,7 +149,7 @@ public class SelectionUi extends UI {
                 5 (H)elp
                 6 (Q)uit;
                 """);
-        screen.prompt("please select an option", null);
+        Screen.prompt("please select an option", null);
         Screen.refresh();
     }
 
@@ -150,7 +157,7 @@ public class SelectionUi extends UI {
         String requestedDoc;
         Screen.clear();
         Screen.prompt("press enter to exit");
-        window.banner("HELP", 1, NEGATIVE);
+        window.banner("HELP", 1, color);
         if (input.length < 2) {
             requestedDoc = ALL_HELP;
         }
@@ -264,7 +271,7 @@ public class SelectionUi extends UI {
     public String createGamePrompt() {
         Screen.clear();
         window.banner("CREATE GAME");
-        screen.prompt("Enter a name for this match", null);
+        Screen.prompt("Enter a name for this match", null);
         Screen.refresh();
         return scanner.nextLine();
     }

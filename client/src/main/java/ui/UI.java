@@ -2,13 +2,8 @@ package ui;
 
 import serverFacade.ServerFacade;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Scanner;
-
-import static ui.EscapeSequences.*;
 
 public class UI {
     protected static String authToken;
@@ -29,7 +24,7 @@ public class UI {
     static final int[] PRIMARY = {181, 137, 0};
     static final int[] SECONDARY = {133, 153, 0};
     static final int[] TERNARY = {42, 161, 152};
-    static final int[] NEGATIVE = {220, 50, 47};
+    static final int[] color = {220, 50, 47};
     static final String ARROW = "\ue0b0";
     static final String BACK_ARROW = "\ue0b2";
     static final int cursorX = 5;
@@ -68,7 +63,7 @@ public class UI {
         int currWidth = printLength(text);
         if (currWidth > width) return getPrintSub(0, width, text);
         int padWidth = Math.max(0, width - currWidth);
-        return  String.valueOf(c).repeat(padWidth / 2) +
+        return String.valueOf(c).repeat(padWidth / 2) +
                 text +
                 String.valueOf(c).repeat((padWidth + 1) / 2);
     }
@@ -76,9 +71,6 @@ public class UI {
     protected static String setColor(int[] bg, int[] fg) {
         return setBackground(bg) + setForeground(fg);
     }
-
-
-
 
 
     protected enum HttpResponse {
@@ -139,7 +131,7 @@ public class UI {
             cleanLen++;
         }
         cleanLen = 0;
-        for (int i = startIndex; cleanLen < length && i < textArr.length; i++) {
+        for (int i = startIndex; cleanLen <= length && i < textArr.length; i++) {
             char c = textArr[i];
             if (escape && c == 'm') {
                 escape = false;
@@ -160,6 +152,38 @@ public class UI {
         return cleanText.toString();
     }
 
+    protected boolean getInput(String[] input) {
+        input = scanner.nextLine().split("\\s");
+        return true;
+    }
+
+    public static ArrayList<String> wordWrap(String text, int maxWidth) {
+        if (maxWidth <= 1) throw new RuntimeException("divide by zero");
+        StringBuilder result = new StringBuilder();
+        String[] paragraphs = text.split("(\\n)");
+        ArrayList<String> lines = new ArrayList<>();
+        for (String p : paragraphs) {
+            String[] words = p.split("((?<=\\s))");
+            StringBuilder currentLine = new StringBuilder();
+            for (String word : words) {
+                if (currentLine.length() + word.length() <= maxWidth) {
+                    currentLine.append(word);
+                } else if (currentLine.isEmpty()) {
+                    while (word.length() > maxWidth) {
+                        lines.add(word.substring(0, maxWidth));
+                        word = word.substring(maxWidth);
+                    }
+                    lines.add(word);
+                }
+                else {
+                    lines.add(currentLine.toString().trim());
+                    currentLine = new StringBuilder(word);
+                }
+            }
+            lines.add(currentLine.toString().trim());
+        }
+        return lines;
+    }
 
 
 }
