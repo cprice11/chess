@@ -55,15 +55,15 @@ public class LoginUi extends UI {
         Screen.prompt(null, "Username");
         Screen.refresh();
         String username = scanner.nextLine();
-        window.putText(0, 4, Screen.prompt() + username);
+        window.putText(0, (window.height / 2), Screen.prompt() + username);
         String userPrompt = Screen.prompt();
         Screen.prompt("Password", null);
         Screen.refresh();
         Screen.clear();
         window.banner("login");
         String password = scanner.nextLine();
-        window.putText(0, 4, userPrompt + username);
-        window.putText(0, 5, Screen.prompt() + password.replaceAll("\\S", "*"));
+        window.putText(0, (window.height / 2), userPrompt + username);
+        window.putText(0, (window.height / 2) + 1, Screen.prompt() + password.replaceAll("\\S", "*"));
         Screen.prompt(null, "loading");
         Screen.refresh();
         authToken = facade.login(username, password);
@@ -79,29 +79,27 @@ public class LoginUi extends UI {
         if (window.height > 25 && window.width > 100) window.banner("   ♟ Welcome to the 240 chess client ♟   ", 23);
         else window.banner("   ♟ Welcome to the 240 chess client ♟   ", 1);
         if (window.height > 20 && window.width > 68) {
-            window.centerText(4, "         ⣠⠄     ");
-            window.centerText(5, "     ⡠⣴⣆⣾⡟      ");
-            window.centerText(6, "    ⢼⣷⣟⣟⣟⣶⣄     ");
-            window.centerText(7, "   ⣼⣟⣟⣟⣟⣟⣟⣟⣷    ");
-            window.centerText(8, "  ⢰⣾⣟⣟⣟⣟⣟⣟⣟⣟⡄   ");
-            window.centerText(9, "  ⣚⣟⣟⣟⣟⣟⣟⣟⣟⣟⣟⣦  ");
-            window.centerText(10, "  ⣟⣟⣟⣟⣟⣟⡜⠻⠿⢿⣟⣟⡇ ");
-            window.centerText(11, "  ⣾⣟⣟⣟⣟⣟⣧   ⠻⠃  ");
-            window.centerText(12, "  ⢻⣟⣟⣟⣟⣟⣟⣧⡀     ");
-            window.centerText(13, "  ⢸⣟⣟⣟⣟⣟⣟⣟⣷⡄    ");
-            window.centerText(14, "   ⣟⣟⣟⣟⣟⣟⣟⣟⣟⡀   ");
-            window.centerText(15, "   ⠸⣟⣟⣟⣟⣟⣟⣟⣟⡇   ");
-            window.centerText(16, "   ⣴⣟⣟⣟⣟⣟⣟⣟⣟⣷⡄  ");
-            window.centerText(17, "   ⣠⣟⣟⣟⣟⣟⣟⣟⣟⣦⡀  ");
-            window.centerText(18, " ⢠⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣄ ");
-            window.centerText(19, " ⠸⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿ ");
+            Screen.clear();
+            window.clear();
+            window.banner("HOME", 1);
+            Screen.prompt(null, "Choose an option", UI.SECONDARY, UI.DARK_2);
+            window.putBlock(3, (window.height - 6 )/ 2, MENU_OPTIONS);
+            int knightXpos = window.width / 2;
+            int knightYpos = window.height / 2;
+            if (window.width < 30 || window.height < 10 ) {
+
+            } else if (window.width <60 || window.height < 20) {
+                window.putBlock(knightXpos - 5, knightYpos - 4, PAWN_SMALL);
+            } else if (window.width < 110 || window.height < 40) {
+                window.putBlock(knightXpos - 10, knightYpos - 7, PAWN_MEDIUM);
+            } else {
+                window.putBlock(knightXpos - 22, knightYpos - 14, PAWN_LARGE);
+            }
+            Screen.prompt("please select an option", null);
+            Screen.refresh();
         }
         int menu = (window.height - 5) / 2;
-        window.putText(0, menu, "Press enter to quit, or type");
-        window.putText(0, menu + 1, "'h' to see more information.");
-        window.putText(0, menu + 3, "1. Register");
-        window.putText(0, menu + 4, "2. Login");
-        Screen.prompt(null, "Choose an option");
+
         Screen.refresh();
     }
 
@@ -143,7 +141,7 @@ public class LoginUi extends UI {
         Screen.refresh();
         window.clear();
         String username = scanner.nextLine();
-        window.putText(0, 4, Screen.prompt() + username);
+        window.putText(0, (window.height / 2), Screen.prompt() + username);
         String userPrompt = Screen.prompt();
         Screen.prompt("Password", null);
         window.banner("register");
@@ -153,8 +151,8 @@ public class LoginUi extends UI {
         window.banner("register");
         String password = scanner.nextLine();
         String passPrompt = Screen.prompt();
-        window.putText(0, 4, userPrompt + username);
-        window.putText(0, 5, Screen.prompt() + password.replaceAll("\\S", "*"));
+        window.putText(0, (window.height / 2) + 1, userPrompt + username);
+        window.putText(0, (window.height / 2) + 2, Screen.prompt() + password.replaceAll("\\S", "*"));
         Screen.prompt(null, "Email");
         String emailPrompt = Screen.prompt();
         Screen.refresh();
@@ -162,9 +160,9 @@ public class LoginUi extends UI {
         window.clear();
         window.banner("register");
         String email = scanner.nextLine();
-        window.putText(0, 4, userPrompt + username);
-        window.putText(0, 5, passPrompt + password.replaceAll("\\S", "*"));
-        window.putText(0, 6, emailPrompt + email);
+        window.putText(0, (window.height / 2), userPrompt + username);
+        window.putText(0, (window.height / 2) + 1, passPrompt + password.replaceAll("\\S", "*"));
+        window.putText(0, (window.height / 2) + 2, emailPrompt + email);
         Screen.prompt(null, "loading");
         Screen.refresh();
         authToken = facade.register(username, password, email);
@@ -174,5 +172,75 @@ public class LoginUi extends UI {
             selectionUi.mainMenu();
         }
     }
+    private static final String MENU_OPTIONS = """
+        Press enter to quit, or type
+        'h' to see more information.
+        
+        1. Register
+        2. Login
+        """;
 
+
+    private static final String PAWN_SMALL =
+            """
+              ⣠⣤⣤⡀
+             ⢰⣿⣿⣿⣿⡄
+              ⠻⠿⠿⠟
+              ⠚⣿⣿⠓
+               ⣿⣿
+              ⢸⣿⣿⡆
+            ⢀⣴⣶⣶⣶⣶⣶⣄
+            ⢨⣭⣭⣭⣭⣭⣭⡅
+            """;
+    private static final String PAWN_MEDIUM =
+            """
+                  ⢀⣀⣀
+                ⣠⣾⣿⣿⣿⣿⣷⣄
+               ⢸⣿⣿⣿⣿⣿⣿⣿⣿⡆
+               ⢹⣿⣿⣿⣿⣿⣿⣿⣿⡇
+               ⠈⢿⣿⣿⣿⣿⣿⣿⡟
+                 ⣉⣉⣉⣉⣉⣁
+                ⠚⢛⣛⣛⣛⣛⠛⠂
+                 ⢸⣿⣿⣿⣿
+                 ⢸⣿⣿⣿⣿
+                 ⢸⣿⣿⣿⣿⡆
+                ⢀⣿⣿⣿⣿⣿⣷
+                ⣾⣿⣿⣿⣿⣿⣿⣧
+              ⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀
+             ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+           ⢀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣄
+           ⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇
+            """;
+    private static final String PAWN_LARGE =
+            """                     
+                                     ⣀⣠⣤⣤⣤⣤⣄⡀
+                                  ⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤
+                                 ⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄
+                                ⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀
+                                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+                                ⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+                                ⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿
+                                 ⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁
+                                   ⠙⠻⠿⠿⠿⠿⠿⠿⠿⠿⠟⠁
+                                   ⣠⣶⣶⣶⣶⣶⣶⣶⣶⣶⣦⡀
+                                  ⠼⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠦
+                                    ⢰⣶⣶⣶⣶⣶⣶⣶⣶
+                                    ⢸⣿⣿⣿⣿⣿⣿⣿⣿
+                                    ⢸⣿⣿⣿⣿⣿⣿⣿⣿
+                                    ⢸⣿⣿⣿⣿⣿⣿⣿⣿
+                                    ⢸⣿⣿⣿⣿⣿⣿⣿⣿
+                                    ⣾⣿⣿⣿⣿⣿⣿⣿⣿⡇
+                                   ⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷
+                                   ⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇
+                                  ⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆
+                                 ⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆
+                               ⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀
+                             ⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄
+                            ⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄
+                         ⢀⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄
+                        ⠐⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠂
+                    ⢀⣴⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣄
+                    ⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+                    ⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇
+                    """;
 }

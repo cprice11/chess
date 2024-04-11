@@ -1,6 +1,8 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static ui.EscapeSequences.RESET_BG_COLOR;
 import static ui.EscapeSequences.RESET_TEXT_COLOR;
@@ -33,7 +35,13 @@ public class TerminalWindow extends UI {
     public void putBlock(int x, int y, String block) {
         var lines = block.split("\n");
         for (int i = 0; i < lines.length; i++) {
-            putText(x, y - i, lines[i]);
+            putText(x, y + i, lines[i]);
+        }
+    }
+
+    public void putList(int x, int y, List<String> rows) {
+        for (int i = 0; i < rows.size(); i++) {
+            putText(x, y + i, rows.get(i));
         }
     }
     public void centerText(int y, String text) {
