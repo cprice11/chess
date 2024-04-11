@@ -16,24 +16,24 @@ public class ErrorUi extends UI {
         displayError(-1, message);
     }
     public void displayError(int code, String message) {
-        popUp.border(UI.color);
+        popUp.border(UI.difffff);
         String title = (code == -1)? "ERROR" : "ERROR " + code;
         int titleWidth = 8 + title.length();
         int leftWidth = (popUp.width - titleWidth) / 2;
         int rightWidth = (popUp.width - titleWidth + 1)/ 2;
-        String left = UI.setBackground(color) +
+        String left = UI.setBackground(difffff) +
                 SET_TEXT_COLOR_BLACK +
                 padLeft(BACK_ARROW, leftWidth, ' ') +
                 RESET_BG_COLOR + RESET_TEXT_COLOR;
-        String middle = setColor(null, color) +
+        String middle = setColor(null, difffff) +
                 BACK_ARROW +
-                setColor(color, LIGHT_PIECE) +
+                setColor(difffff, LIGHT_PIECE) +
                 "   " + title + "   " +
                 RESET_BG_COLOR +
-                setColor(null, color) +
+                setColor(null, difffff) +
                 ARROW +
                 RESET_TEXT_COLOR;
-        String right = setBackground(color) +
+        String right = setBackground(difffff) +
                 SET_TEXT_COLOR_BLACK +
                 padRight(ARROW, rightWidth, ' ') +
                 RESET_BG_COLOR + RESET_TEXT_COLOR;

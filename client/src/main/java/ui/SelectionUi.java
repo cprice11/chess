@@ -239,7 +239,7 @@ public class SelectionUi extends UI {
 
     private ChessGame.TeamColor getColor(boolean observe, int gameID) {
         ChessGame.TeamColor color = null;
-        GameSummary game = new GameSummary(); // facade.getgameSummary();
+        GameSummary game = new GameSummary(0, null, null, null); // facade.getgameSummary();
         if (new Random(gameID).nextBoolean()) {
             if (game.whiteUsername() == null) return ChessGame.TeamColor.WHITE;
             else if (game.blackUsername() == null) return ChessGame.TeamColor.BLACK;

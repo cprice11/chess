@@ -24,7 +24,7 @@ public class UI {
     static final int[] PRIMARY = {181, 137, 0};
     static final int[] SECONDARY = {133, 153, 0};
     static final int[] TERNARY = {42, 161, 152};
-    static final int[] color = {220, 50, 47};
+    static final int[] difffff = {220, 50, 47};
     static final String ARROW = "\ue0b0";
     static final String BACK_ARROW = "\ue0b2";
     static final int cursorX = 5;

@@ -123,7 +123,7 @@ public class ServerFacade {
         }
     }
 
-    public void joinGame(String authToken, int gameId, ChessGame.TeamColor color) {
+    public boolean joinGame(String authToken, int gameId, ChessGame.TeamColor color) {
         JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color, gameId);
         String json = serializer.toJson(joinGameRequest);
         try {
@@ -139,11 +139,13 @@ public class ServerFacade {
             HttpResponse response = new HttpResponse(code, message);
             if (response.status() != 200) {
                 new ErrorUi().displayError(response.status(), response.message());
+                return false;
             }
+            return true;
         } catch (Exception e) {
             new ErrorUi().displayError(e.getMessage());
+            return false;
         }
-
     }
 
     public Collection<GameSummary> listGames(String authToken) {
