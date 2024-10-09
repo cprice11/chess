@@ -9,34 +9,42 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
+    private PieceType type;
+    private final ChessGame.TeamColor color;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.type = type;
+        this.color = pieceColor;
     }
 
     /**
      * The various different chess piece options
      */
     public enum PieceType {
-        KING,
-        QUEEN,
-        BISHOP,
-        KNIGHT,
-        ROOK,
-        PAWN
+        KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN
     }
 
     /**
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return this.color;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return this.type;
+    }
+
+    /**
+     * Sets the piece to a new piece type. Useful for promotion.
+     *
+     * @param newType The new piece type
+     */
+    public void changeType(PieceType newType) {
+        this.type = newType;
     }
 
     /**
