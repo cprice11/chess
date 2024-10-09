@@ -7,8 +7,41 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessPosition {
+    int rank;
+    int file;
+    char fileChar;
 
-    public ChessPosition(int row, int col) {
+    public ChessPosition(int rank, int file) {
+        this.rank = rank;
+        this.file = file;
+        switch (file){
+            case 1:
+                this.fileChar = 'A';
+                break;
+            case 2:
+                this.fileChar = 'B';
+                break;
+            case 3:
+                this.fileChar = 'C';
+                break;
+            case 4:
+                this.fileChar = 'D';
+                break;
+            case 5:
+                this.fileChar = 'E';
+                break;
+            case 6:
+                this.fileChar = 'F';
+                break;
+            case 7:
+                this.fileChar = 'G';
+                break;
+            case 8:
+                this.fileChar = 'H';
+                break;
+            default:
+                this.fileChar = '?';
+        }
     }
 
     /**
@@ -16,14 +49,32 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        throw new RuntimeException("Not implemented");
+        return this.rank;
+    }
+    public int getRank() {
+        return this.rank;
     }
 
     /**
      * @return which column this position is in
      * 1 codes for the left row
+     * Identical to getFile()
      */
     public int getColumn() {
-        throw new RuntimeException("Not implemented");
+        return this.file;
+    }
+    /**
+     * @return which file this position is on.
+     * 1 codes for the A file
+     */
+    public int getFile() {
+        return this.file;
+    }
+    /**
+     * @return which file this position is on.
+     * returns '?' in case of undefined file values like 0.
+     */
+    public char getFileChar() {
+        return this.fileChar;
     }
 }
