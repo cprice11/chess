@@ -57,4 +57,27 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public String toString() {
+        return switch (type){
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BISHOP -> "B";
+            case KNIGHT -> "N";
+            case ROOK -> "R";
+            case PAWN -> "P";
+        };
+    }
+
+    public String symbol() {
+        return switch (type){
+            case KING -> "♚";
+            case QUEEN -> "♛";
+            case BISHOP -> "♝";
+            case KNIGHT -> "♞";
+            case ROOK -> "♜";
+            case PAWN -> "♟";
+        };
+    }
 }
