@@ -1,6 +1,6 @@
 ### Maven
 target
-shared/src/main/**/.class
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
@@ -8,3 +8,9 @@ out/
 
 ### Mac OS ###
 .DS_Store
+
+### Chess project ###
+server/**/db.properties
+
+## My system
+devbox.*
