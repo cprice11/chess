@@ -9,6 +9,12 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    public enum COLOR {
+        LIGHT, DARK
+    }
+    public enum PIECE_TYPE {
+        KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN
+    }
 
     public ChessGame() {
 
