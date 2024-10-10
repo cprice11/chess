@@ -9,9 +9,9 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPosition {
-    private int rank;
-    private int file;
-    private char fileChar;
+    private final int rank;
+    private final int file;
+    private final char fileChar;
 
     @Override
     public boolean equals(Object o) {

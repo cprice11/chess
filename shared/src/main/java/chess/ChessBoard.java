@@ -30,7 +30,7 @@ public class ChessBoard {
     }
 
     private static final int BOARD_SIZE = 8; // no magic numbers, If adding alternate rule sets, refactor to be set.
-    private final HashMap<ChessPosition, ChessPiece> pieces = new HashMap<ChessPosition, ChessPiece>();
+    private final HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
 
     public ChessBoard() {
 
@@ -88,7 +88,6 @@ public class ChessBoard {
 
     public void printBoard() {
         StringBuilder boardString = new StringBuilder();
-        ChessGame.TeamColor boardColor = ChessGame.TeamColor.WHITE;
         boardString.append("    A  B  C  D  E  F  G  H\n");
         for (int rank = BOARD_SIZE; rank > 0; rank--) {
             boardString.append(' ').append(rank).append(' ');
