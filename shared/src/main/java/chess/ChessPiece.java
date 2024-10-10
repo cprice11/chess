@@ -88,45 +88,13 @@ public class ChessPiece {
         throw new RuntimeException("Not implemented");
     }
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+        HashSet<ChessPosition> visibleSquares = new HashSet<>();
+        visibleSquares.addAll(expandInDirection(board, position, 1,1 ));
+        visibleSquares.addAll(expandInDirection(board, position, 1,-1 ));
+        visibleSquares.addAll(expandInDirection(board, position, -1,1 ));
+        visibleSquares.addAll(expandInDirection(board, position, -1,-1 ));
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
-        int currRank = position.getRank();
-        int currFile = position.getFile();
-        for (int i = currRank + 1; i < 8; i++) {
-            ChessPosition newPosition = new ChessPosition(i, currFile);
-            ChessPiece existingPiece = board.getPiece(newPosition);
-            if (existingPiece != null) {
-                moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-                break;
-            }
-            moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-        }
-        for (int i = currRank - 1; i > 0; i--) {
-            ChessPosition newPosition = new ChessPosition(i, currFile);
-            ChessPiece existingPiece = board.getPiece(newPosition);
-            if (existingPiece != null) {
-                moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-                break;
-            }
-            moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-        }
-        for (int i = currFile + 1; i < 8; i++) {
-            ChessPosition newPosition = new ChessPosition(currRank, i);
-            ChessPiece existingPiece = board.getPiece(newPosition);
-            if (existingPiece != null) {
-                moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-                break;
-            }
-            moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-        }
-        for (int i = currFile - 1; i > 0; i--) {
-            ChessPosition newPosition = new ChessPosition(currRank, i);
-            ChessPiece existingPiece = board.getPiece(newPosition);
-            if (existingPiece != null) {
-                moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-                break;
-            }
-            moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-        }
+
         return moves;
     }
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
@@ -141,10 +109,10 @@ public class ChessPiece {
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
     }
-    private void removeFriendlyCaptures(ChessBoard board, Collection<ChessMove> moves, ChessPiece piece) {
-        moves.removeIf(move ->
-                board.getPiece(move.getEndPosition()) != null &&
-                board.getPiece(move.getEndPosition()).getTeamColor() == piece.getTeamColor()
+    private void removeFriendlyCaptures(ChessBoard board, Collection<ChessPosition> squares, ChessPiece piece) {
+        squares.removeIf(square ->
+                board.getPiece(square) != null &&
+                board.getPiece(square).getTeamColor() == piece.getTeamColor()
         );
     }
 
