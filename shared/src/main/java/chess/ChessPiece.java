@@ -148,16 +148,20 @@ public class ChessPiece {
         );
     }
 
-    private Collection<ChessMove> expandInDirection(ChessBoard board, ChessPosition position, int x, int y) {
+    private Collection<ChessPosition> expandInDirection(ChessBoard board, ChessPosition position, int x, int y) {
         if ((x != 1 && x != -1) || (y != 1 && y != -1)) throw new RuntimeException("Invalid direction values");
-        HashSet<ChessMove> moves = new HashSet<>();
+        HashSet<ChessPosition> spaces = new HashSet<>();
         int nextRank = position.getRank() + y;
         int nextFile = position.getFile() + x;
         ChessPosition nextPosition = new ChessPosition(nextRank, nextFile);
         while (nextPosition.isOnBoard()) {
-            moves.add(new ChessMove(position))
+            spaces.add(nextPosition);
+            if (board.getPiece(nextPosition) != null) break;
+            nextRank += y;
+            nextRank += x;
+            nextPosition = new ChessPosition(nextRank, nextFile);
         }
-        return moves;
+        return spaces;
     }
 
     private Collection<ChessMove> positionsToMoves(ChessPosition start, Collection<ChessPosition> positions) {
