@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -68,8 +69,85 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        ChessPiece piece = board.getPiece(position);
+        return switch (piece.getPieceType()) {
+            case PAWN -> pawnMoves(board, position, piece);
+            case ROOK -> rookMoves(board, position, piece);
+            case KNIGHT -> knightMoves(board, position, piece);
+            case BISHOP -> bishopMoves(board, position, piece);
+            case QUEEN -> queenMoves(board, position, piece);
+            case KING -> kingMoves(board, position, piece);
+        };
+    }
+
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
+    }
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+        HashSet<ChessMove> moves = new HashSet<ChessMove>();
+        int currRank = position.getRank();
+        int currFile = position.getFile();
+        for (int i = currRank + 1; i < 8; i++) {
+            ChessPosition newPosition = new ChessPosition(i, currFile);
+            ChessPiece existingPiece = board.getPiece(newPosition);
+            if (existingPiece != null) {
+                if (piece.getTeamColor() != existingPiece.getTeamColor()) {
+                    moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
+                }
+                break;
+            }
+            moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
+        }
+        for (int i = currRank - 1; i > 0; i--) {
+            ChessPosition newPosition = new ChessPosition(i, currFile);
+            ChessPiece existingPiece = board.getPiece(newPosition);
+            if (existingPiece != null) {
+                if (piece.getTeamColor() != existingPiece.getTeamColor()) {
+                    moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
+                }
+                break;
+            }
+            moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
+        }
+        for (int i = currFile + 1; i < 8; i++) {
+            ChessPosition newPosition = new ChessPosition(currRank, i);
+            ChessPiece existingPiece = board.getPiece(newPosition);
+            if (existingPiece != null) {
+                if (piece.getTeamColor() != existingPiece.getTeamColor()) {
+                    moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
+                }
+                break;
+            }
+            moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
+        }
+        for (int i = currFile - 1; i > 0; i--) {
+            ChessPosition newPosition = new ChessPosition(currRank, i);
+            ChessPiece existingPiece = board.getPiece(newPosition);
+            if (existingPiece != null) {
+                if (piece.getTeamColor() != existingPiece.getTeamColor()) {
+                    moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
+                }
+                break;
+            }
+            moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
+        }
+        return moves;
+    }
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+        throw new RuntimeException("Not implemented");
+    }
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+        throw new RuntimeException("Not implemented");
+    }
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+        throw new RuntimeException("Not implemented");
+    }
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+        throw new RuntimeException("Not implemented");
+    }
+    private void removeFriendlyCaptures(ChessBoard board, Collection<ChessMove> moves, ChessPiece piece) {
+        moves.removeIf(move -> board.getPiece(move.getStartPosition()).getTeamColor() == piece.getTeamColor());
     }
 
     @Override
