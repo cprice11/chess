@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -44,6 +45,17 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         pieces.put(position, piece);
+    }
+
+    /**
+     * Removes a chess piece from the chessboard
+     *
+     * @param position which position to clear
+     */
+    public ChessPiece removePiece(ChessPosition position) {
+        ChessPiece piece = getPiece(position);
+        pieces.remove(position);
+        return piece;
     }
 
     /**
@@ -105,5 +117,13 @@ public class ChessBoard {
         }
         boardString.append("    A  B  C  D  E  F  G  H");
         System.out.println(boardString);
+    }
+
+    public HashMap<ChessPosition, ChessPiece> getPieces(ChessGame.TeamColor color) {
+        HashMap<ChessPosition, ChessPiece> teamPositions = new HashMap<>();
+        pieces.forEach((position, piece) -> {
+                    if (piece.getTeamColor() == color) teamPositions.put(position, piece);
+                });
+        return teamPositions;
     }
 }
