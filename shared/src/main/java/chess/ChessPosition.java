@@ -92,4 +92,9 @@ public class ChessPosition {
     public char getFileChar() {
         return this.fileChar;
     }
+
+    @Override
+    public String toString() {
+        return fileChar + String.valueOf(rank);
+    }
 }
