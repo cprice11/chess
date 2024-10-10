@@ -99,6 +99,7 @@ public class ChessPiece {
         return visibleSquares;
     }
 
+    // TODO Add castling squares
     private Collection<ChessPosition> rookSquares(ChessBoard board, ChessPosition position) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
         visibleSquares.addAll(expandInDirection(board, position, 0, 1));

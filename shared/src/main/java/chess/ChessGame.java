@@ -18,6 +18,7 @@ public class ChessGame {
     private boolean blackShortCastleAllowed;
     private boolean whiteLongCastleAllowed;
     private boolean blackLongCastleAllowed;
+    private ChessPosition enPassant = null;
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
@@ -70,11 +71,18 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        // If game over throw
         ChessPosition start = move.getStartPosition();
         ChessPiece piece = board.getPiece(start);
         if (piece == null) throw new InvalidMoveException("No piece at location: " + move.getStartPosition());
         if (piece.getTeamColor() != turn) throw new InvalidMoveException("Not " + piece.getTeamColor() + "'s turn.");
         if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException(move + " is an invalid move");
+        // IF castle and castle flags set and spaces are not threatened Castle
+        // If pawn leap set enpassant square
+        // IF in check
+        //  -   check if move gets out
+        // ELSE
+        //  -
         board.removePiece(start);
         if (move.getPromotionPiece() != null) piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
         board.addPiece(move.getEndPosition(), piece);
