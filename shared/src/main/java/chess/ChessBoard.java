@@ -32,7 +32,7 @@ public class ChessBoard {
     private final HashMap<ChessPosition, ChessPiece> pieces = new HashMap<ChessPosition, ChessPiece>();
 
     public ChessBoard() {
-        resetBoard();
+
     }
 
     /**
