@@ -93,6 +93,10 @@ public class ChessPosition {
         return this.fileChar;
     }
 
+    public boolean isOnBoard() {
+        return (rank > 8 || rank < 1 || file > 8 || file < 1);
+    }
+
     @Override
     public String toString() {
         return fileChar + String.valueOf(rank);

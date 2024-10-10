@@ -142,8 +142,33 @@ public class ChessPiece {
         throw new RuntimeException("Not implemented");
     }
     private void removeFriendlyCaptures(ChessBoard board, Collection<ChessMove> moves, ChessPiece piece) {
-        moves.removeIf(move -> board.getPiece(move.getStartPosition()).getTeamColor() == piece.getTeamColor());
+        moves.removeIf(move ->
+                board.getPiece(move.getEndPosition()) != null &&
+                board.getPiece(move.getEndPosition()).getTeamColor() == piece.getTeamColor()
+        );
     }
+
+    private Collection<ChessMove> expandInDirection(ChessBoard board, ChessPosition position, int x, int y) {
+        if ((x != 1 && x != -1) || (y != 1 && y != -1)) throw new RuntimeException("Invalid direction values");
+        HashSet<ChessMove> moves = new HashSet<>();
+        int nextRank = position.getRank() + y;
+        int nextFile = position.getFile() + x;
+        ChessPosition nextPosition = new ChessPosition(nextRank, nextFile);
+        while (nextPosition.isOnBoard()) {
+            moves.add(new ChessMove(position))
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> positionsToMoves(ChessPosition start, Collection<ChessPosition> positions) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        for (ChessPosition end : positions) {
+            moves.add(new ChessMove(start, end, null));
+        }
+        return moves;
+    }
+
+
 
     @Override
     public String toString() {
