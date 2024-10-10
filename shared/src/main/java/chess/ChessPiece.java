@@ -11,7 +11,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private PieceType type;
+    private final PieceType type;
     private final ChessGame.TeamColor color;
 
     @Override
@@ -53,14 +53,8 @@ public class ChessPiece {
         return this.type;
     }
 
-    /**
-     * Sets the piece to a new piece type. Useful for promotion.
-     *
-     * @param newType The new piece type
-     */
-    public void changeType(PieceType newType) {
-        this.type = newType;
-    }
+
+
 
     /**
      * Calculates all the positions a chess piece can move to
@@ -74,11 +68,11 @@ public class ChessPiece {
         board.printBoard();
         Collection<ChessPosition> squares = switch (piece.getPieceType()) {
             case PAWN -> pawnSquares(board, position, piece);
-            case ROOK -> rookSquares(board, position, piece);
-            case KNIGHT -> knightSquares(board, position, piece);
-            case BISHOP -> bishopSquares(board, position, piece);
-            case QUEEN -> queenSquares(board, position, piece);
-            case KING -> kingSquares(board, position, piece);
+            case ROOK -> rookSquares(board, position);
+            case KNIGHT -> knightSquares(position);
+            case BISHOP -> bishopSquares(board, position);
+            case QUEEN -> queenSquares(board, position);
+            case KING -> kingSquares(position);
         };
         squares.removeIf(square -> !square.isOnBoard());
         removeFriendlyCaptures(board, squares, piece);
@@ -104,15 +98,17 @@ public class ChessPiece {
         if (board.getPiece(attackRight) != null) visibleSquares.add(attackRight);
         return visibleSquares;
     }
-    private Collection<ChessPosition> rookSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
+
+    private Collection<ChessPosition> rookSquares(ChessBoard board, ChessPosition position) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        visibleSquares.addAll(expandInDirection(board, position, 0,1 ));
-        visibleSquares.addAll(expandInDirection(board, position, 0,-1 ));
-        visibleSquares.addAll(expandInDirection(board, position, 1,0 ));
-        visibleSquares.addAll(expandInDirection(board, position, -1,0 ));
+        visibleSquares.addAll(expandInDirection(board, position, 0, 1));
+        visibleSquares.addAll(expandInDirection(board, position, 0, -1));
+        visibleSquares.addAll(expandInDirection(board, position, 1, 0));
+        visibleSquares.addAll(expandInDirection(board, position, -1, 0));
         return visibleSquares;
     }
-    private Collection<ChessPosition> knightSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
+
+    private Collection<ChessPosition> knightSquares(ChessPosition position) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
         int rank = position.getRank();
         int file = position.getFile();
@@ -126,19 +122,21 @@ public class ChessPiece {
         visibleSquares.add(new ChessPosition(rank - 2, file + 1));
         return visibleSquares;
     }
-    private Collection<ChessPosition> bishopSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
+
+    private Collection<ChessPosition> bishopSquares(ChessBoard board, ChessPosition position) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        visibleSquares.addAll(expandInDirection(board, position, 1,1 ));
-        visibleSquares.addAll(expandInDirection(board, position, 1,-1 ));
-        visibleSquares.addAll(expandInDirection(board, position, -1,1 ));
-        visibleSquares.addAll(expandInDirection(board, position, -1,-1 ));
+        visibleSquares.addAll(expandInDirection(board, position, 1, 1));
+        visibleSquares.addAll(expandInDirection(board, position, 1, -1));
+        visibleSquares.addAll(expandInDirection(board, position, -1, 1));
+        visibleSquares.addAll(expandInDirection(board, position, -1, -1));
         return visibleSquares;
     }
-    private Collection<ChessPosition> kingSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
+
+    private Collection<ChessPosition> kingSquares(ChessPosition position) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
         int rank = position.getRank();
         int file = position.getFile();
-        visibleSquares.add(new ChessPosition(rank -1, file - 1));
+        visibleSquares.add(new ChessPosition(rank - 1, file - 1));
         visibleSquares.add(new ChessPosition(rank, file - 1));
         visibleSquares.add(new ChessPosition(rank + 1, file - 1));
         visibleSquares.add(new ChessPosition(rank + 1, file));
@@ -148,28 +146,30 @@ public class ChessPiece {
         visibleSquares.add(new ChessPosition(rank - 1, file));
         return visibleSquares;
     }
-    private Collection<ChessPosition> queenSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
+
+    private Collection<ChessPosition> queenSquares(ChessBoard board, ChessPosition position) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        visibleSquares.addAll(expandInDirection(board, position, 0,1 ));
-        visibleSquares.addAll(expandInDirection(board, position, 0,-1 ));
-        visibleSquares.addAll(expandInDirection(board, position, 1,0 ));
-        visibleSquares.addAll(expandInDirection(board, position, -1,0 ));
-        visibleSquares.addAll(expandInDirection(board, position, 1,1 ));
-        visibleSquares.addAll(expandInDirection(board, position, 1,-1 ));
-        visibleSquares.addAll(expandInDirection(board, position, -1,1 ));
-        visibleSquares.addAll(expandInDirection(board, position, -1,-1 ));
+        visibleSquares.addAll(expandInDirection(board, position, 0, 1));
+        visibleSquares.addAll(expandInDirection(board, position, 0, -1));
+        visibleSquares.addAll(expandInDirection(board, position, 1, 0));
+        visibleSquares.addAll(expandInDirection(board, position, -1, 0));
+        visibleSquares.addAll(expandInDirection(board, position, 1, 1));
+        visibleSquares.addAll(expandInDirection(board, position, 1, -1));
+        visibleSquares.addAll(expandInDirection(board, position, -1, 1));
+        visibleSquares.addAll(expandInDirection(board, position, -1, -1));
         return visibleSquares;
     }
+
     private void removeFriendlyCaptures(ChessBoard board, Collection<ChessPosition> squares, ChessPiece piece) {
         squares.removeIf(square ->
                 board.getPiece(square) != null &&
-                board.getPiece(square).getTeamColor() == piece.getTeamColor()
+                        board.getPiece(square).getTeamColor() == piece.getTeamColor()
         );
     }
 
     private Collection<ChessPosition> expandInDirection(ChessBoard board, ChessPosition position, int x, int y) {
-        if ( x * x != 1 && y * y != 1 ) throw new RuntimeException("Invalid direction values");
-        if ( x * x > 1 || y * y > 1 ) throw new RuntimeException("Invalid direction values");
+        if (x * x != 1 && y * y != 1) throw new RuntimeException("Invalid direction values");
+        if (x * x > 1 || y * y > 1) throw new RuntimeException("Invalid direction values");
         HashSet<ChessPosition> spaces = new HashSet<>();
         int nextRank = position.getRank() + y;
         int nextFile = position.getFile() + x;
@@ -197,8 +197,7 @@ public class ChessPiece {
                     moves.add(new ChessMove(start, end, null));
                 }
             }
-        }
-        else {
+        } else {
             for (ChessPosition end : positions) {
                 moves.add(new ChessMove(start, end, null));
             }
@@ -208,7 +207,7 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return switch (type){
+        return switch (type) {
             case KING -> "K";
             case QUEEN -> "Q";
             case BISHOP -> "B";
@@ -219,7 +218,7 @@ public class ChessPiece {
     }
 
     public String symbol() {
-        return switch (type){
+        return switch (type) {
             case KING -> "♚";
             case QUEEN -> "♛";
             case BISHOP -> "♝";

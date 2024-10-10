@@ -29,7 +29,7 @@ public class ChessPosition {
     public ChessPosition(int rank, int file) {
         this.rank = rank;
         this.file = file;
-        switch (file){
+        switch (file) {
             case 1:
                 this.fileChar = 'A';
                 break;
@@ -66,6 +66,7 @@ public class ChessPosition {
     public int getRow() {
         return this.rank;
     }
+
     public int getRank() {
         return this.rank;
     }
@@ -78,6 +79,7 @@ public class ChessPosition {
     public int getColumn() {
         return this.file;
     }
+
     /**
      * @return which file this position is on.
      * 1 codes for the A file
@@ -85,6 +87,7 @@ public class ChessPosition {
     public int getFile() {
         return this.file;
     }
+
     /**
      * @return which file this position is on.
      * returns '?' in case of undefined file values like 0.

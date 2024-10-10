@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ChessMove {
     private final ChessPosition start;
     private final ChessPosition end;
-//    private final ChessPosition capturePosition; // Probably useful for en-passant
+    //    private final ChessPosition capturePosition; // Probably useful for en-passant
     private final ChessPiece.PieceType promotionPiece;
 
     @Override

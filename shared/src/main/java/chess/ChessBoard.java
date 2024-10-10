@@ -15,6 +15,7 @@ public class ChessBoard {
     private static final String DARK_PIECE = "\033[38;2;5;6;9m";
     private static final String LIGHT_PIECE = "\033[38;2;245;208;197m";
     private static final String RESET_CODE = "\033[0m";
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
