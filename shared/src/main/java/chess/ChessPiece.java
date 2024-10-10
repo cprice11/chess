@@ -72,7 +72,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         ChessPiece piece = board.getPiece(position);
         board.printBoard();
-        return switch (piece.getPieceType()) {
+        Collection<ChessMove> moves = switch (piece.getPieceType()) {
             case PAWN -> pawnMoves(board, position, piece);
             case ROOK -> rookMoves(board, position, piece);
             case KNIGHT -> knightMoves(board, position, piece);
@@ -80,6 +80,8 @@ public class ChessPiece {
             case QUEEN -> queenMoves(board, position, piece);
             case KING -> kingMoves(board, position, piece);
         };
+        removeFriendlyCaptures(board, moves, piece);
+        return moves;
     }
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
