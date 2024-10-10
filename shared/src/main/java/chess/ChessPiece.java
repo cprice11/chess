@@ -72,41 +72,39 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         ChessPiece piece = board.getPiece(position);
         board.printBoard();
-        Collection<ChessMove> moves = switch (piece.getPieceType()) {
-            case PAWN -> pawnMoves(board, position, piece);
-            case ROOK -> rookMoves(board, position, piece);
-            case KNIGHT -> knightMoves(board, position, piece);
-            case BISHOP -> bishopMoves(board, position, piece);
-            case QUEEN -> queenMoves(board, position, piece);
-            case KING -> kingMoves(board, position, piece);
+        Collection<ChessPosition> squares = switch (piece.getPieceType()) {
+            case PAWN -> pawnSquares(board, position, piece);
+            case ROOK -> rookSquares(board, position, piece);
+            case KNIGHT -> knightSquares(board, position, piece);
+            case BISHOP -> bishopSquares(board, position, piece);
+            case QUEEN -> queenSquares(board, position, piece);
+            case KING -> kingSquares(board, position, piece);
         };
-        removeFriendlyCaptures(board, moves, piece);
-        return moves;
+        removeFriendlyCaptures(board, squares, piece);
+        return positionsToMoves(position, squares);
     }
 
-    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+    private Collection<ChessPosition> pawnSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
     }
-    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+    private Collection<ChessPosition> rookSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
         visibleSquares.addAll(expandInDirection(board, position, 1,1 ));
         visibleSquares.addAll(expandInDirection(board, position, 1,-1 ));
         visibleSquares.addAll(expandInDirection(board, position, -1,1 ));
         visibleSquares.addAll(expandInDirection(board, position, -1,-1 ));
-        HashSet<ChessMove> moves = new HashSet<ChessMove>();
-
-        return moves;
+        return visibleSquares;
     }
-    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+    private Collection<ChessPosition> knightSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
     }
-    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+    private Collection<ChessPosition> bishopSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
     }
-    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+    private Collection<ChessPosition> kingSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
     }
-    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+    private Collection<ChessPosition> queenSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
     }
     private void removeFriendlyCaptures(ChessBoard board, Collection<ChessPosition> squares, ChessPiece piece) {
@@ -126,7 +124,7 @@ public class ChessPiece {
             spaces.add(nextPosition);
             if (board.getPiece(nextPosition) != null) break;
             nextRank += y;
-            nextRank += x;
+            nextFile += x;
             nextPosition = new ChessPosition(nextRank, nextFile);
         }
         return spaces;
@@ -139,8 +137,6 @@ public class ChessPiece {
         }
         return moves;
     }
-
-
 
     @Override
     public String toString() {
