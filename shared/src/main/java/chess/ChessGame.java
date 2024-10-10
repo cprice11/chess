@@ -14,9 +14,17 @@ import java.util.Map;
 public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
+    private boolean whiteShortCastleAllowed;
+    private boolean blackShortCastleAllowed;
+    private boolean whiteLongCastleAllowed;
+    private boolean blackLongCastleAllowed;
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
+        whiteShortCastleAllowed = true;
+        blackShortCastleAllowed = true;
+        whiteLongCastleAllowed = true;
+        blackLongCastleAllowed = true;
         turn = TeamColor.WHITE;
     }
 
@@ -70,6 +78,7 @@ public class ChessGame {
         board.removePiece(start);
         if (move.getPromotionPiece() != null) piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
         board.addPiece(move.getEndPosition(), piece);
+        turn = otherTeam(turn);
     }
 
     /**
