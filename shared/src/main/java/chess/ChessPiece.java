@@ -89,10 +89,10 @@ public class ChessPiece {
     }
     private Collection<ChessPosition> rookSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        visibleSquares.addAll(expandInDirection(board, position, 1,1 ));
-        visibleSquares.addAll(expandInDirection(board, position, 1,-1 ));
-        visibleSquares.addAll(expandInDirection(board, position, -1,1 ));
-        visibleSquares.addAll(expandInDirection(board, position, -1,-1 ));
+        visibleSquares.addAll(expandInDirection(board, position, 0,1 ));
+        visibleSquares.addAll(expandInDirection(board, position, 0,-1 ));
+        visibleSquares.addAll(expandInDirection(board, position, -1,0 ));
+        visibleSquares.addAll(expandInDirection(board, position, -1,0 ));
         return visibleSquares;
     }
     private Collection<ChessPosition> knightSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
@@ -115,7 +115,8 @@ public class ChessPiece {
     }
 
     private Collection<ChessPosition> expandInDirection(ChessBoard board, ChessPosition position, int x, int y) {
-        if ((x != 1 && x != -1) || (y != 1 && y != -1)) throw new RuntimeException("Invalid direction values");
+        if ( x * x != 1 && y * y != 1 ) throw new RuntimeException("Invalid direction values");
+        if ( x * x > 1 || y * y > 1 ) throw new RuntimeException("Invalid direction values");
         HashSet<ChessPosition> spaces = new HashSet<>();
         int nextRank = position.getRank() + y;
         int nextFile = position.getFile() + x;
