@@ -1,6 +1,9 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -12,7 +15,9 @@ public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
     public ChessGame() {
-
+        board = new ChessBoard();
+        board.resetBoard();
+        turn = TeamColor.WHITE;
     }
 
     /**
@@ -57,7 +62,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition start = move.getStartPosition();
+        ChessPiece piece = board.getPiece(start);
+        if (piece == null) throw new InvalidMoveException("No piece at location: " + move.getStartPosition());
+        if (piece.getTeamColor() != turn) throw new InvalidMoveException("Not " + piece.getTeamColor() + "'s turn.");
+        if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException(move + " is an invalid move");
+        board.removePiece(start);
+        if (move.getPromotionPiece() != null) piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+        board.addPiece(move.getEndPosition(), piece);
     }
 
     /**
@@ -67,7 +79,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return getSquaresThreatenedBy(otherTeam(teamColor)).contains(getKingPosition(teamColor));
     }
 
     /**
@@ -107,5 +119,29 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    private Collection<ChessPosition> getSquaresThreatenedBy(TeamColor color) {
+        HashSet<ChessPosition> threatenedSquares = new HashSet<>();
+        board.getPieces(color).forEach((position, piece) ->
+                piece.pieceMoves(board, position).forEach(move ->
+                        threatenedSquares.add(move.getEndPosition())
+                )
+        );
+        return threatenedSquares;
+    }
+
+    private ChessPosition getKingPosition(TeamColor color) {
+        HashMap<ChessPosition, ChessPiece> pieces = board.getPieces(color);
+        for(Map.Entry<ChessPosition, ChessPiece> position : board.getPieces(color).entrySet()) {
+            if (position.getValue().getPieceType() == ChessPiece.PieceType.KING) {
+                return position.getKey();
+            }
+        }
+        return null;
+    }
+
+    private TeamColor otherTeam(TeamColor color) {
+        return color == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 }
