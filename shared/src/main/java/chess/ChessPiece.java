@@ -96,7 +96,19 @@ public class ChessPiece {
         return visibleSquares;
     }
     private Collection<ChessPosition> knightSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        HashSet<ChessPosition> visibleSquares = new HashSet<>();
+        int rank = position.getRank();
+        int file = position.getFile();
+        visibleSquares.add(new ChessPosition(rank - 1, file - 2));
+        visibleSquares.add(new ChessPosition(rank + 1, file - 2));
+        visibleSquares.add(new ChessPosition(rank + 2, file - 1));
+        visibleSquares.add(new ChessPosition(rank + 2, file + 1));
+        visibleSquares.add(new ChessPosition(rank - 1, file + 2));
+        visibleSquares.add(new ChessPosition(rank + 1, file + 2));
+        visibleSquares.add(new ChessPosition(rank - 2, file - 1));
+        visibleSquares.add(new ChessPosition(rank - 2, file + 1));
+        visibleSquares.removeIf(square -> !square.isOnBoard());
+        return visibleSquares;
     }
     private Collection<ChessPosition> bishopSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
