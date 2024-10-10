@@ -4,7 +4,7 @@ This project demonstrates mastery of proper software design, client/server archi
 
 ## Phases
 
- - [ ] phase - 0
+ - [x] phase - 0
  - [ ] phase - 1
  - [ ] phase - 2
  - [ ] phase - 3
