@@ -71,6 +71,7 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         ChessPiece piece = board.getPiece(position);
+        board.printBoard();
         return switch (piece.getPieceType()) {
             case PAWN -> pawnMoves(board, position, piece);
             case ROOK -> rookMoves(board, position, piece);
@@ -92,9 +93,7 @@ public class ChessPiece {
             ChessPosition newPosition = new ChessPosition(i, currFile);
             ChessPiece existingPiece = board.getPiece(newPosition);
             if (existingPiece != null) {
-                if (piece.getTeamColor() != existingPiece.getTeamColor()) {
-                    moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-                }
+                moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
                 break;
             }
             moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
@@ -103,9 +102,7 @@ public class ChessPiece {
             ChessPosition newPosition = new ChessPosition(i, currFile);
             ChessPiece existingPiece = board.getPiece(newPosition);
             if (existingPiece != null) {
-                if (piece.getTeamColor() != existingPiece.getTeamColor()) {
-                    moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-                }
+                moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
                 break;
             }
             moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
@@ -114,9 +111,7 @@ public class ChessPiece {
             ChessPosition newPosition = new ChessPosition(currRank, i);
             ChessPiece existingPiece = board.getPiece(newPosition);
             if (existingPiece != null) {
-                if (piece.getTeamColor() != existingPiece.getTeamColor()) {
-                    moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-                }
+                moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
                 break;
             }
             moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
@@ -125,9 +120,7 @@ public class ChessPiece {
             ChessPosition newPosition = new ChessPosition(currRank, i);
             ChessPiece existingPiece = board.getPiece(newPosition);
             if (existingPiece != null) {
-                if (piece.getTeamColor() != existingPiece.getTeamColor()) {
-                    moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
-                }
+                moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
                 break;
             }
             moves.add(new ChessMove(position, newPosition, piece.getPieceType()));
