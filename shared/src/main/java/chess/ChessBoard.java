@@ -10,11 +10,11 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private static final String DARK_SQUARE = "[48;2;{r};{g};{b}m";
-    private static final String LIGHT_SQUARE = "[48;2;{r};{g};{b}m";
-    private static final String DARK_PIECE = "[48;2;{r};{g};{b}m";
-    private static final String LIGHT_PIECE = "[48;2;{r};{g};{b}m";
-    private static final String RESET_CODE = "[48;2;{r};{g};{b}m";
+    private static final String DARK_SQUARE = "\u001b[48;2;119;73;54m";
+    private static final String LIGHT_SQUARE = "\033[48;2;214;159;126m";
+    private static final String DARK_PIECE = "\033[38;2;5;6;9m";
+    private static final String LIGHT_PIECE = "\033[38;2;245;208;197m";
+    private static final String RESET_CODE = "\033[0m";
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,8 +65,8 @@ public class ChessBoard {
         addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(1, 3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(1, 4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
-        addPiece(new ChessPosition(1, 5), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(1, 4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(1, 5), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
         addPiece(new ChessPosition(1, 6), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
         addPiece(new ChessPosition(1, 7), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
@@ -74,8 +74,8 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(8, 2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(8, 3), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
-        addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
         addPiece(new ChessPosition(8, 6), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
         addPiece(new ChessPosition(8, 7), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
@@ -89,19 +89,22 @@ public class ChessBoard {
     public void printBoard() {
         StringBuilder boardString = new StringBuilder();
         ChessGame.TeamColor boardColor = ChessGame.TeamColor.WHITE;
-        boardString.append("    A  B  C  D  E  F  G  H ");
+        boardString.append("    A  B  C  D  E  F  G  H\n");
         for (int rank = BOARD_SIZE; rank > 0; rank--) {
             boardString.append(' ').append(rank).append(' ');
-            for (int file = 1; file < BOARD_SIZE; file++) {
+            for (int file = 1; file <= BOARD_SIZE; file++) {
                 if ((rank + file) % 2 == 0) boardString.append(LIGHT_SQUARE);
                 else boardString.append(DARK_SQUARE);
                 ChessPiece piece = pieces.get(new ChessPosition(rank, file));
-                String textColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? LIGHT_PIECE : DARK_PIECE;
                 if (piece == null) boardString.append("   ");
-                else boardString.append(" ").append(textColor).append(piece.symbol()).append(" ");
+                else {
+                    String textColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? LIGHT_PIECE : DARK_PIECE;
+                    boardString.append(" ").append(textColor).append(piece.symbol()).append(" ");
+                }
             }
             boardString.append(RESET_CODE).append(' ').append(rank).append('\n');
         }
+        boardString.append("    A  B  C  D  E  F  G  H");
         System.out.println(boardString);
     }
 }
