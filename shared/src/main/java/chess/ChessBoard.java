@@ -10,11 +10,24 @@ import java.util.*;
  */
 public class ChessBoard {
     private static final String DARK_SQUARE = "\u001b[48;2;119;73;54m";
+    private static final String PRIMARY = "\u001b[48;2;114;223;154m";
+    private static final String SECONDARY = "\u001b[48;2;114;223;209m";
+    private static final String TERNARY = "\u001b[48;2;114;183;223m";
+    private static final String ERROR = "\u001b[48;2;255;105;105m";
     private static final String LIGHT_SQUARE = "\033[48;2;214;159;126m";
     private static final String DARK_PIECE = "\033[38;2;5;6;9m";
     private static final String LIGHT_PIECE = "\033[38;2;245;208;197m";
     private static final String RESET_CODE = "\033[0m";
 
+
+    public static enum PAINT_COLOR {
+        DARK_SQUARE,
+        PRIMARY,
+        SECONDARY,
+        TERNARY,
+        ERROR,
+        LIGHT_SQUARE,
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -30,6 +43,7 @@ public class ChessBoard {
 
     private static final int BOARD_SIZE = 8; // no magic numbers, If adding alternate rule sets, refactor to be set.
     private final HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
+    private final HashMap<ChessPosition, PAINT_COLOR> paintedSquares = new HashMap<>();
 
     public ChessBoard() {
 
@@ -102,9 +116,14 @@ public class ChessBoard {
         for (int rank = BOARD_SIZE; rank > 0; rank--) {
             boardString.append(' ').append(rank).append(' ');
             for (int file = 1; file <= BOARD_SIZE; file++) {
-                if ((rank + file) % 2 == 0) boardString.append(DARK_SQUARE);
-                else boardString.append(LIGHT_SQUARE);
-                ChessPiece piece = pieces.get(new ChessPosition(rank, file));
+                ChessPosition position = new ChessPosition(rank, file);
+                PAINT_COLOR squareColor = paintedSquares.get(position);
+                if (squareColor == null) {
+                    if ((rank + file) % 2 == 0) squareColor = PAINT_COLOR.DARK_SQUARE;
+                    else squareColor = PAINT_COLOR.LIGHT_SQUARE;
+                }
+                boardString.append(getColorString(squareColor));
+                ChessPiece piece = pieces.get(position);
                 if (piece == null) boardString.append("   ");
                 else {
                     String textColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? LIGHT_PIECE : DARK_PIECE;
@@ -150,5 +169,24 @@ public class ChessBoard {
         }
         if (numBlanks != 0) row.append(numBlanks);
         return row.toString();
+    }
+
+    public void  paintSquare(ChessPosition square, PAINT_COLOR color ) {
+        paintedSquares.put(square, color);
+    }
+
+    public void clearPaint() {
+        paintedSquares.clear();
+    }
+
+    private String getColorString(PAINT_COLOR color) {
+        return switch (color) {
+            case DARK_SQUARE -> DARK_SQUARE;
+            case LIGHT_SQUARE -> LIGHT_SQUARE;
+            case PRIMARY -> PRIMARY;
+            case SECONDARY -> SECONDARY;
+            case TERNARY -> TERNARY;
+            case ERROR -> ERROR;
+        };
     }
 }
