@@ -63,7 +63,6 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         ChessPiece piece = board.getPiece(position);
-        board.printBoard();
         Collection<ChessPosition> squares = switch (piece.getPieceType()) {
             case PAWN -> pawnSquares(board, position, piece);
             case ROOK -> rookSquares(board, position);
@@ -75,6 +74,9 @@ public class ChessPiece {
         };
         squares.removeIf(square -> !square.isOnBoard());
         removeFriendlyCaptures(board, squares, piece);
+        board.paintSquare(position, ChessBoard.PAINT_COLOR.PRIMARY);
+        board.paintSquares(squares, ChessBoard.PAINT_COLOR.TERNARY);
+        board.printBoard();
         return positionsToMoves(position, squares, piece);
     }
 

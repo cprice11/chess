@@ -10,9 +10,10 @@ import java.util.*;
  */
 public class ChessBoard {
     private static final String DARK_SQUARE = "\u001b[48;2;119;73;54m";
-    private static final String PRIMARY = "\u001b[48;2;114;223;154m";
-    private static final String SECONDARY = "\u001b[48;2;114;223;209m";
-    private static final String TERNARY = "\u001b[48;2;114;183;223m";
+    private static final String WARN = "\u001b[48;2;225;228;74m";
+    private static final String PRIMARY = "\u001b[48;2;100;208;140m";
+    private static final String SECONDARY = "\u001b[48;2;100;208;209m";
+    private static final String TERNARY = "\u001b[48;2;100;140;209m";
     private static final String ERROR = "\u001b[48;2;255;105;105m";
     private static final String LIGHT_SQUARE = "\033[48;2;214;159;126m";
     private static final String DARK_PIECE = "\033[38;2;5;6;9m";
@@ -20,13 +21,15 @@ public class ChessBoard {
     private static final String RESET_CODE = "\033[0m";
 
 
-    public static enum PAINT_COLOR {
+    public enum PAINT_COLOR {
         DARK_SQUARE,
+        LIGHT_SQUARE,
+        WARN,
         PRIMARY,
         SECONDARY,
         TERNARY,
         ERROR,
-        LIGHT_SQUARE,
+
     }
     @Override
     public boolean equals(Object o) {
@@ -171,6 +174,12 @@ public class ChessBoard {
         return row.toString();
     }
 
+    public void  paintSquares(Collection<ChessPosition> squares, PAINT_COLOR color ) {
+        for (ChessPosition square : squares) {
+            paintSquare(square, color);
+        }
+    }
+
     public void  paintSquare(ChessPosition square, PAINT_COLOR color ) {
         paintedSquares.put(square, color);
     }
@@ -183,6 +192,7 @@ public class ChessBoard {
         return switch (color) {
             case DARK_SQUARE -> DARK_SQUARE;
             case LIGHT_SQUARE -> LIGHT_SQUARE;
+            case WARN -> WARN;
             case PRIMARY -> PRIMARY;
             case SECONDARY -> SECONDARY;
             case TERNARY -> TERNARY;
