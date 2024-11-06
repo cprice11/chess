@@ -1,9 +1,6 @@
 package chess;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -73,11 +70,33 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         // If game over throw
         ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
         ChessPiece piece = board.getPiece(start);
         if (piece == null) throw new InvalidMoveException("No piece at location: " + move.getStartPosition());
-        if (piece.getTeamColor() != turn) throw new InvalidMoveException("Not " + piece.getTeamColor() + "'s turn.");
+        TeamColor teamColor = piece.getTeamColor();
+        if (teamColor != turn) throw new InvalidMoveException("Not " + teamColor + "'s turn.");
         if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException(move + " is an invalid move");
-        // IF castle and castle flags set and spaces are not threatened Castle
+        Collection<ChessPosition> threatenedPositions = getSquaresThreatenedBy(piece.getTeamColor());
+        int homeRank = (teamColor == TeamColor.WHITE) ? 1 : 8;
+        if (move.isCastleLong || move.isCastleShort) {
+            List<ChessPosition> kingsPositions = new ArrayList<>();
+            kingsPositions.add(start);
+            kingsPositions.add(end);
+            if (move.isCastleLong) {
+                kingsPositions.add(new ChessPosition(homeRank, 3));
+                kingsPositions.add(new ChessPosition(homeRank, 4));
+            } else {
+                kingsPositions.add(new ChessPosition(homeRank, 6));
+            }
+            Collection<ChessPosition> overlap = new ArrayList<>();
+            kingsPositions.forEach((ChessPosition position) -> {
+                if (threatenedPositions.contains(position)) overlap.add(position);
+            });
+            if (overlap.isEmpty()) throw new InvalidMoveException("Cannot castle through check");
+        }
+        if (move.isLeap) {
+            board.addPiece(move.enPassant, new ChessPiece(teamColor, ChessPiece.PieceType.EN_PASSANT));
+        }
         // If pawn leap set enpassant square
         // IF in check
         //  -   check if move gets out

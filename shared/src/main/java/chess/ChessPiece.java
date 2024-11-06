@@ -34,7 +34,7 @@ public class ChessPiece {
      * The various different chess piece options
      */
     public enum PieceType {
-        KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN
+        KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN, EN_PASSANT
     }
 
     /**
@@ -71,6 +71,7 @@ public class ChessPiece {
             case BISHOP -> bishopSquares(board, position);
             case QUEEN -> queenSquares(board, position);
             case KING -> kingSquares(position);
+            case EN_PASSANT -> new HashSet<ChessPosition>();
         };
         squares.removeIf(square -> !square.isOnBoard());
         removeFriendlyCaptures(board, squares, piece);
@@ -213,6 +214,7 @@ public class ChessPiece {
             case KNIGHT -> "N";
             case ROOK -> "R";
             case PAWN -> "P";
+            case EN_PASSANT -> null;
         };
     }
 
@@ -224,6 +226,7 @@ public class ChessPiece {
             case KNIGHT -> "♞";
             case ROOK -> "♜";
             case PAWN -> "♟";
+            case EN_PASSANT -> null;
         };
     }
 

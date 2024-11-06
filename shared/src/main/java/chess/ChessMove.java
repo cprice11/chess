@@ -13,6 +13,10 @@ public class ChessMove {
     private final ChessPosition end;
     //    private final ChessPosition capturePosition; // Probably useful for en-passant
     private final ChessPiece.PieceType promotionPiece;
+    public boolean isCastleShort = false;
+    public boolean isCastleLong = false;
+    public boolean isLeap = false;
+    public ChessPosition enPassant = null;
 
     @Override
     public boolean equals(Object o) {
