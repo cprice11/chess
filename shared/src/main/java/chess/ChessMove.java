@@ -11,14 +11,21 @@ import java.util.Objects;
 public class ChessMove {
     private final ChessPosition start;
     private final ChessPosition end;
+    private final ChessPiece piece;
+    private final ChessGame.TeamColor team;
+    private final boolean isCapture;
+    private final ChessPiece capturedPiece;
+    // Pawn specific
+    private final boolean isLeap;
+    private ChessPosition positionSkippedByLeap;
+    private ChessPosition positionBeingCapturedByEnPassant;
+    private final boolean isPromotion;
     private final ChessPiece.PieceType promotionPiece;
-    public final boolean isCastle;
-    public final boolean isCastleShort;
-    public final boolean isCastleLong;
-    public final boolean isLeap;
-    public final boolean isPromotion;
-    public final boolean isCapture;
-    public ChessPosition enPassant;
+    // King specific
+    private final boolean isCastle;
+    private final boolean isCastleShort;
+    private final boolean isCastleLong;
+    private final ChessPosition castlingRook;
 
     @Override
     public boolean equals(Object o) {
@@ -33,71 +40,81 @@ public class ChessMove {
         return Objects.hash(start, end, promotionPiece);
     }
 
-//    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
-//                     ChessPiece.PieceType promotionPiece) {
-//        start = startPosition;
-//        end = endPosition;
-//        this.promotionPiece = promotionPiece;
-//    }
-
     private ChessMove(MoveBuilder builder) {
         this.start = builder.start;
         this.end = builder.end;
+        this.piece = builder.piece;
+        this.team = builder.team;
+        this.isCapture = builder.isCapture;
+        this.capturedPiece = builder.capturedPiece;
+        // Pawn specific
+        this.isLeap = builder.isLeap;
+        this.positionSkippedByLeap = builder.positionSkippedByLeap;
+        this.positionBeingCapturedByEnPassant = builder.postitionBeingCapturedByEnPassant;
+        this.isPromotion = builder.isPromotion;
         this.promotionPiece = builder.promotionPiece;
+        // King specific
+        this.isCastle = builder.isCastle;
         this.isCastleShort = builder.isCastleShort;
         this.isCastleLong = builder.isCastleLong;
-        this.isCastle = builder.isCastle;
-        this.isLeap = builder.isLeap;
-        this.isPromotion = builder.isPromotion;
-        this.isCapture = builder.isCapture;
-        this.enPassant = builder.enPassant;
+        this.castlingRook = builder.castlingRook;
     }
 
     public static class MoveBuilder {
         private ChessPosition start;
         private ChessPosition end;
+        private ChessPiece piece;
+        private ChessGame.TeamColor team;
+        private boolean isCapture = false;
+        private ChessPiece capturedPiece = null;
+        // Pawn specific
+        private boolean isLeap = false;
+        private ChessPosition positionSkippedByLeap = null;
+        private ChessPosition postitionBeingCapturedByEnPassant = null;
+        private boolean isPromotion = false;
         private ChessPiece.PieceType promotionPiece;
-        public boolean isCastleShort = false;
-        public boolean isCastleLong = false;
-        public boolean isCastle = false;
-        public boolean isLeap = false;
-        public boolean isPromotion = false;
-        public boolean isCapture = false;
-        public ChessPosition enPassant = null;
+        // King specific
+        private boolean isCastle = false;
+        private boolean isCastleShort = false;
+        private boolean isCastleLong = false;
+        private ChessPosition castlingRook = null;
 
-        public MoveBuilder start(ChessPosition position) {
-            this.start = position;
-            return this;
+        public MoveBuilder(ChessPiece piece, ChessPosition start, ChessPosition end){
+            this.piece = piece;
+            this.team = piece.getTeamColor();
+            this.start = start;
+            this.end = end;
         }
-        public MoveBuilder end(ChessPosition position) {
-            this.end = position;
-            return this;
-        }
+
         public MoveBuilder promotion(ChessPiece.PieceType piece) {
             this.promotionPiece = piece;
             this.isPromotion = true;
             return this;
         }
-        public MoveBuilder isCastleShort() {
+        public MoveBuilder castlesShortWith(ChessPosition castlingRook) {
             this.isCastleShort = true;
             this.isCastle = true;
+            this.castlingRook = castlingRook;
             return this;
         }
-        public MoveBuilder isCastleLong() {
+        public MoveBuilder castlesLongWith(ChessPosition castlingRook) {
             this.isCastleLong = true;
             this.isCastle = true;
+            this.castlingRook  = castlingRook;
             return this;
         }
-        public MoveBuilder isLeap() {
+        public MoveBuilder leap(ChessPosition leapedSquare) {
+            this.positionSkippedByLeap = leapedSquare;
             this.isLeap = true;
             return this;
         }
-        public MoveBuilder isCapture() {
+        public MoveBuilder capture(ChessPiece capture) {
             this.isCapture = true;
+            this.capturedPiece = capture;
             return this;
         }
         public MoveBuilder pieceCapturedByEnPassant(ChessPosition position) {
-            this.enPassant = position;
+            this.postitionBeingCapturedByEnPassant = position;
             return this;
         }
 
@@ -129,6 +146,8 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
     }
+
+
 
     @Override
     public String toString() {
