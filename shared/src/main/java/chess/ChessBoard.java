@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -117,6 +115,8 @@ public class ChessBoard {
         }
         boardString.append("    A  B  C  D  E  F  G  H");
         System.out.println(boardString);
+//        System.out.println(getFENBoard());
+
     }
 
     public HashMap<ChessPosition, ChessPiece> getPieces(ChessGame.TeamColor color) {
@@ -125,5 +125,30 @@ public class ChessBoard {
                     if (piece.getTeamColor() == color) teamPositions.put(position, piece);
                 });
         return teamPositions;
+    }
+
+    public String getFENBoard() {
+        // Join each row with a '/'
+        List<String> rows = new ArrayList<>(8);
+        for (int i = BOARD_SIZE; i > 0; i--) {
+            rows.add(getFENRow(i));
+        }
+        return String.join("/",rows);
+    }
+
+    public String getFENRow(int rank) {
+        int numBlanks = 0;
+        StringBuilder row = new StringBuilder();
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            ChessPiece piece = getPiece(new ChessPosition(rank, i  + 1));
+            if (piece == null) numBlanks++;
+            else {
+                if (numBlanks != 0) row.append(numBlanks);
+                numBlanks = 0;
+                row.append(piece.getChar());
+            }
+        }
+        if (numBlanks != 0) row.append(numBlanks);
+        return row.toString();
     }
 }

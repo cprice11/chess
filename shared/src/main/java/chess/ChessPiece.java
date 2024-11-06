@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents a single chess piece
@@ -227,5 +225,11 @@ public class ChessPiece {
             case ROOK -> "♜";
             case PAWN -> "♟";
         };
+    }
+
+    public char getChar() {
+        String letter = toString();
+        letter = (color == ChessGame.TeamColor.WHITE) ? letter.toUpperCase() : letter.toLowerCase();
+        return letter.charAt(0);
     }
 }
