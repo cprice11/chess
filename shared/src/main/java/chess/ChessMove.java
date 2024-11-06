@@ -11,12 +11,14 @@ import java.util.Objects;
 public class ChessMove {
     private final ChessPosition start;
     private final ChessPosition end;
-    //    private final ChessPosition capturePosition; // Probably useful for en-passant
     private final ChessPiece.PieceType promotionPiece;
-    public boolean isCastleShort = false;
-    public boolean isCastleLong = false;
-    public boolean isLeap = false;
-    public ChessPosition enPassant = null;
+    public final boolean isCastle;
+    public final boolean isCastleShort;
+    public final boolean isCastleLong;
+    public final boolean isLeap;
+    public final boolean isPromotion;
+    public final boolean isCapture;
+    public ChessPosition enPassant;
 
     @Override
     public boolean equals(Object o) {
@@ -31,12 +33,77 @@ public class ChessMove {
         return Objects.hash(start, end, promotionPiece);
     }
 
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
-                     ChessPiece.PieceType promotionPiece) {
-        start = startPosition;
-        end = endPosition;
-        this.promotionPiece = promotionPiece;
+//    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
+//                     ChessPiece.PieceType promotionPiece) {
+//        start = startPosition;
+//        end = endPosition;
+//        this.promotionPiece = promotionPiece;
+//    }
 
+    private ChessMove(MoveBuilder builder) {
+        this.start = builder.start;
+        this.end = builder.end;
+        this.promotionPiece = builder.promotionPiece;
+        this.isCastleShort = builder.isCastleShort;
+        this.isCastleLong = builder.isCastleLong;
+        this.isCastle = builder.isCastle;
+        this.isLeap = builder.isLeap;
+        this.isPromotion = builder.isPromotion;
+        this.isCapture = builder.isCapture;
+        this.enPassant = builder.enPassant;
+    }
+
+    public static class MoveBuilder {
+        private ChessPosition start;
+        private ChessPosition end;
+        private ChessPiece.PieceType promotionPiece;
+        public boolean isCastleShort = false;
+        public boolean isCastleLong = false;
+        public boolean isCastle = false;
+        public boolean isLeap = false;
+        public boolean isPromotion = false;
+        public boolean isCapture = false;
+        public ChessPosition enPassant = null;
+
+        public MoveBuilder start(ChessPosition position) {
+            this.start = position;
+            return this;
+        }
+        public MoveBuilder end(ChessPosition position) {
+            this.end = position;
+            return this;
+        }
+        public MoveBuilder promotion(ChessPiece.PieceType piece) {
+            this.promotionPiece = piece;
+            this.isPromotion = true;
+            return this;
+        }
+        public MoveBuilder isCastleShort() {
+            this.isCastleShort = true;
+            this.isCastle = true;
+            return this;
+        }
+        public MoveBuilder isCastleLong() {
+            this.isCastleLong = true;
+            this.isCastle = true;
+            return this;
+        }
+        public MoveBuilder isLeap() {
+            this.isLeap = true;
+            return this;
+        }
+        public MoveBuilder isCapture() {
+            this.isCapture = true;
+            return this;
+        }
+        public MoveBuilder pieceCapturedByEnPassant(ChessPosition position) {
+            this.enPassant = position;
+            return this;
+        }
+
+        public ChessMove build() {
+            return new ChessMove(this);
+        }
     }
 
     /**
@@ -67,4 +134,5 @@ public class ChessMove {
     public String toString() {
         return start + "-" + end;
     }
+
 }
