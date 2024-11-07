@@ -60,35 +60,31 @@ end
 
 group #green Logout #white
 rbox over Server,Services:<wordwrap:30>Logs out the user represented by the authToken.
-A -> Server: **[DELETE]**\n/session\nauthToken
+A -> Server: **[DELETE]**\n/session\n{authToken}
 box over Services:User
 activate Services #8b8db3
 Server -> Services:logout(authToken)
 box over Services:Auth
 activate Services #b6dbb7
 Services -> DataAccessException: verify(authToken)
-DataAccessException -> Database:SELECT * FROM auth \nWHERE token=authToken
+DataAccessException -> Database:SELECT * FROM Auth \nWHERE token=authToken
 note left of DataAccessException:401 on fail
-space
 DataAccessException --> Services:AuthData
-deactivate Services
 entryspacing 0.5
-space
-activate Services #b6dbb7
 Services -> DataAccessException: deleteAuth(authToken)
 DataAccessException -> Database:DELETE FROM Auth \nWHERE authToken=<authToken>
 DataAccessException --> Services:
 deactivate Services
 Services --> Server:
 deactivate Services
-Server --> A:**[200]**\n{}\n**[401]**\n{ "message": "Error: unauthorized" }\n**[500]**{ "message": "Error: (description of error)" }
+Server --> A:**[200]**\n{}\n**[401]**\n{ "message": "Error: unauthorized" }\n**[500]**\n{ "message": "Error: (description of error)" }
 end
 
 
 
 group #red List Games #white
 rbox over Server,Services:Gives a list of all games.
-A -> Server: **[GET]**\n/game\nauthToken
+A -> Server: **[GET]**\n/game\n{authToken}
 box over Services:Game
 activate Services #pink
 Server -> Services: getGames(authToken)
