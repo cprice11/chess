@@ -71,8 +71,6 @@ public class ChessPiece {
             case EN_PASSANT -> new HashSet<ChessMove>();
             default -> new HashSet<ChessMove>();
         };
-//        moves.removeIf(move -> !move.getEndPosition().isOnBoard()); // is this only for the knight?
-//        removeFriendlyCaptures(board, moves, piece);
         board.paintMoves(moves);
         board.printBoard();
         board.clearPaint();
@@ -133,7 +131,8 @@ public class ChessPiece {
         for (ChessPosition square : visibleSquares) {
             if (square.isOnBoard()) {
                 ChessMove.MoveBuilder move = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
-                availableMoves.add(handleCaptures(move, board).build());
+                ChessMove.MoveBuilder handledMove = handleCaptures(move, board);
+                if (handledMove != null) availableMoves.add(handledMove.build());
             }
         }
         return availableMoves;
@@ -155,7 +154,8 @@ public class ChessPiece {
         for (ChessPosition square : visibleSquares) {
             if (square.isOnBoard()) {
                 ChessMove.MoveBuilder move = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
-                availableMoves.add(handleCaptures(move, board).build());
+                ChessMove.MoveBuilder handledMove = handleCaptures(move, board);
+                if (handledMove != null) availableMoves.add(handledMove.build());
             }
         }
         return availableMoves;
@@ -178,7 +178,8 @@ public class ChessPiece {
         HashSet<ChessMove> availableMoves = new HashSet<>();
         for (ChessPosition square : visibleSquares) {
             ChessMove.MoveBuilder move = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
-            availableMoves.add(handleCaptures(move, board).build());
+            ChessMove.MoveBuilder handledMove = handleCaptures(move, board);
+            if (handledMove != null) availableMoves.add(handledMove.build());
         }
         return availableMoves;
     }
@@ -195,7 +196,7 @@ public class ChessPiece {
             ChessPiece attackedPiece = board.getPiece(move.end);
             if (attackedPiece == null) return move;
             else if (isEnemy(attackedPiece)) return move.capture(attackedPiece);
-            return move;
+            return null;
     }
 
     private Collection<ChessPosition> expandInDirection(ChessBoard board, ChessPosition position, int x, int y) {
