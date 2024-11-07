@@ -16,7 +16,9 @@ This project demonstrates mastery of proper software design, client/server archi
 ## Diagrams
 <details>
   <summary><strong>Server Class Structure Diagram</strong></summary>
+ 
 ![Class structure from module 2 specs](https://github.com/softwareconstruction240/softwareconstruction/raw/main/chess/2-server-design/server-class-structure.png)
+
 </details>
 
 <details>
