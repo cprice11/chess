@@ -327,10 +327,6 @@ public class ChessBoard {
         return (color == ChessGame.TeamColor.WHITE) ? whiteCanCastleLong : blackCanCastleLong;
     }
 
-    public ChessPosition getEnPassantTarget() {
-        return enPassantTarget;
-    }
-
     public void setEnPassantTarget(ChessPosition passedSquare) {
         enPassantTarget = passedSquare;
     }
