@@ -172,34 +172,52 @@ end
 
 
 group #yellow Join Game #black
-rbox over Server,Services:<wordwrap:30>Verifies that the specified game exists, and, if a color is specified, adds the caller as the requested color to the game. If no color is specified the user is joined as an observer. This request is idempotent.
-A -> Server: **[PUT]**\n/game\nauthToken\n{PlayerColor, gameID}
-box over Services: Game
-activate Services #pink
-Server -> Services:joinGame(authToken, playerColor, gameID)
-box over Services: Auth
-activate Services #b6dbb7
-Services -> DataAccessException:verify(authToken)
-DataAccessException -> Database:SELECT username FROM Auth \nWHERE authToken=<authToken>
-note left of DataAccessException:401 on fail
-DataAccessException --> Services:AuthData
-deactivate Services
-Services -> DataAccessException: getGame(gameID)
-DataAccessException -> Database:SELECT * FROM Games WHERE gameID=<gameID>
-DataAccessException --> Services:Game
-note left of Services:403 if taken
-Services -> DataAccessException:startGame(gameID, username, color)
-DataAccessException -> Database:UPDATE Games \nSET whiteUsername*=<username>,\nWHERE gameID=<gameID>
-DataAccessException --> Services:
-Services --> Server:
-deactivate Services
-Server --> A:**[200]**
+    rbox over A, Server:<wordwrap:40>Verifies that the specified game exists, and, if a color is specified, adds the caller as the requested color to the game. If no color is specified the user is joined as an observer. This request is idempotent.
+    group #navy PUT #white
+        box right of A:/game\nauthToken\n{PlayerColor, gameID}
+    end
+    A -> Server:
+    box over Services: Game
+    activate Services #pink
+    Server -> Services:joinGame(authToken, playerColor, gameID)
+    box over Services: Auth
+    activate Services #b6dbb7
+    Services -> DataAccessException:verify(authToken)
+    DataAccessException -> db:SELECT username FROM Auth \nWHERE authToken=<authToken>
+    note left of DataAccessException:401 on fail
+    DataAccessException --> Services:AuthData
+    deactivate Services
+    Services -> DataAccessException: getGame(gameID)
+    DataAccessException -> db:SELECT * FROM Games WHERE gameID=<gameID>
+    DataAccessException --> Services:Game
+    note left of Services:403 if taken
+    Services -> DataAccessException:startGame(gameID, username, color)
+    DataAccessException -> db:UPDATE Games \nSET whiteUsername*=<username>,\nWHERE gameID=<gameID>
+    DataAccessException --> Services:
+    Services --> Server:
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{}
+    end
+    group #a00000 400 #white
+        box right of A:{ "message": "Error: bad request" }
+    end
+    group #a00000 401 #white
+        box right of A:{ "message": "Error: unauthorized" }
+    end
+    group #a00000 403 #white
+        box right of A:{ "message": "Error: already taken" }
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
 end
 
 
 
 group #gray Clear application #white
-    rbox over A, Server:<wordwrap:30>Clears the database. Removes all users, games, and authTokens.
+    rbox over A, Server:<wordwrap:40>Clears the database. Removes all users, games, and authTokens.
     group #navy DELETE #white
         box right of A:/db
     end
