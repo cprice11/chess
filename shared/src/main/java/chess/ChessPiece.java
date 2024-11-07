@@ -65,12 +65,12 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(position);
         Collection<ChessMove> moves = switch (piece.getPieceType()) {
             case PAWN -> pawnMoves(board, position, piece);
-//            case ROOK -> rookSquares(board, position);
+            case ROOK -> slidingPieceMoves(board, position, piece, true, false);
 //            case KNIGHT -> knightSquares(position);
-//            case BISHOP -> bishopSquares(board, position);
-//            case QUEEN -> queenSquares(board, position);
+            case BISHOP -> slidingPieceMoves(board, position, piece, false, true);
+            case QUEEN -> slidingPieceMoves(board, position, piece, true,true);
 //            case KING -> kingSquares(position);
-//            case EN_PASSANT -> new HashSet<ChessPosition>();
+            case EN_PASSANT -> new HashSet<ChessMove>();
             default -> new HashSet<ChessMove>();
         };
 //        moves.removeIf(move -> !move.getEndPosition().isOnBoard()); // is this only for the knight?
@@ -87,8 +87,8 @@ public class ChessPiece {
         int file = position.getFile();
         int direction = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
         int promotionRank = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 8 : 1;
-        ChessPosition forward = new ChessPosition(rank + direction, file);
         // forward
+        ChessPosition forward = new ChessPosition(rank + direction, file);
         if (board.getPiece(forward) == null) {
             visibleSquares.add(new ChessMove.MoveBuilder(position, forward, null));
             ChessPosition leap = new ChessPosition(rank + 2 * direction, file);
@@ -104,6 +104,7 @@ public class ChessPiece {
         if (attackedLeft != null && isEnemy(attackedLeft)) visibleSquares.add(new ChessMove.MoveBuilder(position, attackLeft).capture(attackedLeft));
         if (attackedRight != null && isEnemy(attackedRight)) visibleSquares.add(new ChessMove.MoveBuilder(position, attackRight).capture(attackedRight));
         HashSet<ChessMove> availableMoves = new HashSet<>();
+        // add promotion options
         for (ChessMove.MoveBuilder move : visibleSquares) {
             int endRank = move.end.getRank();
             if (endRank == promotionRank) {
@@ -115,16 +116,6 @@ public class ChessPiece {
             else availableMoves.add(move.build());
         }
         return availableMoves;
-    }
-
-    // TODO Add castling squares
-    private Collection<ChessPosition> rookSquares(ChessBoard board, ChessPosition position) {
-        HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        visibleSquares.addAll(expandInDirection(board, position, 0, 1));
-        visibleSquares.addAll(expandInDirection(board, position, 0, -1));
-        visibleSquares.addAll(expandInDirection(board, position, 1, 0));
-        visibleSquares.addAll(expandInDirection(board, position, -1, 0));
-        return visibleSquares;
     }
 
     private Collection<ChessPosition> knightSquares(ChessPosition position) {
@@ -139,15 +130,6 @@ public class ChessPiece {
         visibleSquares.add(new ChessPosition(rank + 1, file + 2));
         visibleSquares.add(new ChessPosition(rank - 2, file - 1));
         visibleSquares.add(new ChessPosition(rank - 2, file + 1));
-        return visibleSquares;
-    }
-
-    private Collection<ChessPosition> bishopSquares(ChessBoard board, ChessPosition position) {
-        HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        visibleSquares.addAll(expandInDirection(board, position, 1, 1));
-        visibleSquares.addAll(expandInDirection(board, position, 1, -1));
-        visibleSquares.addAll(expandInDirection(board, position, -1, 1));
-        visibleSquares.addAll(expandInDirection(board, position, -1, -1));
         return visibleSquares;
     }
 
@@ -166,17 +148,28 @@ public class ChessPiece {
         return visibleSquares;
     }
 
-    private Collection<ChessPosition> queenSquares(ChessBoard board, ChessPosition position) {
+    private Collection<ChessMove> slidingPieceMoves(ChessBoard board, ChessPosition startingPosition, ChessPiece piece, boolean orthoganal, boolean diagonal){
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        visibleSquares.addAll(expandInDirection(board, position, 0, 1));
-        visibleSquares.addAll(expandInDirection(board, position, 0, -1));
-        visibleSquares.addAll(expandInDirection(board, position, 1, 0));
-        visibleSquares.addAll(expandInDirection(board, position, -1, 0));
-        visibleSquares.addAll(expandInDirection(board, position, 1, 1));
-        visibleSquares.addAll(expandInDirection(board, position, 1, -1));
-        visibleSquares.addAll(expandInDirection(board, position, -1, 1));
-        visibleSquares.addAll(expandInDirection(board, position, -1, -1));
-        return visibleSquares;
+        if (orthoganal) {
+            visibleSquares.addAll(expandInDirection(board, startingPosition, 0, 1));
+            visibleSquares.addAll(expandInDirection(board, startingPosition, 0, -1));
+            visibleSquares.addAll(expandInDirection(board, startingPosition, 1, 0));
+            visibleSquares.addAll(expandInDirection(board, startingPosition, -1, 0));
+        }
+        if (diagonal) {
+            visibleSquares.addAll(expandInDirection(board, startingPosition, 1, 1));
+            visibleSquares.addAll(expandInDirection(board, startingPosition, 1, -1));
+            visibleSquares.addAll(expandInDirection(board, startingPosition, -1, 1));
+            visibleSquares.addAll(expandInDirection(board, startingPosition, -1, -1));
+        }
+        HashSet<ChessMove> availableMoves = new HashSet<>();
+        for (ChessPosition square : visibleSquares) {
+            ChessMove.MoveBuilder move  = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
+            ChessPiece attackedPiece = board.getPiece(square);
+            if (attackedPiece == null) availableMoves.add(move.build());
+            else if (isEnemy(attackedPiece)) availableMoves.add(move.capture(attackedPiece).build());
+        }
+        return availableMoves;
     }
 
     private boolean isFriendly(ChessPiece piece) {
@@ -187,10 +180,11 @@ public class ChessPiece {
         return !isFriendly(piece);
     }
 
-    private void removeFriendlyCaptures(Collection<ChessMove> moves) {
+    private Collection<ChessMove> removeFriendlyCaptures(Collection<ChessMove> moves) {
         moves.removeIf(move ->
                 move.isCapture() && move.getCapturedPiece().getTeamColor() == move.getTeam()
         );
+        return moves;
     }
 
     private Collection<ChessPosition> expandInDirection(ChessBoard board, ChessPosition position, int x, int y) {
@@ -209,35 +203,6 @@ public class ChessPiece {
         }
         return spaces;
     }
-
-//    private Collection<ChessMove> positionsToMoves(ChessPosition start, Collection<ChessPosition> positions, ChessPiece piece) {
-//        HashSet<ChessMove.MoveBuilder> movesToBuild = new HashSet<>();
-//        if (piece.getPieceType() == PieceType.PAWN) {
-//            for (ChessPosition end : positions) {
-//                if (end.getRank() == 8 || end.getRank() == 1) {
-//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end).promotion(PieceType.ROOK));
-//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end).promotion(PieceType.KNIGHT));
-//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end).promotion(PieceType.BISHOP));
-//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end).promotion(PieceType.QUEEN));
-//                } else {
-//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end));
-//                }
-//            }
-//        } else if (piece.getPieceType() == PieceType.KING) {
-//            // If king on home square
-//            if ((start.getFile() == 5) &&
-//
-//                       ( (piece.getTeamColor() == ChessGame.TeamColor.WHITE && start.getRank() == 1) ||
-//                                (piece.getTeamColor() == ChessGame.TeamColor.WHITE && start.getRank() == 1))
-//            ) { }
-//
-//            for (ChessPosition end : positions) {
-//                movesToBuild.add(new ChessMove.MoveBuilder().start(start).end(end));
-//            }
-//        }
-//
-//        return movesToBuild;
-//    }
 
     @Override
     public String toString() {
