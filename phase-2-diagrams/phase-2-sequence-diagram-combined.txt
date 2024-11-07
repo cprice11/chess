@@ -86,11 +86,9 @@ group #green Logout #white
         box right of A:/session\n{authToken}
     end
     A -> Server:
-    box over Services:User
-    activate Services #8b8db3
-    Server -> Services:logout(authToken)
     box over Services:Auth
     activate Services #b6dbb7
+    Server -> Services:logout(authToken)
     Services -> DataAccessException: verify(authToken)
     DataAccessException -> db:SELECT * FROM Auth \nWHERE token=authToken
     note left of DataAccessException:401 on fail
@@ -98,7 +96,6 @@ group #green Logout #white
     Services -> DataAccessException: deleteAuth(authToken)
     DataAccessException -> db:DELETE FROM Auth \nWHERE authToken=<authToken>
     DataAccessException --> Services:
-    deactivate Services
     Services --> Server:
     deactivate Services
     Server --> A:
@@ -145,9 +142,8 @@ group #red List Games #white
     end
 end
 
-
 group #purple Create Game #white
-    rbox over Server, Services:<wordwrap:30>Creates a new game.
+    rbox over A, Server:<wordwrap:30>Creates a new game.
     group #navy POST #white
         box right of A:/game\nauthToken\n{gameName}
     end
@@ -181,7 +177,6 @@ group #purple Create Game #white
         box right of A: { "message": "Error: (description of error)" }
     end
 end
-
 
 group #yellow Join Game #black
     rbox over A, Server:<wordwrap:40>Verifies that the specified game exists, and, if a color is specified, adds the caller as the requested color to the game. If no color is specified the user is joined as an observer. This request is idempotent.
