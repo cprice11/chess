@@ -38,13 +38,7 @@ public class ChessBoard {
     private int fullMoveNumber = 1;
 
     public enum PAINT_COLOR {
-        DARK_SQUARE,
-        LIGHT_SQUARE,
-        WARN,
-        PRIMARY,
-        SECONDARY,
-        TERNARY,
-        ERROR,
+        DARK_SQUARE, LIGHT_SQUARE, WARN, PRIMARY, SECONDARY, TERNARY, ERROR,
 
     }
 
@@ -78,6 +72,7 @@ public class ChessBoard {
         this.halfMoveClock = board.halfMoveClock;
         this.fullMoveNumber = board.fullMoveNumber;
     }
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -157,40 +152,30 @@ public class ChessBoard {
 
     public Collection<ChessMove> getMovesFor(ChessGame.TeamColor color) {
         HashSet<ChessMove> moves = new HashSet<>();
-        getPieces(color).forEach(((position, piece) ->
-                moves.addAll(piece.pieceMoves(this, position))
-        ));
+        getPieces(color).forEach(((position, piece) -> moves.addAll(piece.pieceMoves(this, position))));
         return moves;
     }
 
     public Collection<ChessPosition> getPositionsFor(ChessGame.TeamColor color) {
         HashSet<ChessPosition> positions = new HashSet<>();
-        getPieces(color).forEach(((position, piece) ->
-                positions.add(position)
-        ));
+        getPieces(color).forEach(((position, piece) -> positions.add(position)));
         return positions;
     }
 
     public Collection<ChessMove> otherTeamsMoves(ChessGame.TeamColor color) {
-        return (color == ChessGame.TeamColor.WHITE) ?
-                getMovesFor(ChessGame.TeamColor.BLACK) :
-                getMovesFor(ChessGame.TeamColor.WHITE);
+        return (color == ChessGame.TeamColor.WHITE) ? getMovesFor(ChessGame.TeamColor.BLACK) : getMovesFor(ChessGame.TeamColor.WHITE);
     }
 
     public Collection<ChessPosition> positionsThreatenedBy(ChessGame.TeamColor color) {
         HashSet<ChessPosition> threatenedSpaces = new HashSet<>();
         HashMap<ChessPosition, ChessPiece> otherTeam = getPieces(color);
-        otherTeam.forEach((position, piece) ->
-                threatenedSpaces.addAll(piece.pieceThreats(this, position))
-        );
-//        paintSquares(threatenedSpaces, PAINT_COLOR.WARN);
+        otherTeam.forEach((position, piece) -> threatenedSpaces.addAll(piece.pieceThreats(this, position)));
         return threatenedSpaces;
     }
 
     public boolean isInCheck(ChessGame.TeamColor color) {
         Collection<ChessMove> otherTeamsMoves = otherTeamsMoves(color);
-        return otherTeamsMoves.stream()
-                .anyMatch(move -> move.isCapture() && move.getCapturedPiece().getPieceType() == ChessPiece.PieceType.KING);
+        return otherTeamsMoves.stream().anyMatch(move -> move.isCapture() && move.getCapturedPiece().getPieceType() == ChessPiece.PieceType.KING);
     }
 
     public void clearEnPassant() {
@@ -224,7 +209,7 @@ public class ChessBoard {
         }
         boardString.append("    A  B  C  D  E  F  G  H");
         System.out.println(boardString);
-//        System.out.println(getFEN());
+        System.out.println(getFEN());
     }
 
     public void paintMoves(Collection<ChessMove> moves) {
@@ -318,32 +303,16 @@ public class ChessBoard {
         this.turn = team;
     }
 
-    public boolean whiteCanCastleShort() {
-        return whiteCanCastleShort;
-    }
-
     public void whiteCanCastleShort(boolean canCastle) {
         whiteCanCastleShort = canCastle;
-    }
-
-    public boolean whiteCanCastleLong() {
-        return whiteCanCastleLong;
     }
 
     public void whiteCanCastleLong(boolean canCastle) {
         whiteCanCastleLong = canCastle;
     }
 
-    public boolean blackCanCastleShort() {
-        return blackCanCastleShort;
-    }
-
     public void blackCanCastleShort(boolean canCastle) {
         blackCanCastleShort = canCastle;
-    }
-
-    public boolean blackCanCastleLong() {
-        return blackCanCastleLong;
     }
 
     public void blackCanCastleLong(boolean canCastle) {

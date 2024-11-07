@@ -199,14 +199,6 @@ public class ChessMove {
         return isCastle;
     }
 
-    public boolean isCastleShort() {
-        return isCastleShort;
-    }
-
-    public boolean isCastleLong() {
-        return isCastleLong;
-    }
-
     public ChessPosition getCastlingRookPosition() {
         return castlingRookPosition;
     }

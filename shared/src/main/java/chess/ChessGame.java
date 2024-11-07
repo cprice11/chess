@@ -78,7 +78,6 @@ public class ChessGame {
         // If game over. throw
 //        board.printBoard();
         ChessPosition start = move.getStartPosition();
-        ChessPosition end = move.getEndPosition();
         ChessPiece piece = board.getPiece(move.getStartPosition());
         if (piece == null) throw new InvalidMoveException("No piece at location: " + move.getStartPosition());
         TeamColor teamColor = piece.getTeamColor();
@@ -227,7 +226,6 @@ public class ChessGame {
     }
 
     private ChessPosition getKingPosition(TeamColor color) {
-        HashMap<ChessPosition, ChessPiece> pieces = board.getPieces(color);
         for (Map.Entry<ChessPosition, ChessPiece> position : board.getPieces(color).entrySet()) {
             if (position.getValue().getPieceType() == ChessPiece.PieceType.KING) {
                 return position.getKey();
