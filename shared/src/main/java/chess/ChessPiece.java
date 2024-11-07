@@ -67,7 +67,7 @@ public class ChessPiece {
             case KNIGHT -> knightMoves(board, position, piece);
             case BISHOP -> slidingPieceMoves(board, position, piece, false, true);
             case QUEEN -> slidingPieceMoves(board, position, piece, true, true);
-//            case KING -> kingSquares(position);
+            case KING -> kingMoves(board, position, piece);
             case EN_PASSANT -> new HashSet<ChessMove>();
             default -> new HashSet<ChessMove>();
         };
@@ -133,18 +133,16 @@ public class ChessPiece {
         for (ChessPosition square : visibleSquares) {
             if (square.isOnBoard()) {
                 ChessMove.MoveBuilder move = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
-                ChessPiece attackedPiece = board.getPiece(square);
-                if (attackedPiece == null) availableMoves.add(move.build());
-                else if (isEnemy(attackedPiece)) availableMoves.add(move.capture(attackedPiece).build());
+                availableMoves.add(handleCaptures(move, board).build());
             }
         }
         return availableMoves;
     }
 
-    private Collection<ChessPosition> kingSquares(ChessPosition position) {
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition startingPosition, ChessPiece piece) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        int rank = position.getRank();
-        int file = position.getFile();
+        int rank = startingPosition.getRank();
+        int file = startingPosition.getFile();
         visibleSquares.add(new ChessPosition(rank - 1, file - 1));
         visibleSquares.add(new ChessPosition(rank, file - 1));
         visibleSquares.add(new ChessPosition(rank + 1, file - 1));
@@ -153,7 +151,14 @@ public class ChessPiece {
         visibleSquares.add(new ChessPosition(rank, file + 1));
         visibleSquares.add(new ChessPosition(rank - 1, file + 1));
         visibleSquares.add(new ChessPosition(rank - 1, file));
-        return visibleSquares;
+        HashSet<ChessMove> availableMoves = new HashSet<>();
+        for (ChessPosition square : visibleSquares) {
+            if (square.isOnBoard()) {
+                ChessMove.MoveBuilder move = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
+                availableMoves.add(handleCaptures(move, board).build());
+            }
+        }
+        return availableMoves;
     }
 
     private Collection<ChessMove> slidingPieceMoves(ChessBoard board, ChessPosition startingPosition, ChessPiece piece, boolean orthogonal, boolean diagonal) {
@@ -173,9 +178,7 @@ public class ChessPiece {
         HashSet<ChessMove> availableMoves = new HashSet<>();
         for (ChessPosition square : visibleSquares) {
             ChessMove.MoveBuilder move = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
-            ChessPiece attackedPiece = board.getPiece(square);
-            if (attackedPiece == null) availableMoves.add(move.build());
-            else if (isEnemy(attackedPiece)) availableMoves.add(move.capture(attackedPiece).build());
+            availableMoves.add(handleCaptures(move, board).build());
         }
         return availableMoves;
     }
@@ -188,11 +191,11 @@ public class ChessPiece {
         return !isFriendly(piece);
     }
 
-    private Collection<ChessMove> removeFriendlyCaptures(Collection<ChessMove> moves) {
-        moves.removeIf(move ->
-                move.isCapture() && move.getCapturedPiece().getTeamColor() == move.getTeam()
-        );
-        return moves;
+    private ChessMove.MoveBuilder handleCaptures(ChessMove.MoveBuilder move, ChessBoard board) {
+            ChessPiece attackedPiece = board.getPiece(move.end);
+            if (attackedPiece == null) return move;
+            else if (isEnemy(attackedPiece)) return move.capture(attackedPiece);
+            return move;
     }
 
     private Collection<ChessPosition> expandInDirection(ChessBoard board, ChessPosition position, int x, int y) {
