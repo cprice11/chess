@@ -18,13 +18,10 @@ public class ChessMove {
     // Pawn specific
     private final boolean isLeap;
     private final ChessPosition positionSkippedByLeap;
-    private final ChessPosition positionBeingCapturedByEnPassant;
     private final ChessPiece.PieceType promotionPiece;
 
     // King specific
     private final boolean isCastle;
-    private final boolean isCastleShort;
-    private final boolean isCastleLong;
     private final ChessPosition castlingRookPosition;
     private final ChessPosition newCastlingRookPosition;
 
@@ -51,12 +48,9 @@ public class ChessMove {
         // Pawn specific
         this.isLeap = builder.isLeap;
         this.positionSkippedByLeap = builder.positionSkippedByLeap;
-        this.positionBeingCapturedByEnPassant = builder.postitionBeingCapturedByEnPassant;
         this.promotionPiece = builder.promotionPiece;
         // King specific
         this.isCastle = builder.isCastle;
-        this.isCastleShort = builder.isCastleShort;
-        this.isCastleLong = builder.isCastleLong;
         this.castlingRookPosition = builder.castlingRookPosition;
         this.newCastlingRookPosition = builder.newCastlingRookPosition;
     }
@@ -79,12 +73,9 @@ public class ChessMove {
         // Pawn specific
         private boolean isLeap = false;
         private ChessPosition positionSkippedByLeap = null;
-        private ChessPosition postitionBeingCapturedByEnPassant = null;
         private ChessPiece.PieceType promotionPiece;
         // King specific
         private boolean isCastle = false;
-        private boolean isCastleShort = false;
-        private boolean isCastleLong = false;
         private ChessPosition castlingRookPosition = null;
         private ChessPosition newCastlingRookPosition = null;
 
@@ -105,8 +96,7 @@ public class ChessMove {
                     .castlesShortWith(this.castlingRookPosition, this.newCastlingRookPosition)
                     .castlesLongWith(this.castlingRookPosition, this.newCastlingRookPosition)
                     .leap(this.positionSkippedByLeap)
-                    .capture(this.capturedPiece)
-                    .pieceCapturedByEnPassant(this.postitionBeingCapturedByEnPassant);
+                    .capture(this.capturedPiece);
         }
 
         public MoveBuilder piece(ChessPiece piece) {
@@ -124,7 +114,6 @@ public class ChessMove {
 
         public MoveBuilder castlesShortWith(ChessPosition castlingRook, ChessPosition newRookPosition) {
             if (castlingRook == null || newRookPosition == null) return this;
-            this.isCastleShort = true;
             this.isCastle = true;
             this.castlingRookPosition = castlingRook;
             this.newCastlingRookPosition = newRookPosition;
@@ -133,7 +122,6 @@ public class ChessMove {
 
         public MoveBuilder castlesLongWith(ChessPosition castlingRook, ChessPosition newRookPosition) {
             if (castlingRook == null || newRookPosition == null) return this;
-            this.isCastleLong = true;
             this.isCastle = true;
             this.castlingRookPosition = castlingRook;
             this.newCastlingRookPosition = newRookPosition;
@@ -151,12 +139,6 @@ public class ChessMove {
             if (capture == null) return this;
             this.isCapture = true;
             this.capturedPiece = capture;
-            return this;
-        }
-
-        public MoveBuilder pieceCapturedByEnPassant(ChessPosition position) {
-            if (position == null) return this;
-            this.postitionBeingCapturedByEnPassant = position;
             return this;
         }
 
@@ -201,10 +183,6 @@ public class ChessMove {
 
     public ChessPosition getNewCastlingRookPosition() {
         return newCastlingRookPosition;
-    }
-
-    public ChessPosition getPositionBeingCapturedByEnPassant() {
-        return positionBeingCapturedByEnPassant;
     }
 
     public ChessPosition getPositionSkippedByLeap() {
