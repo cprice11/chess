@@ -48,6 +48,18 @@ public class ChessBoard {
     private final HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
     private final HashMap<ChessPosition, PAINT_COLOR> paintedSquares = new HashMap<>();
 
+    private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
+
+    private boolean whiteCanCastleShort;
+    private boolean whiteCanCastleLong;
+    private boolean blackCanCastleShort;
+    private boolean blackCanCastleLong;
+
+    private ChessPosition enPassantTarget;
+
+    private int halfMoveClock = 0;
+    private int fullMoveNumber = 1;
+
     public ChessBoard() {
 
     }
@@ -138,8 +150,7 @@ public class ChessBoard {
         }
         boardString.append("    A  B  C  D  E  F  G  H");
         System.out.println(boardString);
-//        System.out.println(getFENBoard());
-
+//        System.out.println(getFEN());
     }
 
     public HashMap<ChessPosition, ChessPiece> getPieces(ChessGame.TeamColor color) {
@@ -148,6 +159,22 @@ public class ChessBoard {
                     if (piece.getTeamColor() == color) teamPositions.put(position, piece);
                 });
         return teamPositions;
+    }
+
+    public String getFEN() {
+        StringBuilder FEN = new StringBuilder(getFENBoard()).append(" ");
+        FEN.append((turn == ChessGame.TeamColor.WHITE)? "w" : "b").append(" ");
+        StringBuilder castling = new StringBuilder();
+        castling.append(whiteCanCastleShort ? "K" : "");
+        castling.append(whiteCanCastleLong ? "Q" : "");
+        castling.append(blackCanCastleShort ? "k" : "");
+        castling.append(blackCanCastleLong ? "q" : "");
+        if (castling.isEmpty()) castling.append("-");
+        FEN.append(castling).append(" ");
+        FEN.append((enPassantTarget == null)? "-" : enPassantTarget).append(" ");
+        FEN.append(halfMoveClock).append(" ");
+        FEN.append(fullMoveNumber);
+        return FEN.toString();
     }
 
     public String getFENBoard() {
