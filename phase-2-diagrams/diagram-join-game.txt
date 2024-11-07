@@ -24,11 +24,11 @@ group #yellow Join Game #black
     DataAccessException --> Services:AuthData
     deactivate Services
     Services -> DataAccessException: getGame(gameID)
-    DataAccessException -> db:SELECT * FROM Games WHERE gameID=<gameID>
+    DataAccessException -> db:SELECT * FROM Games\nWHERE gameID=<gameID>
     DataAccessException --> Services:Game
     note left of Services:403 if taken
     Services -> DataAccessException:startGame(gameID, username, color)
-    DataAccessException -> db:UPDATE Games \nSET whiteUsername*=<username>,\nWHERE gameID=<gameID>
+    DataAccessException -> db:UPDATE Games \nSET <color>Username=<username>\nWHERE gameID=<gameID>
     DataAccessException --> Services:
     Services --> Server:
     deactivate Services
