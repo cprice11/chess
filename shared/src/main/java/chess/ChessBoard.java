@@ -183,7 +183,7 @@ public class ChessBoard {
         otherTeam.forEach((position, piece) ->
                 threatenedSpaces.addAll(piece.pieceThreats(this, position))
         );
-        paintSquares(threatenedSpaces, PAINT_COLOR.WARN);
+//        paintSquares(threatenedSpaces, PAINT_COLOR.WARN);
         return threatenedSpaces;
     }
 
@@ -321,6 +321,7 @@ public class ChessBoard {
     public boolean whiteCanCastleShort() {
         return whiteCanCastleShort;
     }
+
     public void whiteCanCastleShort(boolean canCastle) {
         whiteCanCastleShort = canCastle;
     }
@@ -328,6 +329,7 @@ public class ChessBoard {
     public boolean whiteCanCastleLong() {
         return whiteCanCastleLong;
     }
+
     public void whiteCanCastleLong(boolean canCastle) {
         whiteCanCastleLong = canCastle;
     }
@@ -335,6 +337,7 @@ public class ChessBoard {
     public boolean blackCanCastleShort() {
         return blackCanCastleShort;
     }
+
     public void blackCanCastleShort(boolean canCastle) {
         blackCanCastleShort = canCastle;
     }
@@ -342,6 +345,7 @@ public class ChessBoard {
     public boolean blackCanCastleLong() {
         return blackCanCastleLong;
     }
+
     public void blackCanCastleLong(boolean canCastle) {
         blackCanCastleLong = canCastle;
     }
@@ -349,6 +353,7 @@ public class ChessBoard {
     public boolean canCastleShort(ChessGame.TeamColor color) {
         return (color == ChessGame.TeamColor.WHITE) ? whiteCanCastleShort : blackCanCastleShort;
     }
+
     public boolean canCastleLong(ChessGame.TeamColor color) {
         return (color == ChessGame.TeamColor.WHITE) ? whiteCanCastleLong : blackCanCastleLong;
     }
@@ -356,6 +361,7 @@ public class ChessBoard {
     public ChessPosition getEnPassantTarget() {
         return enPassantTarget;
     }
+
     public void setEnPassantTarget(ChessPosition passedSquare) {
         enPassantTarget = passedSquare;
     }
@@ -363,6 +369,7 @@ public class ChessBoard {
     public ChessPosition getPassedPawn() {
         return passedPawn;
     }
+
     public void setPassedPawn(ChessPosition passedPawn) {
         this.passedPawn = passedPawn;
     }

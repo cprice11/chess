@@ -50,7 +50,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
-        Collection<ChessMove> confirmedMoves =  new HashSet<>();
+        Collection<ChessMove> confirmedMoves = new HashSet<>();
         TeamColor turn = board.getPiece(startPosition).getTeamColor();
         for (ChessMove move : moves) {
             ChessBoard testBoard = new ChessBoard(board);
@@ -76,7 +76,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         // If game over. throw
-        board.printBoard();
+//        board.printBoard();
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece piece = board.getPiece(move.getStartPosition());
@@ -103,7 +103,7 @@ public class ChessGame {
         testGame.executeMove(flaggedMove);
         if (testGame.isInCheck(teamColor)) throw new InvalidMoveException(move + " puts the king in check");
         executeMove(flaggedMove);
-        board.printBoard();
+//        board.printBoard();
     }
 
     private void executeMove(ChessMove move) {
@@ -191,7 +191,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> moves = new HashSet<>();
+        board.getPositionsFor(teamColor).forEach(position ->
+                moves.addAll(validMoves(position))
+        );
+        return !isInCheck(teamColor) && moves.isEmpty();
     }
 
     /**

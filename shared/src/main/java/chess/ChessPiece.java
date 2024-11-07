@@ -69,9 +69,9 @@ public class ChessPiece {
             case KING -> kingMoves(board, position);
             default -> new HashSet<>();
         };
-        board.paintMoves(moves);
-        board.printBoard();
-        board.clearPaint();
+//        board.paintMoves(moves);
+//        board.printBoard();
+//        board.clearPaint();
         return moves;
     }
 
@@ -133,6 +133,7 @@ public class ChessPiece {
         }
         return availableMoves;
     }
+
     private Collection<ChessPosition> pawnThreats(ChessBoard board, ChessPosition position) {
         HashSet<ChessPosition> threatenedSquares = new HashSet<>();
         pawnMoves(board, position).stream().filter(ChessMove::isCapture).forEach(move -> threatenedSquares.add(move.getEndPosition()));
@@ -161,6 +162,7 @@ public class ChessPiece {
         }
         return availableMoves;
     }
+
     private Collection<ChessPosition> knightThreats(ChessBoard board, ChessPosition startingPosition) {
         HashSet<ChessPosition> threatenedSquares = new HashSet<>();
         knightMoves(board, startingPosition).forEach(move -> threatenedSquares.add(move.getEndPosition()));
@@ -252,6 +254,7 @@ public class ChessPiece {
         }
         return availableMoves;
     }
+
     private Collection<ChessPosition> kingThreats(ChessBoard board, ChessPosition startingPosition) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
         int rank = startingPosition.getRank();
@@ -292,6 +295,7 @@ public class ChessPiece {
         }
         return availableMoves;
     }
+
     private Collection<ChessPosition> slidingPieceThreats(ChessBoard board, ChessPosition startingPosition, boolean orthogonal, boolean diagonal) {
         HashSet<ChessPosition> threatenedSquares = new HashSet<>();
         slidingPieceMoves(board, startingPosition, orthogonal, diagonal).forEach(move -> threatenedSquares.add(move.getEndPosition()));
@@ -301,6 +305,7 @@ public class ChessPiece {
     private boolean isFriendly(ChessPiece piece) {
         return piece.getTeamColor() == color;
     }
+
     private boolean isEnemy(ChessPiece piece) {
         return !isFriendly(piece);
     }
@@ -330,7 +335,7 @@ public class ChessPiece {
     }
 
     public ChessGame.TeamColor otherTeam() {
-        return (color == ChessGame.TeamColor.WHITE)?
+        return (color == ChessGame.TeamColor.WHITE) ?
                 ChessGame.TeamColor.BLACK :
                 ChessGame.TeamColor.WHITE;
     }
