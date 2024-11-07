@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class ChessBoard {
     private static final String DARK_SQUARE = "\u001b[48;2;119;73;54m";
-    private static final String WARN = "\u001b[48;2;225;228;74m";
+    private static final String WARN = "\u001b[48;2;208;87;0m";
     private static final String PRIMARY = "\u001b[48;2;100;208;140m";
     private static final String SECONDARY = "\u001b[48;2;100;208;209m";
     private static final String TERNARY = "\u001b[48;2;100;140;209m";
@@ -20,6 +20,22 @@ public class ChessBoard {
     private static final String LIGHT_PIECE = "\033[38;2;245;208;197m";
     private static final String RESET_CODE = "\033[0m";
 
+    public static final int BOARD_SIZE = 8; // no magic numbers, If adding alternate rule sets, refactor to be set.
+    private final HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
+    private final HashMap<ChessPosition, PAINT_COLOR> paintedSquares = new HashMap<>();
+
+    private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
+
+    private boolean whiteCanCastleShort;
+    private boolean whiteCanCastleLong;
+    private boolean blackCanCastleShort;
+    private boolean blackCanCastleLong;
+
+    private ChessPosition enPassantTarget; // The square jumped over
+    private ChessPosition passedPawn; // The pawn that can be captured
+
+    private int halfMoveClock = 0;
+    private int fullMoveNumber = 1;
 
     public enum PAINT_COLOR {
         DARK_SQUARE,
@@ -31,6 +47,7 @@ public class ChessBoard {
         ERROR,
 
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,24 +61,22 @@ public class ChessBoard {
         return Objects.hash(pieces);
     }
 
-    private static final int BOARD_SIZE = 8; // no magic numbers, If adding alternate rule sets, refactor to be set.
-    private final HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
-    private final HashMap<ChessPosition, PAINT_COLOR> paintedSquares = new HashMap<>();
-
-    private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
-
-    private boolean whiteCanCastleShort;
-    private boolean whiteCanCastleLong;
-    private boolean blackCanCastleShort;
-    private boolean blackCanCastleLong;
-
-    private ChessPosition enPassantTarget;
-
-    private int halfMoveClock = 0;
-    private int fullMoveNumber = 1;
 
     public ChessBoard() {
+        whiteCanCastleShort = whiteCanCastleLong = blackCanCastleShort = blackCanCastleLong = true;
+    }
 
+    public ChessBoard(ChessBoard board) {
+        board.pieces.forEach(this::addPiece);
+        this.turn = board.turn;
+        this.whiteCanCastleShort = board.whiteCanCastleShort;
+        this.whiteCanCastleLong = board.whiteCanCastleLong;
+        this.blackCanCastleShort = board.blackCanCastleShort;
+        this.blackCanCastleLong = board.blackCanCastleLong;
+        this.enPassantTarget = board.enPassantTarget;
+        this.passedPawn = board.passedPawn;
+        this.halfMoveClock = board.halfMoveClock;
+        this.fullMoveNumber = board.fullMoveNumber;
     }
 
     /**
@@ -103,6 +118,12 @@ public class ChessBoard {
     public void resetBoard() { // For alternate rules this might need to be overridden.
         pieces.clear();
         clearPaint();
+        turn = ChessGame.TeamColor.WHITE;
+        whiteCanCastleShort = whiteCanCastleLong = blackCanCastleShort = blackCanCastleLong = true;
+        enPassantTarget = null;
+        halfMoveClock = 0;
+        fullMoveNumber = 1;
+
         addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(1, 3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
@@ -126,6 +147,59 @@ public class ChessBoard {
         }
     }
 
+    public HashMap<ChessPosition, ChessPiece> getPieces(ChessGame.TeamColor color) {
+        HashMap<ChessPosition, ChessPiece> teamPositions = new HashMap<>();
+        pieces.forEach((position, piece) -> {
+            if (piece.getTeamColor() == color) teamPositions.put(position, piece);
+        });
+        return teamPositions;
+    }
+
+    public Collection<ChessMove> getMovesFor(ChessGame.TeamColor color) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        getPieces(color).forEach(((position, piece) ->
+                moves.addAll(piece.pieceMoves(this, position))
+        ));
+        return moves;
+    }
+
+    public Collection<ChessPosition> getPositionsFor(ChessGame.TeamColor color) {
+        HashSet<ChessPosition> positions = new HashSet<>();
+        getPieces(color).forEach(((position, piece) ->
+                positions.add(position)
+        ));
+        return positions;
+    }
+
+    public Collection<ChessMove> otherTeamsMoves(ChessGame.TeamColor color) {
+        return (color == ChessGame.TeamColor.WHITE) ?
+                getMovesFor(ChessGame.TeamColor.BLACK) :
+                getMovesFor(ChessGame.TeamColor.WHITE);
+    }
+
+    public Collection<ChessPosition> positionsThreatenedBy(ChessGame.TeamColor color) {
+        HashSet<ChessPosition> threatenedSpaces = new HashSet<>();
+        HashMap<ChessPosition, ChessPiece> otherTeam = getPieces(color);
+        otherTeam.forEach((position, piece) ->
+                threatenedSpaces.addAll(piece.pieceThreats(this, position))
+        );
+        paintSquares(threatenedSpaces, PAINT_COLOR.WARN);
+        return threatenedSpaces;
+    }
+
+    public boolean isInCheck(ChessGame.TeamColor color) {
+        Collection<ChessMove> otherTeamsMoves = otherTeamsMoves(color);
+        return otherTeamsMoves.stream()
+                .anyMatch(move -> move.isCapture() && move.getCapturedPiece().getPieceType() == ChessPiece.PieceType.KING);
+    }
+
+    public void clearEnPassant() {
+        pieces.remove(enPassantTarget);
+        enPassantTarget = null;
+        passedPawn = null;
+    }
+
+    // Output methods
     public void printBoard() {
         StringBuilder boardString = new StringBuilder();
         boardString.append("    A  B  C  D  E  F  G  H\n");
@@ -153,55 +227,6 @@ public class ChessBoard {
 //        System.out.println(getFEN());
     }
 
-    public HashMap<ChessPosition, ChessPiece> getPieces(ChessGame.TeamColor color) {
-        HashMap<ChessPosition, ChessPiece> teamPositions = new HashMap<>();
-        pieces.forEach((position, piece) -> {
-                    if (piece.getTeamColor() == color) teamPositions.put(position, piece);
-                });
-        return teamPositions;
-    }
-
-    public String getFEN() {
-        StringBuilder FEN = new StringBuilder(getFENBoard()).append(" ");
-        FEN.append((turn == ChessGame.TeamColor.WHITE)? "w" : "b").append(" ");
-        StringBuilder castling = new StringBuilder();
-        castling.append(whiteCanCastleShort ? "K" : "");
-        castling.append(whiteCanCastleLong ? "Q" : "");
-        castling.append(blackCanCastleShort ? "k" : "");
-        castling.append(blackCanCastleLong ? "q" : "");
-        if (castling.isEmpty()) castling.append("-");
-        FEN.append(castling).append(" ");
-        FEN.append((enPassantTarget == null)? "-" : enPassantTarget).append(" ");
-        FEN.append(halfMoveClock).append(" ");
-        FEN.append(fullMoveNumber);
-        return FEN.toString();
-    }
-
-    public String getFENBoard() {
-        // Join each row with a '/'
-        List<String> rows = new ArrayList<>(8);
-        for (int i = BOARD_SIZE; i > 0; i--) {
-            rows.add(getFENRow(i));
-        }
-        return String.join("/",rows);
-    }
-
-    public String getFENRow(int rank) {
-        int numBlanks = 0;
-        StringBuilder row = new StringBuilder();
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            ChessPiece piece = getPiece(new ChessPosition(rank, i  + 1));
-            if (piece == null) numBlanks++;
-            else {
-                if (numBlanks != 0) row.append(numBlanks);
-                numBlanks = 0;
-                row.append(piece.getChar());
-            }
-        }
-        if (numBlanks != 0) row.append(numBlanks);
-        return row.toString();
-    }
-
     public void paintMoves(Collection<ChessMove> moves) {
         for (ChessMove move : moves) {
             paintMove(move);
@@ -214,16 +239,16 @@ public class ChessBoard {
         paintSquare(end, PAINT_COLOR.SECONDARY);
         if (move.isCapture()) paintSquare(end, PAINT_COLOR.WARN);
         if (move.isLeap()) paintSquare(move.getPositionSkippedByLeap(), PAINT_COLOR.TERNARY);
-        if (move.isCastle()) paintSquare(move.getCastlingRook(), PAINT_COLOR.TERNARY);
+        if (move.isCastle()) paintSquare(move.getCastlingRookPosition(), PAINT_COLOR.TERNARY);
     }
 
-    public void  paintSquares(Collection<ChessPosition> squares, PAINT_COLOR color ) {
+    public void paintSquares(Collection<ChessPosition> squares, PAINT_COLOR color) {
         for (ChessPosition square : squares) {
             paintSquare(square, color);
         }
     }
 
-    public void  paintSquare(ChessPosition square, PAINT_COLOR color ) {
+    public void paintSquare(ChessPosition square, PAINT_COLOR color) {
         paintedSquares.put(square, color);
     }
 
@@ -241,5 +266,112 @@ public class ChessBoard {
             case TERNARY -> TERNARY;
             case ERROR -> ERROR;
         };
+    }
+
+    public String getFEN() {
+        StringBuilder FEN = new StringBuilder(getFENBoard()).append(" ");
+        FEN.append((turn == ChessGame.TeamColor.WHITE) ? "w" : "b").append(" ");
+        StringBuilder castling = new StringBuilder();
+        castling.append(whiteCanCastleShort ? "K" : "");
+        castling.append(whiteCanCastleLong ? "Q" : "");
+        castling.append(blackCanCastleShort ? "k" : "");
+        castling.append(blackCanCastleLong ? "q" : "");
+        if (castling.isEmpty()) castling.append("-");
+        FEN.append(castling).append(" ");
+        FEN.append((enPassantTarget == null) ? "-" : enPassantTarget).append(" ");
+        FEN.append(halfMoveClock).append(" ");
+        FEN.append(fullMoveNumber);
+        return FEN.toString();
+    }
+
+    public String getFENBoard() {
+        // Join each row with a '/'
+        List<String> rows = new ArrayList<>(8);
+        for (int i = BOARD_SIZE; i > 0; i--) {
+            rows.add(getFENRow(i));
+        }
+        return String.join("/", rows);
+    }
+
+    public String getFENRow(int rank) {
+        int numBlanks = 0;
+        StringBuilder row = new StringBuilder();
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            ChessPiece piece = getPiece(new ChessPosition(rank, i + 1));
+            if (piece == null) numBlanks++;
+            else {
+                if (numBlanks != 0) row.append(numBlanks);
+                numBlanks = 0;
+                row.append(piece.getChar());
+            }
+        }
+        if (numBlanks != 0) row.append(numBlanks);
+        return row.toString();
+    }
+
+    // Getters
+    public ChessGame.TeamColor getTurn() {
+        return turn;
+    }
+
+    public void setTurn(ChessGame.TeamColor team) {
+        this.turn = team;
+    }
+
+    public boolean whiteCanCastleShort() {
+        return whiteCanCastleShort;
+    }
+    public void whiteCanCastleShort(boolean canCastle) {
+        whiteCanCastleShort = canCastle;
+    }
+
+    public boolean whiteCanCastleLong() {
+        return whiteCanCastleLong;
+    }
+    public void whiteCanCastleLong(boolean canCastle) {
+        whiteCanCastleLong = canCastle;
+    }
+
+    public boolean blackCanCastleShort() {
+        return blackCanCastleShort;
+    }
+    public void blackCanCastleShort(boolean canCastle) {
+        blackCanCastleShort = canCastle;
+    }
+
+    public boolean blackCanCastleLong() {
+        return blackCanCastleLong;
+    }
+    public void blackCanCastleLong(boolean canCastle) {
+        blackCanCastleLong = canCastle;
+    }
+
+    public boolean canCastleShort(ChessGame.TeamColor color) {
+        return (color == ChessGame.TeamColor.WHITE) ? whiteCanCastleShort : blackCanCastleShort;
+    }
+    public boolean canCastleLong(ChessGame.TeamColor color) {
+        return (color == ChessGame.TeamColor.WHITE) ? whiteCanCastleLong : blackCanCastleLong;
+    }
+
+    public ChessPosition getEnPassantTarget() {
+        return enPassantTarget;
+    }
+    public void setEnPassantTarget(ChessPosition passedSquare) {
+        enPassantTarget = passedSquare;
+    }
+
+    public ChessPosition getPassedPawn() {
+        return passedPawn;
+    }
+    public void setPassedPawn(ChessPosition passedPawn) {
+        this.passedPawn = passedPawn;
+    }
+
+    public int getHalfMoveClock() {
+        return halfMoveClock;
+    }
+
+    public int getFullMoveNumber() {
+        return fullMoveNumber;
     }
 }
