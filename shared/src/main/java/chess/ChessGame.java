@@ -59,10 +59,10 @@ public class ChessGame {
             testGame.setBoard(testBoard);
             try {
                 testGame.makeMove(move);
-                if (testGame.board.isInCheck(turn)) continue;
-                else confirmedMoves.add(move);
-            } catch (InvalidMoveException e) {
-                continue;
+                if (!testGame.board.isInCheck(turn)) {
+                    confirmedMoves.add(move);
+                }
+            } catch (InvalidMoveException ignored) {
             }
         }
         return confirmedMoves;

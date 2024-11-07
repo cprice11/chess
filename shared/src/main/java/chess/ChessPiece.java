@@ -60,7 +60,7 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         ChessPiece piece = board.getPiece(position);
-        Collection<ChessMove> moves = switch (piece.getPieceType()) {
+        return switch (piece.getPieceType()) {
             case PAWN -> pawnMoves(board, position);
             case ROOK -> slidingPieceMoves(board, position, true, false);
             case KNIGHT -> knightMoves(board, position);
@@ -69,10 +69,6 @@ public class ChessPiece {
             case KING -> kingMoves(board, position);
             default -> new HashSet<>();
         };
-//        board.paintMoves(moves);
-//        board.printBoard();
-//        board.clearPaint();
-        return moves;
     }
 
     /**

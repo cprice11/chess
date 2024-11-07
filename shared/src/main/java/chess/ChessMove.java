@@ -215,10 +215,6 @@ public class ChessMove {
         return newCastlingRookPosition;
     }
 
-    public boolean isPromotion() {
-        return isPromotion;
-    }
-
     public ChessPosition getPositionBeingCapturedByEnPassant() {
         return positionBeingCapturedByEnPassant;
     }

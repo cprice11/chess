@@ -279,8 +279,8 @@ public class ChessBoard {
         if (castling.isEmpty()) castling.append("-");
         FEN.append(castling).append(" ");
         FEN.append((enPassantTarget == null) ? "-" : enPassantTarget).append(" ");
-        FEN.append(halfMoveClock).append(" ");
-        FEN.append(fullMoveNumber);
+        FEN.append(getHalfMoveClock()).append(" ");
+        FEN.append(getFullMoveNumber());
         return FEN.toString();
     }
 
