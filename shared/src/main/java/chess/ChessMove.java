@@ -17,10 +17,11 @@ public class ChessMove {
     private final ChessPiece capturedPiece;
     // Pawn specific
     private final boolean isLeap;
-    private ChessPosition positionSkippedByLeap;
-    private ChessPosition positionBeingCapturedByEnPassant;
+    private final ChessPosition positionSkippedByLeap;
+    private final ChessPosition positionBeingCapturedByEnPassant;
     private final boolean isPromotion;
     private final ChessPiece.PieceType promotionPiece;
+
     // King specific
     private final boolean isCastle;
     private final boolean isCastleShort;
@@ -60,11 +61,19 @@ public class ChessMove {
         this.castlingRook = builder.castlingRook;
     }
 
+    public ChessMove(ChessPosition start, ChessPosition end, ChessPiece.PieceType pieceType) {
+        this(new MoveBuilder(start, end, pieceType));
+    }
+
+    public ChessMove(ChessPosition start, ChessPosition end) {
+        this(new MoveBuilder(start, end, null));
+    }
+
     public static class MoveBuilder {
-        private ChessPosition start;
-        private ChessPosition end;
-        private ChessPiece piece;
-        private ChessGame.TeamColor team;
+        public final ChessPosition start;
+        public final ChessPosition end;
+        public ChessPiece piece;
+        public ChessGame.TeamColor team;
         private boolean isCapture = false;
         private ChessPiece capturedPiece = null;
         // Pawn specific
@@ -79,41 +88,66 @@ public class ChessMove {
         private boolean isCastleLong = false;
         private ChessPosition castlingRook = null;
 
-        public MoveBuilder(ChessPiece piece, ChessPosition start, ChessPosition end){
-            this.piece = piece;
-            this.team = piece.getTeamColor();
+        public MoveBuilder(ChessPosition start, ChessPosition end, ChessPiece.PieceType promotionPiece){
             this.start = start;
             this.end = end;
+            promotion(promotionPiece);
+        }
+        public MoveBuilder(ChessPosition start, ChessPosition end) {
+            this(start, end, null);
         }
 
+        public MoveBuilder copy() {
+            MoveBuilder copiedBuilder = new MoveBuilder(this.start, this.end, this.promotionPiece);
+             return copiedBuilder
+                    .piece(this.piece)
+                    .castlesShortWith(this.castlingRook)
+                    .castlesLongWith(this.castlingRook)
+                    .leap(this.positionSkippedByLeap)
+                    .capture(this.capturedPiece)
+                    .pieceCapturedByEnPassant(this.postitionBeingCapturedByEnPassant);
+        }
+
+        public MoveBuilder piece(ChessPiece piece) {
+            if (piece == null) return this;
+            this.piece = piece;
+            this.team = piece.getTeamColor();
+            return this;
+        }
         public MoveBuilder promotion(ChessPiece.PieceType piece) {
+            if (piece == null) return this;
             this.promotionPiece = piece;
             this.isPromotion = true;
             return this;
         }
         public MoveBuilder castlesShortWith(ChessPosition castlingRook) {
+            if (castlingRook == null) return this;
             this.isCastleShort = true;
             this.isCastle = true;
             this.castlingRook = castlingRook;
             return this;
         }
         public MoveBuilder castlesLongWith(ChessPosition castlingRook) {
+            if (castlingRook == null) return this;
             this.isCastleLong = true;
             this.isCastle = true;
             this.castlingRook  = castlingRook;
             return this;
         }
         public MoveBuilder leap(ChessPosition leapedSquare) {
+            if (leapedSquare == null) return this;
             this.positionSkippedByLeap = leapedSquare;
             this.isLeap = true;
             return this;
         }
         public MoveBuilder capture(ChessPiece capture) {
+            if (capture == null) return this;
             this.isCapture = true;
             this.capturedPiece = capture;
             return this;
         }
         public MoveBuilder pieceCapturedByEnPassant(ChessPosition position) {
+            if (position == null) return this;
             this.postitionBeingCapturedByEnPassant = position;
             return this;
         }
@@ -123,20 +157,19 @@ public class ChessMove {
         }
     }
 
+    // Getters
     /**
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
         return start;
     }
-
     /**
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
         return end;
     }
-
     /**
      * Gets the type of piece to promote a pawn to if pawn promotion is part of this
      * chess move
@@ -146,12 +179,45 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
     }
-
-
+    public boolean isCastle() {
+        return isCastle;
+    }
+    public boolean isCastleShort() {
+        return isCastleShort;
+    }
+    public boolean isCastleLong() {
+        return isCastleLong;
+    }
+    public ChessPosition getCastlingRook() {
+        return castlingRook;
+    }
+    public boolean isPromotion() {
+        return isPromotion;
+    }
+    public ChessPosition getPositionBeingCapturedByEnPassant() {
+        return positionBeingCapturedByEnPassant;
+    }
+    public ChessPosition getPositionSkippedByLeap() {
+        return positionSkippedByLeap;
+    }
+    public boolean isLeap() {
+        return isLeap;
+    }
+    public ChessPiece getCapturedPiece() {
+        return capturedPiece;
+    }
+    public ChessPiece getPiece() {
+        return piece;
+    }
+    public ChessGame.TeamColor getTeam() {
+        return team;
+    }
+    public boolean isCapture() {
+        return isCapture;
+    }
 
     @Override
     public String toString() {
         return start + "-" + end;
     }
-
 }

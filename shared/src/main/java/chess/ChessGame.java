@@ -78,11 +78,11 @@ public class ChessGame {
         if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException(move + " is an invalid move");
         Collection<ChessPosition> threatenedPositions = getSquaresThreatenedBy(piece.getTeamColor());
         int homeRank = (teamColor == TeamColor.WHITE) ? 1 : 8;
-        if (move.isCastleLong || move.isCastleShort) {
+        if (move.isCastleLong() || move.isCastleShort()) {
             List<ChessPosition> kingsPositions = new ArrayList<>();
             kingsPositions.add(start);
             kingsPositions.add(end);
-            if (move.isCastleLong) {
+            if (move.isCastleLong()) {
                 kingsPositions.add(new ChessPosition(homeRank, 3));
                 kingsPositions.add(new ChessPosition(homeRank, 4));
             } else {
@@ -94,8 +94,8 @@ public class ChessGame {
             });
             if (overlap.isEmpty()) throw new InvalidMoveException("Cannot castle through check");
         }
-        if (move.isLeap) {
-            board.addPiece(move.enPassant, new ChessPiece(teamColor, ChessPiece.PieceType.EN_PASSANT));
+        if (move.isLeap()) {
+            board.addPiece(move.getPositionBeingCapturedByEnPassant(), new ChessPiece(teamColor, ChessPiece.PieceType.EN_PASSANT));
         }
         // If pawn leap set enpassant square
         // IF in check

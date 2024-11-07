@@ -63,41 +63,58 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         ChessPiece piece = board.getPiece(position);
-        Collection<ChessPosition> squares = switch (piece.getPieceType()) {
-            case PAWN -> pawnSquares(board, position, piece);
-            case ROOK -> rookSquares(board, position);
-            case KNIGHT -> knightSquares(position);
-            case BISHOP -> bishopSquares(board, position);
-            case QUEEN -> queenSquares(board, position);
-            case KING -> kingSquares(position);
-            case EN_PASSANT -> new HashSet<ChessPosition>();
+        Collection<ChessMove> moves = switch (piece.getPieceType()) {
+            case PAWN -> pawnMoves(board, position, piece);
+//            case ROOK -> rookSquares(board, position);
+//            case KNIGHT -> knightSquares(position);
+//            case BISHOP -> bishopSquares(board, position);
+//            case QUEEN -> queenSquares(board, position);
+//            case KING -> kingSquares(position);
+//            case EN_PASSANT -> new HashSet<ChessPosition>();
+            default -> new HashSet<ChessMove>();
         };
-        squares.removeIf(square -> !square.isOnBoard());
-        removeFriendlyCaptures(board, squares, piece);
-        board.paintSquare(position, ChessBoard.PAINT_COLOR.PRIMARY);
-        board.paintSquares(squares, ChessBoard.PAINT_COLOR.TERNARY);
+//        moves.removeIf(move -> !move.getEndPosition().isOnBoard()); // is this only for the knight?
+//        removeFriendlyCaptures(board, moves, piece);
+        board.paintMoves(moves);
         board.printBoard();
-        return positionsToMoves(position, squares, piece);
+        board.clearPaint();
+        return moves;
     }
 
-    private Collection<ChessPosition> pawnSquares(ChessBoard board, ChessPosition position, ChessPiece piece) {
-        HashSet<ChessPosition> visibleSquares = new HashSet<>();
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
+        HashSet<ChessMove.MoveBuilder> visibleSquares = new HashSet<>();
         int rank = position.getRank();
         int file = position.getFile();
         int direction = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
+        int promotionRank = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 8 : 1;
         ChessPosition forward = new ChessPosition(rank + direction, file);
+        // forward
         if (board.getPiece(forward) == null) {
-            visibleSquares.add(forward);
+            visibleSquares.add(new ChessMove.MoveBuilder(position, forward, null));
             ChessPosition leap = new ChessPosition(rank + 2 * direction, file);
             if (((rank == 2 && direction == 1) || (rank == 7 && direction == -1)) && board.getPiece(leap) == null) {
-                visibleSquares.add(leap);
+                visibleSquares.add(new ChessMove.MoveBuilder(position, leap, null).leap(forward));
             }
         }
+        // diagonals
         ChessPosition attackLeft = new ChessPosition(rank + direction, file - 1);
         ChessPosition attackRight = new ChessPosition(rank + direction, file + 1);
-        if (board.getPiece(attackLeft) != null) visibleSquares.add(attackLeft);
-        if (board.getPiece(attackRight) != null) visibleSquares.add(attackRight);
-        return visibleSquares;
+        ChessPiece attackedLeft = board.getPiece(attackLeft);
+        ChessPiece attackedRight = board.getPiece(attackRight);
+        if (attackedLeft != null && isEnemy(attackedLeft)) visibleSquares.add(new ChessMove.MoveBuilder(position, attackLeft).capture(attackedLeft));
+        if (attackedRight != null && isEnemy(attackedRight)) visibleSquares.add(new ChessMove.MoveBuilder(position, attackRight).capture(attackedRight));
+        HashSet<ChessMove> availableMoves = new HashSet<>();
+        for (ChessMove.MoveBuilder move : visibleSquares) {
+            int endRank = move.end.getRank();
+            if (endRank == promotionRank) {
+                availableMoves.add(move.copy().promotion(PieceType.ROOK).build());
+                availableMoves.add(move.copy().promotion(PieceType.KNIGHT).build());
+                availableMoves.add(move.copy().promotion(PieceType.BISHOP).build());
+                availableMoves.add(move.copy().promotion(PieceType.QUEEN).build());
+            }
+            else availableMoves.add(move.build());
+        }
+        return availableMoves;
     }
 
     // TODO Add castling squares
@@ -162,10 +179,17 @@ public class ChessPiece {
         return visibleSquares;
     }
 
-    private void removeFriendlyCaptures(ChessBoard board, Collection<ChessPosition> squares, ChessPiece piece) {
-        squares.removeIf(square ->
-                board.getPiece(square) != null &&
-                        board.getPiece(square).getTeamColor() == piece.getTeamColor()
+    private boolean isFriendly(ChessPiece piece) {
+        return piece.getTeamColor() == color;
+    }
+
+    private boolean isEnemy(ChessPiece piece) {
+        return !isFriendly(piece);
+    }
+
+    private void removeFriendlyCaptures(Collection<ChessMove> moves) {
+        moves.removeIf(move ->
+                move.isCapture() && move.getCapturedPiece().getTeamColor() == move.getTeam()
         );
     }
 
@@ -186,26 +210,34 @@ public class ChessPiece {
         return spaces;
     }
 
-    private Collection<ChessMove> positionsToMoves(ChessPosition start, Collection<ChessPosition> positions, ChessPiece piece) {
-        HashSet<ChessMove> moves = new HashSet<>();
-        if (piece.getPieceType() == PieceType.PAWN) {
-            for (ChessPosition end : positions) {
-                if (end.getRank() == 8 || end.getRank() == 1) {
-                    moves.add(new ChessMove(start, end, PieceType.ROOK));
-                    moves.add(new ChessMove(start, end, PieceType.BISHOP));
-                    moves.add(new ChessMove(start, end, PieceType.KNIGHT));
-                    moves.add(new ChessMove(start, end, PieceType.QUEEN));
-                } else {
-                    moves.add(new ChessMove(start, end, null));
-                }
-            }
-        } else {
-            for (ChessPosition end : positions) {
-                moves.add(new ChessMove(start, end, null));
-            }
-        }
-        return moves;
-    }
+//    private Collection<ChessMove> positionsToMoves(ChessPosition start, Collection<ChessPosition> positions, ChessPiece piece) {
+//        HashSet<ChessMove.MoveBuilder> movesToBuild = new HashSet<>();
+//        if (piece.getPieceType() == PieceType.PAWN) {
+//            for (ChessPosition end : positions) {
+//                if (end.getRank() == 8 || end.getRank() == 1) {
+//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end).promotion(PieceType.ROOK));
+//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end).promotion(PieceType.KNIGHT));
+//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end).promotion(PieceType.BISHOP));
+//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end).promotion(PieceType.QUEEN));
+//                } else {
+//                    movesToBuild.add(new ChessMove.MoveBuilder(piece, start, end));
+//                }
+//            }
+//        } else if (piece.getPieceType() == PieceType.KING) {
+//            // If king on home square
+//            if ((start.getFile() == 5) &&
+//
+//                       ( (piece.getTeamColor() == ChessGame.TeamColor.WHITE && start.getRank() == 1) ||
+//                                (piece.getTeamColor() == ChessGame.TeamColor.WHITE && start.getRank() == 1))
+//            ) { }
+//
+//            for (ChessPosition end : positions) {
+//                movesToBuild.add(new ChessMove.MoveBuilder().start(start).end(end));
+//            }
+//        }
+//
+//        return movesToBuild;
+//    }
 
     @Override
     public String toString() {

@@ -90,6 +90,7 @@ public class ChessBoard {
      */
     public void resetBoard() { // For alternate rules this might need to be overridden.
         pieces.clear();
+        clearPaint();
         addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(1, 3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
@@ -172,6 +173,21 @@ public class ChessBoard {
         }
         if (numBlanks != 0) row.append(numBlanks);
         return row.toString();
+    }
+
+    public void paintMoves(Collection<ChessMove> moves) {
+        for (ChessMove move : moves) {
+            paintMove(move);
+        }
+    }
+
+    public void paintMove(ChessMove move) {
+        paintSquare(move.getStartPosition(), PAINT_COLOR.PRIMARY);
+        ChessPosition end = move.getEndPosition();
+        paintSquare(end, PAINT_COLOR.SECONDARY);
+        if (move.isCapture()) paintSquare(end, PAINT_COLOR.WARN);
+        if (move.isLeap()) paintSquare(move.getPositionSkippedByLeap(), PAINT_COLOR.TERNARY);
+        if (move.isCastle()) paintSquare(move.getCastlingRook(), PAINT_COLOR.TERNARY);
     }
 
     public void  paintSquares(Collection<ChessPosition> squares, PAINT_COLOR color ) {
