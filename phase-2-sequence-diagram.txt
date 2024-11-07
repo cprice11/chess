@@ -11,7 +11,7 @@ entryspacing 0.6
 
 group #navy Registration #white
 rbox over Server,Services:Register a new user.
-A -> Server: [POST] /user\n{username, password, email}
+A -> Server: **[POST]**\n/user\n{username, password, email}
 box over Services:User
 activate Services #8b8db3
 Server -> Services: register(username, password, email)
@@ -30,14 +30,14 @@ deactivate Services
 
 Services --> Server:AuthData
 deactivate Services
-Server --> A:**[200]**\n{"username": "", "authToken": ""}
+Server --> A:**[200]**\n{"username": "", "authToken": ""}\n**[400]**\n{ "message": "Error: bad request" }\n**[403]**\n{ "message": "Error: already taken" }\n**[500]**\n{ "message": "Error: (description of error)" }
 end
 
 
 
 group #orange Login #white
-rbox over Server,Services:<wordwrap:30>Logs in an existing user (returns a new authToken).
-A --> Server: [POST] /session\n{username, password}
+rbox over Server,Services:<wordwrap:30>Logs in an existing user (returns a new authToken).[500] { "message": "Error: (description of error)" }
+A --> Server: **[POST]**\n/session\n{username, password}
 box over Services:User
 activate Services #8b8db3
 Server -> Services:login(username, #password*)
@@ -61,7 +61,7 @@ end
 
 group #green Logout #white
 rbox over Server,Services:<wordwrap:30>Logs out the user represented by the authToken.
-A -> Server: [DELETE] /session\nauthToken
+A -> Server: **[DELETE]**\n/session\nauthToken
 box over Services:User
 activate Services #8b8db3
 Server -> Services:logout(authToken)
@@ -90,7 +90,7 @@ end
 
 group #red List Games #white
 rbox over Server,Services:Gives a list of all games.
-A -> Server: [GET] /game\nauthToken
+A -> Server: **[GET]**\n/game\nauthToken
 box over Services:Game
 activate Services #pink
 Server -> Services: getGames(authToken)
@@ -114,7 +114,7 @@ end
 
 group #purple Create Game #white
 rbox over Server, Services:<wordwrap:30>Creates a new game.
-A -> Server: [POST] /game\nauthToken\n{gameName}
+A -> Server: **[POST]**\n/game\nauthToken\n{gameName}
 box over Services: Game
 activate Services #pink
 Server -> Services:createGame(authToken, gameName)
@@ -138,7 +138,7 @@ end
 
 group #yellow Join Game #black
 rbox over Server,Services:<wordwrap:30>Verifies that the specified game exists, and, if a color is specified, adds the caller as the requested color to the game. If no color is specified the user is joined as an observer. This request is idempotent.
-A -> Server: [PUT] /game\nauthToken\n{PlayerColor, gameID}
+A -> Server: **[PUT]**\n/game\nauthToken\n{PlayerColor, gameID}
 box over Services: Game
 activate Services #pink
 Server -> Services:joinGame(authToken, playerColor, gameID)
@@ -166,7 +166,7 @@ end
 group #gray Clear application #white
 
 rbox over Server,Services:<wordwrap:30>Clears the database. Removes all users, games, and authTokens.
-A -> Server: [DELETE] /db
+A -> Server: **[DELETE]**\n/db
 box over Services:Dev
 activate Services #gray
 Server -> Services:clearDatabase()
