@@ -27,7 +27,6 @@ Services -> DataAccessException: createAuth(username)
 DataAccessException -> Database:INSERT <authToken>, <username>\nINTO Auth
 DataAccessException --> Services:AuthData
 deactivate Services
-
 Services --> Server:AuthData
 deactivate Services
 Server --> A:**[200]**\n{"username": "", "authToken": ""}\n**[400]**\n{ "message": "Error: bad request" }\n**[403]**\n{ "message": "Error: already taken" }\n**[500]**\n{ "message": "Error: (description of error)" }
@@ -54,7 +53,7 @@ DataAccessException --> Services:AuthData
 deactivate Services
 Services --> Server:AuthData
 deactivate Services
-Server --> A:**[200]**\n{"username": "", "authToken: ""},
+Server --> A: **[200]**\n{"username": "", "authToken: ""}\n**[401]**\n{ "message": "Error: unauthorized" }\n**[500]**\n{ "message": "Error: (description of error)" }
 end
 
 
@@ -81,9 +80,8 @@ DataAccessException -> Database:DELETE FROM Auth \nWHERE authToken=<authToken>
 DataAccessException --> Services:
 deactivate Services
 Services --> Server:
-
 deactivate Services
-Server --> A:**[200]**
+Server --> A:**[200]**\n{}\n**[401]**\n{ "message": "Error: unauthorized" }\n**[500]**{ "message": "Error: (description of error)" }
 end
 
 
