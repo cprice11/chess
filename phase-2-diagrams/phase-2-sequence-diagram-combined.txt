@@ -7,8 +7,6 @@ fontawesome6solid f1c0 "**Database**" as db
 <background:#gray>
 entryspacing 0.6
 
-
-
 group #navy Registration #white
     rbox over A, Server:Register a new user.
     group #navy POST #white
@@ -19,15 +17,15 @@ group #navy Registration #white
     activate Services #8b8db3
     Server -> Services: register(username, password, email)
     Services -> DataAccessException: getUser(username)
-    DataAccessException -> Database: SELECT username From Users\nWHERE username=<username>
+    DataAccessException -> db: SELECT username From Users\nWHERE username=<username>
     note left of DataAccessException:403 if taken
     DataAccessException --> Services:UserData
     Services -> DataAccessException:createUser(username, password, email)
-    DataAccessException -> Database:INSERT <username>, <password>,\n<email> INTO Users
+    DataAccessException -> db:INSERT <username>, <password>,\n<email> INTO Users
     box over Services:Auth
     activate Services #b6dbb7
     Services -> DataAccessException: createAuth(username)
-    DataAccessException -> Database:INSERT <authToken>, <username>\nINTO Auth
+    DataAccessException -> db:INSERT <authToken>, <username>\nINTO Auth
     DataAccessException --> Services:AuthData
     deactivate Services
     Services --> Server:AuthData
@@ -83,7 +81,7 @@ end
 
 
 group #green Logout #white
-    rbox over Server,Services:<wordwrap:34>Logs out the user represented by the authToken.
+    rbox over A, Server:<wordwrap:34>Logs out the user represented by the authToken.
     group #navy DELETE #white
         box right of A:/session\n{authToken}
     end
@@ -94,11 +92,11 @@ group #green Logout #white
     box over Services:Auth
     activate Services #b6dbb7
     Services -> DataAccessException: verify(authToken)
-    DataAccessException -> Database:SELECT * FROM Auth \nWHERE token=authToken
+    DataAccessException -> db:SELECT * FROM Auth \nWHERE token=authToken
     note left of DataAccessException:401 on fail
     DataAccessException --> Services:AuthData
     Services -> DataAccessException: deleteAuth(authToken)
-    DataAccessException -> Database:DELETE FROM Auth \nWHERE authToken=<authToken>
+    DataAccessException -> db:DELETE FROM Auth \nWHERE authToken=<authToken>
     DataAccessException --> Services:
     deactivate Services
     Services --> Server:

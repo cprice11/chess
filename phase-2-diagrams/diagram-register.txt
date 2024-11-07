@@ -19,15 +19,15 @@ group #navy Registration #white
     activate Services #8b8db3
     Server -> Services: register(username, password, email)
     Services -> DataAccessException: getUser(username)
-    DataAccessException -> Database: SELECT username From Users\nWHERE username=<username>
+    DataAccessException -> db: SELECT username From Users\nWHERE username=<username>
     note left of DataAccessException:403 if taken
     DataAccessException --> Services:UserData
     Services -> DataAccessException:createUser(username, password, email)
-    DataAccessException -> Database:INSERT <username>, <password>,\n<email> INTO Users
+    DataAccessException -> db:INSERT <username>, <password>,\n<email> INTO Users
     box over Services:Auth
     activate Services #b6dbb7
     Services -> DataAccessException: createAuth(username)
-    DataAccessException -> Database:INSERT <authToken>, <username>\nINTO Auth
+    DataAccessException -> db:INSERT <authToken>, <username>\nINTO Auth
     DataAccessException --> Services:AuthData
     deactivate Services
     Services --> Server:AuthData
