@@ -6,3 +6,36 @@ fontawesome6solid f1c0 "**Database**" as db
 
 <background:#gray>
 entryspacing 0.6
+
+group #green Logout #white
+    rbox over Server,Services:<wordwrap:34>Logs out the user represented by the authToken.
+    group #navy DELETE #white
+        box right of A:/session\n{authToken}
+    end
+    A -> Server:
+    box over Services:User
+    activate Services #8b8db3
+    Server -> Services:logout(authToken)
+    box over Services:Auth
+    activate Services #b6dbb7
+    Services -> DataAccessException: verify(authToken)
+    DataAccessException -> Database:SELECT * FROM Auth \nWHERE token=authToken
+    note left of DataAccessException:401 on fail
+    DataAccessException --> Services:AuthData
+    Services -> DataAccessException: deleteAuth(authToken)
+    DataAccessException -> Database:DELETE FROM Auth \nWHERE authToken=<authToken>
+    DataAccessException --> Services:
+    deactivate Services
+    Services --> Server:
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{}
+    end
+    group #a00000 401 #white
+        box right of A:{ "message": "Error: unauthorized" }
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
+end
