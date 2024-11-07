@@ -19,7 +19,6 @@ public class ChessMove {
     private final boolean isLeap;
     private final ChessPosition positionSkippedByLeap;
     private final ChessPosition positionBeingCapturedByEnPassant;
-    private final boolean isPromotion;
     private final ChessPiece.PieceType promotionPiece;
 
     // King specific
@@ -53,7 +52,6 @@ public class ChessMove {
         this.isLeap = builder.isLeap;
         this.positionSkippedByLeap = builder.positionSkippedByLeap;
         this.positionBeingCapturedByEnPassant = builder.postitionBeingCapturedByEnPassant;
-        this.isPromotion = builder.isPromotion;
         this.promotionPiece = builder.promotionPiece;
         // King specific
         this.isCastle = builder.isCastle;
@@ -82,7 +80,6 @@ public class ChessMove {
         private boolean isLeap = false;
         private ChessPosition positionSkippedByLeap = null;
         private ChessPosition postitionBeingCapturedByEnPassant = null;
-        private boolean isPromotion = false;
         private ChessPiece.PieceType promotionPiece;
         // King specific
         private boolean isCastle = false;
@@ -122,7 +119,6 @@ public class ChessMove {
         public MoveBuilder promotion(ChessPiece.PieceType piece) {
             if (piece == null) return this;
             this.promotionPiece = piece;
-            this.isPromotion = true;
             return this;
         }
 
