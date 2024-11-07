@@ -52,8 +52,6 @@ public class ChessPiece {
     }
 
 
-
-
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -66,9 +64,9 @@ public class ChessPiece {
         Collection<ChessMove> moves = switch (piece.getPieceType()) {
             case PAWN -> pawnMoves(board, position, piece);
             case ROOK -> slidingPieceMoves(board, position, piece, true, false);
-//            case KNIGHT -> knightSquares(position);
+            case KNIGHT -> knightMoves(board, position, piece);
             case BISHOP -> slidingPieceMoves(board, position, piece, false, true);
-            case QUEEN -> slidingPieceMoves(board, position, piece, true,true);
+            case QUEEN -> slidingPieceMoves(board, position, piece, true, true);
 //            case KING -> kingSquares(position);
             case EN_PASSANT -> new HashSet<ChessMove>();
             default -> new HashSet<ChessMove>();
@@ -101,8 +99,10 @@ public class ChessPiece {
         ChessPosition attackRight = new ChessPosition(rank + direction, file + 1);
         ChessPiece attackedLeft = board.getPiece(attackLeft);
         ChessPiece attackedRight = board.getPiece(attackRight);
-        if (attackedLeft != null && isEnemy(attackedLeft)) visibleSquares.add(new ChessMove.MoveBuilder(position, attackLeft).capture(attackedLeft));
-        if (attackedRight != null && isEnemy(attackedRight)) visibleSquares.add(new ChessMove.MoveBuilder(position, attackRight).capture(attackedRight));
+        if (attackedLeft != null && isEnemy(attackedLeft))
+            visibleSquares.add(new ChessMove.MoveBuilder(position, attackLeft).capture(attackedLeft));
+        if (attackedRight != null && isEnemy(attackedRight))
+            visibleSquares.add(new ChessMove.MoveBuilder(position, attackRight).capture(attackedRight));
         HashSet<ChessMove> availableMoves = new HashSet<>();
         // add promotion options
         for (ChessMove.MoveBuilder move : visibleSquares) {
@@ -112,16 +112,15 @@ public class ChessPiece {
                 availableMoves.add(move.copy().promotion(PieceType.KNIGHT).build());
                 availableMoves.add(move.copy().promotion(PieceType.BISHOP).build());
                 availableMoves.add(move.copy().promotion(PieceType.QUEEN).build());
-            }
-            else availableMoves.add(move.build());
+            } else availableMoves.add(move.build());
         }
         return availableMoves;
     }
 
-    private Collection<ChessPosition> knightSquares(ChessPosition position) {
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition startingPosition, ChessPiece piece) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        int rank = position.getRank();
-        int file = position.getFile();
+        int rank = startingPosition.getRank();
+        int file = startingPosition.getFile();
         visibleSquares.add(new ChessPosition(rank - 1, file - 2));
         visibleSquares.add(new ChessPosition(rank + 1, file - 2));
         visibleSquares.add(new ChessPosition(rank + 2, file - 1));
@@ -130,7 +129,16 @@ public class ChessPiece {
         visibleSquares.add(new ChessPosition(rank + 1, file + 2));
         visibleSquares.add(new ChessPosition(rank - 2, file - 1));
         visibleSquares.add(new ChessPosition(rank - 2, file + 1));
-        return visibleSquares;
+        HashSet<ChessMove> availableMoves = new HashSet<>();
+        for (ChessPosition square : visibleSquares) {
+            if (square.isOnBoard()) {
+                ChessMove.MoveBuilder move = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
+                ChessPiece attackedPiece = board.getPiece(square);
+                if (attackedPiece == null) availableMoves.add(move.build());
+                else if (isEnemy(attackedPiece)) availableMoves.add(move.capture(attackedPiece).build());
+            }
+        }
+        return availableMoves;
     }
 
     private Collection<ChessPosition> kingSquares(ChessPosition position) {
@@ -148,9 +156,9 @@ public class ChessPiece {
         return visibleSquares;
     }
 
-    private Collection<ChessMove> slidingPieceMoves(ChessBoard board, ChessPosition startingPosition, ChessPiece piece, boolean orthoganal, boolean diagonal){
+    private Collection<ChessMove> slidingPieceMoves(ChessBoard board, ChessPosition startingPosition, ChessPiece piece, boolean orthogonal, boolean diagonal) {
         HashSet<ChessPosition> visibleSquares = new HashSet<>();
-        if (orthoganal) {
+        if (orthogonal) {
             visibleSquares.addAll(expandInDirection(board, startingPosition, 0, 1));
             visibleSquares.addAll(expandInDirection(board, startingPosition, 0, -1));
             visibleSquares.addAll(expandInDirection(board, startingPosition, 1, 0));
@@ -164,7 +172,7 @@ public class ChessPiece {
         }
         HashSet<ChessMove> availableMoves = new HashSet<>();
         for (ChessPosition square : visibleSquares) {
-            ChessMove.MoveBuilder move  = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
+            ChessMove.MoveBuilder move = new ChessMove.MoveBuilder(startingPosition, square).piece(piece);
             ChessPiece attackedPiece = board.getPiece(square);
             if (attackedPiece == null) availableMoves.add(move.build());
             else if (isEnemy(attackedPiece)) availableMoves.add(move.capture(attackedPiece).build());
