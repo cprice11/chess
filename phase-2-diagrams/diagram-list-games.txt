@@ -1,0 +1,8 @@
+fontawesome6solid f43c "**Client**\nA Terminal client of Chess" as A
+fontawesome6solid f233 "**Server**\nPublic http server" as Server
+participant "**Services**\nUser, Auth, Game, Dev" as Services
+participant "**DataAccessException**" as DataAccessException
+fontawesome6solid f1c0 "**Database**" as db
+
+<background:#gray>
+entryspacing 0.6

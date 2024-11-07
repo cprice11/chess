@@ -1,0 +1,39 @@
+fontawesome6solid f43c "**Client**\nA Terminal client of Chess" as A
+fontawesome6solid f233 "**Server**\nPublic http server" as Server
+participant "**Services**\nUser, Auth, Game, Dev" as Services
+participant "**DataAccessException**" as DataAccessException
+fontawesome6solid f1c0 "**Database**" as db
+
+<background:#gray>
+entryspacing 0.6
+
+
+
+group #gray Clear application #white
+    rbox over A, Server:<wordwrap:30>Clears the database. Removes all users, games, and authTokens.
+    group #navy DELETE #white
+        box right of A:/db
+    end
+    A -> Server: 
+    box over Services:Dev
+    activate Services #gray
+    Server -> Services:clearDatabase()
+    Services -> DataAccessException:deleteUsers()
+    DataAccessException->db:TRUNCATE TABLE Users
+    DataAccessException --> Services:
+    Services->DataAccessException:deleteGames()
+    DataAccessException->db:TRUNCATE TABLE Games
+    DataAccessException --> Services:
+    Services->DataAccessException:deleteAuth()
+    DataAccessException -> db:TRUNCATE TABLE Auth
+    DataAccessException --> Services:
+    Services --> Server:
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{}
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
+end
