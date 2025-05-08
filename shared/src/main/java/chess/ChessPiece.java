@@ -83,6 +83,8 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(myPosition);
         return switch (piece.getPieceType()) {
             case ROOK -> rookMoves(board, myPosition, piece);
+            case BISHOP -> bishopMoves(board, myPosition, piece);
+            case QUEEN -> queenMoves(board, myPosition, piece);
             default -> new HashSet<ChessMove>();
         };
     }
@@ -93,7 +95,22 @@ public class ChessPiece {
         moves.addAll(slideMoves(board, myPosition, piece, -1, 0));
         moves.addAll(slideMoves(board, myPosition, piece,0, 1));
         moves.addAll(slideMoves(board, myPosition, piece,0, -1));
-//        moves.forEach(move -> {System.out.println(move.toString() + '-' + board.getPiece(move.getEndPosition()).toString());});
+        return moves;
+    }
+
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        moves.addAll(slideMoves(board, myPosition, piece, 1, -1));
+        moves.addAll(slideMoves(board, myPosition, piece, 1, 1));
+        moves.addAll(slideMoves(board, myPosition, piece,-1, -1));
+        moves.addAll(slideMoves(board, myPosition, piece,-1, 1));
+        return moves;
+    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        moves.addAll(rookMoves(board, myPosition, piece));
+        moves.addAll(bishopMoves(board, myPosition, piece));
         return moves;
     }
 
