@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents a single chess piece
@@ -81,6 +80,39 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(myPosition);
+        return switch (piece.getPieceType()) {
+            case ROOK -> rookMoves(board, myPosition);
+            default -> new HashSet<ChessMove>();
+        };
+    }
+
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        moves.addAll(slideMoves(board, myPosition, piece, 1, 0));
+        moves.addAll(slideMoves(board, myPosition, piece, -1, 0));
+        moves.addAll(slideMoves(board, myPosition, piece,0, 1));
+        moves.addAll(slideMoves(board, myPosition, piece,0, -1));
+        return moves;
+    }
+
+    private Collection<ChessMove> slideMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, int rankIteration, int fileIteration) {
+        int startRank = myPosition.getRank();
+        int startFile = myPosition.getFile();
+        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        for (int i = 1; i < 8; i++) {
+            ChessPosition nextPosition = new ChessPosition(startRank + i * rankIteration, startFile + i * fileIteration);
+            if (!nextPosition.isOnBoard()) break;
+            ChessPiece nextPiece = board.getPiece(nextPosition);
+            ChessMove nextMove =  new ChessMove(myPosition, nextPosition, null);
+            if (nextPiece != null) {
+                if (nextPiece.getPieceType() != piece.getPieceType()) {
+                    moves.add(nextMove);
+                }
+                break;
+            }
+            moves.add(nextMove);
+        }
+        return moves;
     }
 }
