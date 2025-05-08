@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -10,7 +11,40 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    private final PieceType type;
+    private final ChessGame.TeamColor color;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece otherPiece = (ChessPiece) o;
+        return type == otherPiece.type && color == otherPiece.color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, color);
+    }
+
+    @Override
+    public String toString() {
+        String letter = switch (type) {
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BISHOP -> "B";
+            case KNIGHT -> "N";
+            case ROOK -> "R";
+            case PAWN -> "P";
+            default -> null;
+        };
+        letter = color == ChessGame.TeamColor.BLACK ? letter.toLowerCase() : letter;
+        return letter;
+    }
+
+    public ChessPiece(ChessGame.TeamColor color, ChessPiece.PieceType type) {
+        this.type = type;
+        this.color = color;
     }
 
     /**
@@ -29,14 +63,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return this.color;
     }
 
     /**
-     * @return which type of chess piece this piece is
+     * @return Which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return this.type;
     }
 
     /**
