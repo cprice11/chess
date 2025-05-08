@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Represents a single chess piece
@@ -36,7 +35,7 @@ public class ChessPiece {
             case KNIGHT -> "N";
             case ROOK -> "R";
             case PAWN -> "P";
-            default -> null;
+//            default -> null;
         };
         letter = color == ChessGame.TeamColor.BLACK ? letter.toLowerCase() : letter;
         return letter;
@@ -89,12 +88,12 @@ public class ChessPiece {
             case KNIGHT -> knightMoves(board, myPosition, piece);
             case KING -> kingMoves(board, myPosition, piece);
             case PAWN -> pawnMoves(board, myPosition, piece);
-            default -> new HashSet<ChessMove>();
+//            default -> new HashSet<ChessMove>();
         };
     }
 
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        Collection<ChessMove> moves = new HashSet<>();
         moves.addAll(slideMoves(board, myPosition, piece, 1, 0));
         moves.addAll(slideMoves(board, myPosition, piece, -1, 0));
         moves.addAll(slideMoves(board, myPosition, piece,0, 1));
@@ -103,7 +102,7 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        Collection<ChessMove> moves = new HashSet<>();
         moves.addAll(slideMoves(board, myPosition, piece, 1, -1));
         moves.addAll(slideMoves(board, myPosition, piece, 1, 1));
         moves.addAll(slideMoves(board, myPosition, piece,-1, -1));
@@ -112,7 +111,7 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        Collection<ChessMove> moves = new HashSet<>();
         moves.addAll(rookMoves(board, myPosition, piece));
         moves.addAll(bishopMoves(board, myPosition, piece));
         return moves;
@@ -121,7 +120,7 @@ public class ChessPiece {
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int currentRank = myPosition.getRank();
         int currentFile = myPosition.getFile();
-        HashSet<ChessPosition> hops = new HashSet<ChessPosition>();
+        HashSet<ChessPosition> hops = new HashSet<>();
         hops.add(new ChessPosition(currentRank + 2, currentFile - 1));
         hops.add(new ChessPosition(currentRank + 2, currentFile + 1));
         hops.add(new ChessPosition(currentRank - 2, currentFile - 1));
@@ -136,7 +135,7 @@ public class ChessPiece {
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int currentRank = myPosition.getRank();
         int currentFile = myPosition.getFile();
-        HashSet<ChessPosition> hops = new HashSet<ChessPosition>();
+        HashSet<ChessPosition> hops = new HashSet<>();
         hops.add(new ChessPosition(currentRank + 1, currentFile - 1));
         hops.add(new ChessPosition(currentRank + 1, currentFile));
         hops.add(new ChessPosition(currentRank + 1, currentFile + 1));
@@ -149,7 +148,7 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        Collection<ChessMove> moves = new HashSet<>();
         int currentRank = myPosition.getRank();
         int currentFile = myPosition.getFile();
         int advancementValue = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
@@ -173,7 +172,7 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, twoForward, null));
             }
         }
-        Collection<ChessMove> movesWithPromotion = new HashSet<ChessMove>();
+        Collection<ChessMove> movesWithPromotion = new HashSet<>();
         moves.forEach(move -> {
             if (move.getEndPosition().getRank() == promotionRank) {
                 ChessPosition start = move.getStartPosition();
@@ -193,7 +192,7 @@ public class ChessPiece {
     private Collection<ChessMove> slideMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, int rankIteration, int fileIteration) {
         int startRank = myPosition.getRank();
         int startFile = myPosition.getFile();
-        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        Collection<ChessMove> moves = new HashSet<>();
         for (int i = 1; i < 8; i++) {
             ChessPosition nextPosition = new ChessPosition(startRank + i * rankIteration, startFile + i * fileIteration);
             if (!nextPosition.isOnBoard()) break;
@@ -211,7 +210,7 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> hopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessPosition> hops) {
-        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        Collection<ChessMove> moves = new HashSet<>();
         hops.removeIf(hop -> {
             if (!hop.isOnBoard()) return true;
             ChessPiece nextPiece = board.getPiece(hop);
