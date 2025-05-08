@@ -82,7 +82,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         return switch (piece.getPieceType()) {
-            case ROOK -> rookMoves(board, myPosition);
+            case ROOK -> rookMoves(board, myPosition, piece);
             default -> new HashSet<ChessMove>();
         };
     }
@@ -93,6 +93,7 @@ public class ChessPiece {
         moves.addAll(slideMoves(board, myPosition, piece, -1, 0));
         moves.addAll(slideMoves(board, myPosition, piece,0, 1));
         moves.addAll(slideMoves(board, myPosition, piece,0, -1));
+//        moves.forEach(move -> {System.out.println(move.toString() + '-' + board.getPiece(move.getEndPosition()).toString());});
         return moves;
     }
 
@@ -106,7 +107,7 @@ public class ChessPiece {
             ChessPiece nextPiece = board.getPiece(nextPosition);
             ChessMove nextMove =  new ChessMove(myPosition, nextPosition, null);
             if (nextPiece != null) {
-                if (nextPiece.getPieceType() != piece.getPieceType()) {
+                if (nextPiece.getTeamColor() != piece.getTeamColor()) {
                     moves.add(nextMove);
                 }
                 break;
