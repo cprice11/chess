@@ -87,6 +87,8 @@ public class ChessPiece {
             case BISHOP -> bishopMoves(board, myPosition, piece);
             case QUEEN -> queenMoves(board, myPosition, piece);
             case KNIGHT -> knightMoves(board, myPosition, piece);
+            case KING -> kingMoves(board, myPosition, piece);
+            case PAWN -> pawnMoves(board, myPosition, piece);
             default -> new HashSet<ChessMove>();
         };
     }
@@ -129,6 +131,63 @@ public class ChessPiece {
         hops.add(new ChessPosition(currentRank + 1, currentFile + 2));
         hops.add(new ChessPosition(currentRank - 1, currentFile + 2));
         return hopMoves(board, myPosition, piece, hops);
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        int currentRank = myPosition.getRank();
+        int currentFile = myPosition.getFile();
+        HashSet<ChessPosition> hops = new HashSet<ChessPosition>();
+        hops.add(new ChessPosition(currentRank + 1, currentFile - 1));
+        hops.add(new ChessPosition(currentRank + 1, currentFile));
+        hops.add(new ChessPosition(currentRank + 1, currentFile + 1));
+        hops.add(new ChessPosition(currentRank, currentFile - 1));
+        hops.add(new ChessPosition(currentRank, currentFile + 1));
+        hops.add(new ChessPosition(currentRank - 1, currentFile - 1));
+        hops.add(new ChessPosition(currentRank - 1, currentFile));
+        hops.add(new ChessPosition(currentRank - 1, currentFile + 1));
+        return hopMoves(board, myPosition, piece, hops);
+    }
+
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        int currentRank = myPosition.getRank();
+        int currentFile = myPosition.getFile();
+        int advancementValue = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
+        int promotionRank = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 8 : 1;
+        boolean onStart = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? currentRank == 2 : currentRank == 7;
+        ChessPosition leftCapture = new ChessPosition(currentRank + advancementValue, currentFile - 1);
+        ChessPosition rightCapture = new ChessPosition(currentRank + advancementValue, currentFile + 1);
+        ChessPiece leftCapturePiece = board.getPiece(leftCapture);
+        ChessPiece rightCapturePiece = board.getPiece(rightCapture);
+        if (leftCapturePiece != null && leftCapturePiece.getTeamColor() != piece.getTeamColor()) {
+            moves.add(new ChessMove(myPosition, leftCapture, null));
+        }
+        if (rightCapturePiece != null && rightCapturePiece.getTeamColor() != piece.getTeamColor()) {
+            moves.add(new ChessMove(myPosition, rightCapture, null));
+        }
+        ChessPosition oneForward = new ChessPosition(currentRank + advancementValue, currentFile);
+        if (board.getPiece(oneForward) == null) {
+            moves.add(new ChessMove(myPosition, oneForward, null));
+            ChessPosition twoForward = new ChessPosition(currentRank + 2 * advancementValue, currentFile);
+            if (onStart && board.getPiece(twoForward) == null) {
+                moves.add(new ChessMove(myPosition, twoForward, null));
+            }
+        }
+        Collection<ChessMove> movesWithPromotion = new HashSet<ChessMove>();
+        moves.forEach(move -> {
+            if (move.getEndPosition().getRank() == promotionRank) {
+                ChessPosition start = move.getStartPosition();
+                ChessPosition end = move.getEndPosition();
+                movesWithPromotion.add(new ChessMove(start, end, PieceType.ROOK));
+                movesWithPromotion.add(new ChessMove(start, end, PieceType.KNIGHT));
+                movesWithPromotion.add(new ChessMove(start, end, PieceType.BISHOP));
+                movesWithPromotion.add(new ChessMove(start, end, PieceType.QUEEN));
+            }
+            else {
+                movesWithPromotion.add(move);
+            }
+        });
+        return movesWithPromotion;
     }
 
     private Collection<ChessMove> slideMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, int rankIteration, int fileIteration) {
