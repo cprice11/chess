@@ -92,6 +92,13 @@ public class ChessPiece {
         };
     }
 
+    /**
+     * Calculates all the positions a rook can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
         moves.addAll(slideMoves(board, myPosition, piece, 1, 0));
@@ -101,6 +108,13 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates all the positions a bishop can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
         moves.addAll(slideMoves(board, myPosition, piece, 1, -1));
@@ -110,6 +124,13 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates all the positions a queen can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
         moves.addAll(rookMoves(board, myPosition, piece));
@@ -117,6 +138,13 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates all the positions a knight can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int currentRank = myPosition.getRank();
         int currentFile = myPosition.getFile();
@@ -132,6 +160,13 @@ public class ChessPiece {
         return hopMoves(board, myPosition, piece, hops);
     }
 
+    /**
+     * Calculates all the positions a king can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int currentRank = myPosition.getRank();
         int currentFile = myPosition.getFile();
@@ -147,6 +182,13 @@ public class ChessPiece {
         return hopMoves(board, myPosition, piece, hops);
     }
 
+    /**
+     * Calculates all the positions a pawn can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
         int currentRank = myPosition.getRank();
@@ -189,6 +231,15 @@ public class ChessPiece {
         return movesWithPromotion;
     }
 
+    /**
+     * Calculates all the positions a chess piece can slide to unobstructed and possibly capture
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @param rankIteration how much the rank should change each step. -1, 0, or 1
+     * @param fileIteration how much the file should change each step. -1, 0, or 1
+     * @return Collection of valid moves
+     */
     private Collection<ChessMove> slideMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, int rankIteration, int fileIteration) {
         int startRank = myPosition.getRank();
         int startFile = myPosition.getFile();
@@ -209,6 +260,13 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates moves from a collection of end positions that are to empty spaces or enemy captures
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
     private Collection<ChessMove> hopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessPosition> hops) {
         Collection<ChessMove> moves = new HashSet<>();
         hops.removeIf(hop -> {
