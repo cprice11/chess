@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Represents a single chess piece
@@ -85,6 +86,7 @@ public class ChessPiece {
             case ROOK -> rookMoves(board, myPosition, piece);
             case BISHOP -> bishopMoves(board, myPosition, piece);
             case QUEEN -> queenMoves(board, myPosition, piece);
+            case KNIGHT -> knightMoves(board, myPosition, piece);
             default -> new HashSet<ChessMove>();
         };
     }
@@ -114,6 +116,21 @@ public class ChessPiece {
         return moves;
     }
 
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        int currentRank = myPosition.getRank();
+        int currentFile = myPosition.getFile();
+        HashSet<ChessPosition> hops = new HashSet<ChessPosition>();
+        hops.add(new ChessPosition(currentRank + 2, currentFile - 1));
+        hops.add(new ChessPosition(currentRank + 2, currentFile + 1));
+        hops.add(new ChessPosition(currentRank - 2, currentFile - 1));
+        hops.add(new ChessPosition(currentRank - 2, currentFile + 1));
+        hops.add(new ChessPosition(currentRank + 1, currentFile - 2));
+        hops.add(new ChessPosition(currentRank - 1, currentFile - 2));
+        hops.add(new ChessPosition(currentRank + 1, currentFile + 2));
+        hops.add(new ChessPosition(currentRank - 1, currentFile + 2));
+        return hopMoves(board, myPosition, piece, hops);
+    }
+
     private Collection<ChessMove> slideMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, int rankIteration, int fileIteration) {
         int startRank = myPosition.getRank();
         int startFile = myPosition.getFile();
@@ -131,6 +148,18 @@ public class ChessPiece {
             }
             moves.add(nextMove);
         }
+        return moves;
+    }
+
+    private Collection<ChessMove> hopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessPosition> hops) {
+        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        hops.removeIf(hop -> {
+            if (!hop.isOnBoard()) return true;
+            ChessPiece nextPiece = board.getPiece(hop);
+            if (nextPiece == null) return false;
+            return nextPiece.getTeamColor() == piece.getTeamColor();
+        });
+        hops.forEach(hop -> moves.add(new ChessMove(myPosition, hop, null)));
         return moves;
     }
 }
