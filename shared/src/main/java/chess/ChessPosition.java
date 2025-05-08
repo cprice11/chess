@@ -82,6 +82,10 @@ public class ChessPosition {
         return this.fileCharacter;
     }
 
+    public boolean isOnBoard() {
+        return this.rank >= 1 && this.rank <= 8 && this.file >= 1 && this.file <= 8;
+    }
+
     @Override
     public String toString() {
         return fileCharacter + String.valueOf(rank);
