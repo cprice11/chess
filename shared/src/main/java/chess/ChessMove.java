@@ -14,6 +14,7 @@ public class ChessMove {
     private final ChessPiece.PieceType promotionPiece;
     private boolean isCapture = false;
     private boolean canCapture = true;
+    private ChessPosition passedPosition = null;
 
     @Override
     public boolean equals(Object o) {
@@ -68,6 +69,15 @@ public class ChessMove {
 
     public ChessMove isCapture(boolean isCapture) {
         this.isCapture = isCapture;
+        return this;
+    }
+
+    public ChessPosition getEnPassant() {
+        return this.passedPosition;
+    }
+
+    public ChessMove createsEnPassant(ChessPosition passedPosition) {
+        this.passedPosition = passedPosition;
         return this;
     }
 
