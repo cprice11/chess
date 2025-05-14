@@ -3,7 +3,6 @@ package chess;
 import java.awt.*;
 
 public class ChessColor {
-    public static String reset = "\033[0m";
     private Color foreground;
     private Color background;
     private Highlight highlight;
@@ -176,4 +175,7 @@ public class ChessColor {
         calculate();
     }
 
+    public String reset() {
+        return "\033[0m";
+    }
 }
