@@ -37,7 +37,8 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN
+        PAWN,
+        EN_PASSANT
     }
 
     /**
@@ -181,7 +182,6 @@ public class ChessPiece {
         HashSet<ChessPosition> attacks = new HashSet<>();
         attacks.add(new ChessPosition(startRank + advancementValue, startFile - 1));
         attacks.add(new ChessPosition(startRank + advancementValue, startFile + 1));
-
         HashSet<ChessMove> moves = new HashSet<>(movesFromPositions(board, start, piece, attacks));
         moves.removeIf(move -> !move.getIsCapture());
 
@@ -191,7 +191,7 @@ public class ChessPiece {
             moves.add(new ChessMove(start, oneForward, null).canCapture(false));
             ChessPosition twoForward = new ChessPosition(startRank + 2 * advancementValue, startFile);
             if (onStartSquare && board.getPiece(twoForward) == null) {
-                moves.add(new ChessMove(start, twoForward, null).canCapture(false));
+                moves.add(new ChessMove(start, twoForward, null).canCapture(false).createsEnPassant(oneForward));
             }
         }
         HashSet<ChessMove> movesWithPromotion = new HashSet<>();
@@ -284,6 +284,7 @@ public class ChessPiece {
             case KNIGHT -> "\uDB82\uDC58";
             case ROOK -> "\uDB82\uDC5B";
             case PAWN -> "\uDB82\uDC59";
+            case EN_PASSANT -> "E"; // TODO: This should be a space after debugging
         };
 
     }
@@ -297,6 +298,7 @@ public class ChessPiece {
             case KNIGHT -> "N";
             case ROOK -> "R";
             case PAWN -> "P";
+            case EN_PASSANT -> "E"; // TODO: This should be a space after debugging
         };
         return color == ChessGame.TeamColor.WHITE ? pieceChar : pieceChar.toLowerCase();
     }
