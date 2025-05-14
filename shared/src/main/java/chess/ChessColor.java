@@ -3,8 +3,8 @@ package chess;
 import java.awt.*;
 
 public class ChessColor {
-    private Color foreground = Color.decode("#ffffff");
-    private Color background = Color.decode("#000000");
+    private Color foreground;
+    private Color background;
     public String reset = "\033[0m";
     public static final ColorPalette palette = new ColorPalette(
             Color.decode("#FFFFFF"), Color.decode("#000000"),
@@ -45,10 +45,10 @@ public class ChessColor {
         this.background = switch (squareColor) {
             case NONE -> switch (highlight) {
                 case NONE -> palette.surface;
-                case PRIMARY -> palette.surface;
-                case SECONDARY -> palette.surface;
-                case TERNARY -> palette.surface;
-                case ERROR -> palette.surface;
+                case PRIMARY -> palette.lightPrimary;
+                case SECONDARY -> palette.lightSecondary;
+                case TERNARY -> palette.lightTernary;
+                case ERROR -> palette.lightError;
             };
             case DARK -> switch (highlight) {
                 case NONE -> palette.darkSquare;
