@@ -13,6 +13,7 @@ public class ChessMove {
     private final ChessPosition end;
     private final ChessPiece.PieceType promotionPiece;
     private boolean isCapture = false;
+    private boolean canCapture = true;
 
     @Override
     public boolean equals(Object o) {
@@ -61,12 +62,22 @@ public class ChessMove {
         return promotionPiece;
     }
 
-    public boolean isCapture() {
+    public boolean getIsCapture() {
         return isCapture;
     }
 
-    public void setIsCapture(boolean isCapture) {
+    public ChessMove isCapture(boolean isCapture) {
         this.isCapture = isCapture;
+        return this;
+    }
+
+    public boolean getCanCapture() {
+        return canCapture;
+    }
+
+    public ChessMove canCapture(boolean canCapture) {
+        this.canCapture = canCapture;
+        return this;
     }
 
     @Override

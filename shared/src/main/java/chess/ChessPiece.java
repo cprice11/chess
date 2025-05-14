@@ -1,17 +1,10 @@
 package chess;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-/**
- * Represents a single chess piece
- * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
- */
 public class ChessPiece {
     private final ChessGame.TeamColor color;
     private final ChessPiece.PieceType type;
@@ -174,6 +167,7 @@ public class ChessPiece {
      * Calculates all the positions a pawn piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
+     *
      * @return Collection of valid moves
      */
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
@@ -189,22 +183,24 @@ public class ChessPiece {
         attacks.add(new ChessPosition(startRank + advancementValue, startFile + 1));
 
         HashSet<ChessMove> moves = new HashSet<>(movesFromPositions(board, start, piece, attacks));
-        moves.removeIf(move -> !move.isCapture());
+        moves.removeIf(move -> !move.getIsCapture());
 
         ChessPosition oneForward = new ChessPosition(startRank + advancementValue, startFile);
         ChessPiece oneForwardPiece = board.getPiece(oneForward);
         if (oneForwardPiece == null && board.isOnBoard(oneForward)) {
-            moves.add(new ChessMove(start, oneForward, null));
+            moves.add(new ChessMove(start, oneForward, null).canCapture(false));
             ChessPosition twoForward = new ChessPosition(startRank + 2 * advancementValue, startFile);
             if (onStartSquare && board.getPiece(twoForward) == null) {
-                moves.add(new ChessMove(start, twoForward, null));
+                moves.add(new ChessMove(start, twoForward, null).canCapture(false));
             }
         }
         HashSet<ChessMove> movesWithPromotion = new HashSet<>();
         moves.forEach(move -> {
             if (move.getEndPosition().getRank() == promotionRank) {
                 movesWithPromotion.addAll(getPromotions(move));
-            } else movesWithPromotion.add(move);
+            } else {
+                movesWithPromotion.add(move);
+            }
         });
         return movesWithPromotion;
     }
@@ -212,6 +208,7 @@ public class ChessPiece {
     /**
      * Returns a collection of all promotion variations of a ChessMove.
      * ROOK, KNIGHT, BISHOP, and QUEEN.
+     *
      * @param move the move that the promotions will take their start and end positions from
      * @return a collection of chess moves with all promotions
      */
@@ -248,9 +245,10 @@ public class ChessPiece {
 
     /**
      * Takes a collection of positions and returns moves calculated from them while handling captures.
-     * @param board the game board containing the pieces
-     * @param start the starting position of the move
-     * @param piece the piece on that position
+     *
+     * @param board     the game board containing the pieces
+     * @param start     the starting position of the move
+     * @param piece     the piece on that position
      * @param positions the collection of ChessPositions the moves would end on
      * @return a collection of ChessMoves
      */
@@ -262,8 +260,10 @@ public class ChessPiece {
             ChessPiece targetPiece = board.getPiece(target);
             ChessMove hopMove = new ChessMove(start, target, null);
             if (targetPiece != null) {
-                if (targetPiece.getTeamColor() == color) return;
-                hopMove.setIsCapture(true);
+                if (targetPiece.getTeamColor() == color) {
+                    return;
+                }
+                hopMove.isCapture(true);
             }
             moves.add(hopMove);
         });
