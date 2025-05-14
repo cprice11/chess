@@ -3,11 +3,6 @@ package chess;
 import java.awt.*;
 
 public class ChessColor {
-    private Color foreground;
-    private Color background;
-    private Highlight highlight;
-    private SquareColor squareColor;
-
     private ColorPalette palette = new ColorPalette(
             Color.decode("#FFFFFF"), Color.decode("#000000"),
             Color.decode("#302E2B"),
@@ -17,6 +12,11 @@ public class ChessColor {
             Color.decode("#82CBBA"), Color.decode("#46A07C"),
             Color.decode("#4EB7B4"), Color.decode("#302D29"),
             Color.decode("#F73E2C"), Color.decode("#F73E2C"));
+    private Color foreground = palette.lightText;
+    private Color background = palette.surface;
+    private Highlight highlight = Highlight.NONE;
+    private SquareColor squareColor = SquareColor.NONE;
+
 
     public enum Highlight {
         NONE,
@@ -43,13 +43,7 @@ public class ChessColor {
             Color lightError, Color darkError) {
     }
 
-    public ChessColor(ColorPalette palette, SquareColor squareColor, Highlight highlight, Color foreground) {
-        this.palette = palette;
-        this.squareColor = squareColor;
-        this.highlight = highlight;
-        this.foreground = foreground;
-        calculate();
-    }
+    public ChessColor() {}
 
     public Color getForeground() {
         return foreground;
