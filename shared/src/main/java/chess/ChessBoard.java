@@ -41,6 +41,7 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         if (piece == null || position == null) return;
         pieces.put(position, piece);
+        System.out.println(prettyBoard());
     }
 
     /**
@@ -118,35 +119,32 @@ public class ChessBoard {
     }
 
     public String prettyBoard() {
-        StringBuilder test = new StringBuilder();
-        ChessColor color = new ChessColor().lightSquare().lightPiece() ;
-        test.append(color);
-        test.append(" Hello ");
-        test.append(color.getResetString());
-        return test.toString();
-//        String fileLabels = "   a  b  c  d  e  f  g  h \n";
-//        StringBuilder board = new StringBuilder(fileLabels);
-//        for (int rank = BOARD_SIZE; rank > 0; rank--) {
-//            board.append(rank + " ");
-//            for (int file = 1; file <= BOARD_SIZE; file++) {
-//
-//            }
-//
-//        }
-
+        ChessColor color = new ChessColor() ;
+        String fileLabels = "   a  b  c  d  e  f  g  h \n";
+        StringBuilder board = new StringBuilder();
+        board.append(color).append(fileLabels);
+        for (int rank = BOARD_SIZE; rank > 0; rank--) {
+            board.append(color.noHighlight().noSquare());
+            board.append(" ").append(rank).append(" ");
+            for (int file = 1; file <= BOARD_SIZE; file++) {
+                color = (rank + file) % 2 == 1 ? color.lightSquare() : color.darkSquare();
+                ChessPosition square = new ChessPosition(rank, file);
+                ChessPiece piece = pieces.get(square);
+                String pieceString = piece == null ? " " : piece.prettyString();
+                if (piece != null)
+                    color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? color.lightPiece() : color.darkPiece();
+                board.append(color);
+                board.append(" ").append(pieceString).append(" ");
+            }
+            board.append(color.noHighlight().noSquare());
+            board.append(" ").append(rank).append(" ").append('\n');
+        }
+        board.append(fileLabels).append(color.getResetString());
+        return board.toString();
     }
 
     @Override
     public String toString() {
-        return prettyBoard();
-//        StringBuilder board = new StringBuilder();
-//        for (int rank = BOARD_SIZE; rank > 0; rank--) {
-//            for (int file = 1; file <= BOARD_SIZE; file++) {
-//                ChessPiece piece = getPiece(new ChessPosition(rank, file));
-//                board.append(piece == null ? "   " : " " + piece + " ");
-//            }
-//            board.append('\n');
-//        }
-//        return board.toString();
+        return fenString();
     }
 }
