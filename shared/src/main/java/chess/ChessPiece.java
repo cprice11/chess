@@ -271,18 +271,19 @@ public class ChessPiece {
     }
 
     /**
-     * returns the Unicode chess symbol for the piece.
+     * returns the Nerdfont chess symbol for the piece.
+     * Search for "md-chess" on <a href="https://www.nerdfonts.com/cheat-sheet">nerdfonts.com/cheat-sheet</a>
      * colors are swapped because it matches the default console
      * color scheme better and is irrelevant when colors are added.
      */
     public String prettyString() {
         return switch (type) {
-            case KING -> "♚";
-            case QUEEN -> "♛";
-            case BISHOP -> "♝";
-            case KNIGHT -> "♞";
-            case ROOK -> "♜";
-            case PAWN -> "♟";
+            case KING -> "\uDB82\uDC57";
+            case QUEEN -> "\uDB82\uDC5A";
+            case BISHOP -> "\uDB82\uDC5C";
+            case KNIGHT -> "\uDB82\uDC58";
+            case ROOK -> "\uDB82\uDC5B";
+            case PAWN -> "\uDB82\uDC59";
         };
 
     }
