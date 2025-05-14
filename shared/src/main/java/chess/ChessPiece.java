@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -275,20 +276,13 @@ public class ChessPiece {
      * color scheme better and is irrelevant when colors are added.
      */
     public String prettyString() {
-        return switch (toString()) {
-            case "K" -> "♚";
-            case "Q" -> "♛";
-            case "B" -> "♝";
-            case "N" -> "♞";
-            case "R" -> "♜";
-            case "P" -> "♟";
-            case "k" -> "♔";
-            case "q" -> "♕";
-            case "b" -> "♗";
-            case "n" -> "♘";
-            case "r" -> "♖";
-            case "p" -> "♙";
-            default -> "?";
+        return switch (type) {
+            case KING -> "♚";
+            case QUEEN -> "♛";
+            case BISHOP -> "♝";
+            case KNIGHT -> "♞";
+            case ROOK -> "♜";
+            case PAWN -> "♟";
         };
 
     }
