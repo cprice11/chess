@@ -60,10 +60,18 @@ public class ChessBoard {
         return pieces;
     }
 
+    /**
+     * Returns the first position of a king of the given color on the board.
+     * returns null if no matching king is on the board.
+     *
+     * @param color The color of the king to search for.
+     * @return The position of the king or null
+     */
     public ChessPosition getKingSquare(ChessGame.TeamColor color) {
         ChessPiece king = new ChessPiece(color, ChessPiece.PieceType.KING);
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
-            if (entry.getValue() == king) {
+            ChessPiece piece = entry.getValue();
+            if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color) {
                 return entry.getKey();
             }
         }
