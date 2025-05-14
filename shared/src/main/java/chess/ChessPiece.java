@@ -269,6 +269,30 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * returns the Unicode chess symbol for the piece.
+     * colors are swapped because it matches the default console
+     * color scheme better and is irrelevant when colors are added.
+     */
+    public String prettyString() {
+        return switch (toString()) {
+            case "K" -> "♚";
+            case "Q" -> "♛";
+            case "B" -> "♝";
+            case "N" -> "♞";
+            case "R" -> "♜";
+            case "P" -> "♟";
+            case "k" -> "♔";
+            case "q" -> "♕";
+            case "b" -> "♗";
+            case "n" -> "♘";
+            case "r" -> "♖";
+            case "p" -> "♙";
+            default -> "?";
+        };
+
+    }
+
     @Override
     public String toString() {
         String pieceChar = switch (type) {
