@@ -169,7 +169,7 @@ public class ChessColor {
         calculate();
     }
 
-    public String reset() {
+    public String getResetString() {
         return "\033[0m";
     }
 }

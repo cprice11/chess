@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Hashtable;
 import java.util.Objects;
 
 /**
@@ -12,8 +10,9 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
-    public final int BOARD_SIZE = 8;
+    private final Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
+
+    public static final int BOARD_SIZE = 8;
 
     @Override
     public boolean equals(Object o) {
@@ -30,7 +29,7 @@ public class ChessBoard {
     }
 
     public ChessBoard() {
-        
+        System.out.println(prettyBoard());
     }
 
     /**
@@ -40,6 +39,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
+        if (piece == null || position == null) return;
         pieces.put(position, piece);
     }
 
@@ -84,54 +84,69 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
     }
 
-    public String getFEN() {
-        // Turn
-        StringBuilder FEN = new StringBuilder(getFENBoard()).append(" ");
-//        FEN.append((turn == ChessGame.TeamColor.WHITE) ? "w" : "b").append(" ");
-        // Castling
-        StringBuilder castling = new StringBuilder();
-//        castling.append(whiteCanCastleShort ? "K" : "");
-//        castling.append(whiteCanCastleLong ? "Q" : "");
-//        castling.append(blackCanCastleShort ? "k" : "");
-//        castling.append(blackCanCastleLong ? "q" : "");
-        if (castling.isEmpty()) castling.append("-");
-        FEN.append(castling).append(" ");
-        // enPassant available
-//        FEN.append((enPassantTarget == null) ? "-" : enPassantTarget).append(" ");
-        // "Clock"
-//        FEN.append(getHalfMoveClock()).append(" ");
-//        FEN.append(getFullMoveNumber());
-        return FEN.toString();
-    }
-
-    public String getFENBoard() {
-        // Join rows together with slashes
-        List<String> rows = new ArrayList<>(8);
-        for (int i = BOARD_SIZE; i > 0; i--) {
-            rows.add(getFENRow(i));
-        }
-        return String.join("/", rows);
-    }
-
-    public String getFENRow(int rank) {
-        int numBlanks = 0;
-        StringBuilder row = new StringBuilder();
-        for (int i = 1; i <= BOARD_SIZE; i++) {
-            ChessPiece piece = getPiece(new ChessPosition(rank, i));
-            if (piece == null) numBlanks++;
-            else {
-                if (numBlanks != 0) row.append(numBlanks);
-                numBlanks = 0;
-                row.append(piece.toString());
-            }
-        }
-        if (numBlanks != 0) row.append(numBlanks);
-        return row.toString();
-    }
-
     public boolean isOnBoard(ChessPosition position) {
         int rank = position.getRank();
         int file = position.getFile();
-        return rank > 0 && rank <= BOARD_SIZE && file > 0 && file <= BOARD_SIZE;
+        return rank >= 1 && rank <= BOARD_SIZE && file >= 1 && file <= BOARD_SIZE;
+    }
+
+    public String fenString() {
+        StringBuilder board = new StringBuilder(fenRow(BOARD_SIZE));
+        for (int rank = BOARD_SIZE - 1; rank > 0; rank--) {
+            board.append('/');
+            board.append(fenRow(rank));
+        }
+        return board.toString();
+    }
+
+    private String fenRow(int rank) {
+        StringBuilder row = new StringBuilder();
+        int numBlanks = 0;
+        for (int file = 1; file <= BOARD_SIZE ; file++) {
+            ChessPiece piece = pieces.get(new ChessPosition(rank, file));
+            if (piece == null) {
+                numBlanks += 1;
+            } else {
+                if (numBlanks > 0) {
+                    row.append(numBlanks);
+                    numBlanks = 0;
+                }
+                row.append(piece);
+            }
+        }
+        return row.toString();
+    }
+
+    public String prettyBoard() {
+        StringBuilder test = new StringBuilder();
+        ChessColor color = new ChessColor(null).lightSquare().lightPiece().build();
+        test.append(color);
+        test.append(" Hello ");
+        test.append(color.getResetString());
+        return test.toString();
+//        String fileLabels = "   a  b  c  d  e  f  g  h \n";
+//        StringBuilder board = new StringBuilder(fileLabels);
+//        for (int rank = BOARD_SIZE; rank > 0; rank--) {
+//            board.append(rank + " ");
+//            for (int file = 1; file <= BOARD_SIZE; file++) {
+//
+//            }
+//
+//        }
+
+    }
+
+    @Override
+    public String toString() {
+        return prettyBoard();
+//        StringBuilder board = new StringBuilder();
+//        for (int rank = BOARD_SIZE; rank > 0; rank--) {
+//            for (int file = 1; file <= BOARD_SIZE; file++) {
+//                ChessPiece piece = getPiece(new ChessPosition(rank, file));
+//                board.append(piece == null ? "   " : " " + piece + " ");
+//            }
+//            board.append('\n');
+//        }
+//        return board.toString();
     }
 }
