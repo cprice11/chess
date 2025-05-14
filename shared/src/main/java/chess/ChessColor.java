@@ -6,7 +6,7 @@ public class ChessColor {
     private ColorPalette palette = new ColorPalette(
             Color.decode("#FFFFFF"), Color.decode("#000000"),
             Color.decode("#302E2B"),
-            Color.decode("#F9F9F9"), Color.decode("#EBECD0"),
+            Color.decode("#F9F9F9"), Color.decode("#343534"),
             Color.decode("#B9CA42"), Color.decode("#739552"),
             Color.decode("#F5F580"), Color.decode("#B9CA42"),
             Color.decode("#82CBBA"), Color.decode("#46A07C"),
