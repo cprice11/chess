@@ -29,9 +29,7 @@ public class ChessBoard {
         return Objects.hashCode(pieces);
     }
 
-    public ChessBoard() {
-        System.out.println(prettyBoard());
-    }
+    public ChessBoard() {}
 
     /**
      * Adds a chess piece to the chessboard
@@ -42,7 +40,6 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         if (piece == null || position == null) return;
         pieces.put(position, piece);
-        System.out.println(prettyBoard());
     }
 
     /**
@@ -54,6 +51,10 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return pieces.get(position);
+    }
+
+    public ChessPiece removePiece(ChessPosition position) {
+        return pieces.remove(position);
     }
 
     /**
@@ -146,6 +147,10 @@ public class ChessBoard {
         board.append(fileLabels).append('\n');
         board.append("FEN: ").append(fenString()).append('\n').append(color.getResetString());
         return board.toString();
+    }
+
+    public void printBoard() {
+        System.out.println(prettyBoard());
     }
 
     @Override

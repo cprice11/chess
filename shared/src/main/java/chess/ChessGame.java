@@ -28,7 +28,7 @@ public class ChessGame {
     }
 
     public ChessGame() {
-
+        board.resetBoard();
     }
 
     /**
@@ -74,7 +74,17 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
+        ChessPiece piece = board.getPiece(start);
+        if (piece == null) throw new InvalidMoveException("There is no piece at this move's start.");
+        TeamColor color = piece.getTeamColor();
+        if (color != getTeamTurn()) throw new InvalidMoveException("It is not this piece's turn.");
+        if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException("This piece can't move to that position.");
+        board.removePiece(start);
+        board.addPiece(end, promotionPiece == null ? piece : new ChessPiece(color, promotionPiece));
+        board.printBoard();
     }
 
     /**
