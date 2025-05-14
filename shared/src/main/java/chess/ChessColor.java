@@ -3,10 +3,13 @@ package chess;
 import java.awt.*;
 
 public class ChessColor {
+    public static String reset = "\033[0m";
     private Color foreground;
     private Color background;
-    public String reset = "\033[0m";
-    public static final ColorPalette palette = new ColorPalette(
+    private Highlight highlight;
+    private SquareColor squareColor;
+
+    private ColorPalette palette = new ColorPalette(
             Color.decode("#FFFFFF"), Color.decode("#000000"),
             Color.decode("#302E2B"),
             Color.decode("#F9F9F9"), Color.decode("#EBECD0"),
@@ -31,41 +34,22 @@ public class ChessColor {
     }
 
     public record ColorPalette(
-        Color lightText, Color darkText,
-        Color surface,
-        Color lightPiece, Color darkPiece,
-        Color lightSquare, Color darkSquare,
-        Color lightPrimary, Color darkPrimary,
-        Color lightSecondary, Color darkSecondary,
-        Color lightTernary, Color darkTernary,
-        Color lightError, Color darkError) {}
+            Color lightText, Color darkText,
+            Color surface,
+            Color lightPiece, Color darkPiece,
+            Color lightSquare, Color darkSquare,
+            Color lightPrimary, Color darkPrimary,
+            Color lightSecondary, Color darkSecondary,
+            Color lightTernary, Color darkTernary,
+            Color lightError, Color darkError) {
+    }
 
     public ChessColor(ColorPalette palette, SquareColor squareColor, Highlight highlight, Color foreground) {
+        this.palette = palette;
+        this.squareColor = squareColor;
+        this.highlight = highlight;
         this.foreground = foreground;
-        this.background = switch (squareColor) {
-            case NONE -> switch (highlight) {
-                case NONE -> palette.surface;
-                case PRIMARY -> palette.lightPrimary;
-                case SECONDARY -> palette.lightSecondary;
-                case TERNARY -> palette.lightTernary;
-                case ERROR -> palette.lightError;
-            };
-            case DARK -> switch (highlight) {
-                case NONE -> palette.darkSquare;
-                case PRIMARY -> palette.darkPrimary;
-                case SECONDARY -> palette.darkSecondary;
-                case TERNARY -> palette.darkTernary;
-                case ERROR -> palette.darkError;
-            };
-            case LIGHT -> switch (highlight) {
-                case NONE -> palette.lightSquare;
-                case PRIMARY -> palette.lightPrimary;
-                case SECONDARY -> palette.lightSecondary;
-                case TERNARY -> palette.lightTernary;
-                case ERROR -> palette.lightError;
-            };
-        };
-
+        calculate();
     }
 
     public Color getForeground() {
@@ -84,6 +68,41 @@ public class ChessColor {
         this.background = background;
     }
 
+    public ColorPalette getColorPalette() {
+        return this.palette;
+    }
+
+    public void setColorPalette(ColorPalette palette) {
+        this.palette = palette;
+        calculate();
+    }
+
+    private void calculate() {
+        this.background = switch (squareColor) {
+            case NONE -> switch (highlight) {
+                case NONE -> palette.surface;
+                case PRIMARY -> palette.lightPrimary;
+                case SECONDARY -> palette.lightSecondary;
+                case TERNARY -> palette.lightTernary;
+                case ERROR -> palette.lightError;
+            };
+            case LIGHT -> switch (highlight) {
+                case NONE -> palette.lightSquare;
+                case PRIMARY -> palette.lightPrimary;
+                case SECONDARY -> palette.lightSecondary;
+                case TERNARY -> palette.lightTernary;
+                case ERROR -> palette.lightError;
+            };
+            case DARK -> switch (highlight) {
+                case NONE -> palette.darkSquare;
+                case PRIMARY -> palette.darkPrimary;
+                case SECONDARY -> palette.darkSecondary;
+                case TERNARY -> palette.darkTernary;
+                case ERROR -> palette.darkError;
+            };
+        };
+    }
+
     private String foregroundString() {
         return "38;2;" + foreground.getRed() + ";" + foreground.getGreen() + ";" + foreground.getBlue();
     }
@@ -97,69 +116,64 @@ public class ChessColor {
         return "\u001B[" + foregroundString() + ";" + backgroundString() + "m";
     }
 
-    public static class ChessColorBuilder {
-        ColorPalette palette;
-        Color foreground;
-        Highlight highlight;
-        SquareColor squareColor;
+    // foreground modifiers
+    public void lightPiece() {
+        this.foreground = palette.lightPiece;
+    }
 
-        public ChessColorBuilder(ColorPalette palette) {
-            this.palette = palette;
-            foreground = palette.lightText;
-            highlight = Highlight.NONE;
-            squareColor = SquareColor.NONE;
-        }
-        public ChessColorBuilder darkPiece() {
-            this.foreground = palette.darkPiece;
-            return this;
-        };
-        public ChessColorBuilder lightPiece() {
-            this.foreground = palette.darkPiece;
-            return this;
-        };
-        public ChessColorBuilder lightText() {
-            this.foreground = palette.lightText;
-            return this;
-        };
-        public ChessColorBuilder darkText() {
-            this.foreground = palette.darkText;
-            return this;
-        };
-        public ChessColorBuilder lightSquare() {
-            squareColor = SquareColor.LIGHT;
-            return this;
-        };
-        public ChessColorBuilder darkSquare() {
-            squareColor = SquareColor.DARK;
-            return this;
-        };
-        public ChessColorBuilder noSquare() {
-            squareColor = SquareColor.NONE;
-            return this;
-        };
-        public ChessColorBuilder primaryHighlight() {
-            highlight = Highlight.PRIMARY;
-            return this;
-        };
-        public ChessColorBuilder secondaryHighlight() {
-            highlight = Highlight.SECONDARY;
-            return this;
-        };
-        public ChessColorBuilder ternaryHighlight() {
-            highlight = Highlight.TERNARY;
-            return this;
-        };
-        public ChessColorBuilder errorHighlight() {
-            highlight = Highlight.ERROR;
-            return this;
-        };
-        public ChessColorBuilder noHighlight() {
-            highlight = Highlight.NONE;
-            return this;
-        };
-        public ChessColor build() {
-            return new ChessColor(palette, squareColor, highlight, foreground);
-        };
+    public void darkPiece() {
+        this.foreground = palette.darkPiece;
+    }
+
+    public void lightText() {
+        this.foreground = palette.lightText;
+    }
+
+    public void darkText() {
+        this.foreground = palette.darkText;
+    }
+
+
+    // background modifiers
+    public void lightSquare() {
+        squareColor = SquareColor.LIGHT;
+        calculate();
+
+    }
+
+    public void darkSquare() {
+        squareColor = SquareColor.DARK;
+        calculate();
+    }
+
+    public void noSquare() {
+        squareColor = SquareColor.NONE;
+        calculate();
+    }
+
+    public void primaryHighlight() {
+        highlight = Highlight.PRIMARY;
+        calculate();
+    }
+
+    public void secondaryHighlight() {
+        highlight = Highlight.SECONDARY;
+        calculate();
+    }
+
+    public void ternaryHighlight() {
+        highlight = Highlight.TERNARY;
+        calculate();
+    }
+
+    public void errorHighlight() {
+        highlight = Highlight.ERROR;
+        calculate();
+    }
+
+    public void noHighlight() {
+        highlight = Highlight.NONE;
+        calculate();
     }
 
 }
