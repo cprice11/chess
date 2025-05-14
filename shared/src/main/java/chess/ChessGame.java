@@ -95,7 +95,7 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         board.printBoard();
         ChessPosition kingSquare = board.getKingSquare(teamColor);
-        Collection<ChessPosition> threatenedPositions = board.getThreatenedPositions(getOtherTeam(teamColor));
+        Collection<ChessPosition> threatenedPositions = board.getPositionsThreatenedByColor(getOtherTeam(teamColor));
         return threatenedPositions.contains(kingSquare);
     }
 

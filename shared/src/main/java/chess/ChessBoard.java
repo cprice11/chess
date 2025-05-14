@@ -84,7 +84,7 @@ public class ChessBoard {
      * @return a collection of positions showing all squares
      * that could be captured on
      */
-    public Collection<ChessPosition> getThreatenedPositions(ChessGame.TeamColor color) {
+    public Collection<ChessPosition> getPositionsThreatenedByColor(ChessGame.TeamColor color) {
         HashSet<ChessMove> opponentMoves = new HashSet<>(
                 getMovesForColor(color == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)
         );
