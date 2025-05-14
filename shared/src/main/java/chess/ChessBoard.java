@@ -11,6 +11,7 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private final Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
+    private static final boolean useSymbols = true;
 
     public static final int BOARD_SIZE = 8;
 
@@ -107,6 +108,7 @@ public class ChessBoard {
             ChessPiece piece = pieces.get(new ChessPosition(rank, file));
             if (piece == null) {
                 numBlanks += 1;
+                if (numBlanks == BOARD_SIZE) row.append(numBlanks);
             } else {
                 if (numBlanks > 0) {
                     row.append(numBlanks);
@@ -130,16 +132,19 @@ public class ChessBoard {
                 color = (rank + file) % 2 == 1 ? color.lightSquare() : color.darkSquare();
                 ChessPosition square = new ChessPosition(rank, file);
                 ChessPiece piece = pieces.get(square);
-                String pieceString = piece == null ? " " : piece.prettyString();
-                if (piece != null)
+                String pieceString = " ";
+                if (piece != null) {
+                    pieceString = useSymbols ? piece.prettyString() : piece.toString();
                     color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? color.lightPiece() : color.darkPiece();
+                }
                 board.append(color);
                 board.append(" ").append(pieceString).append(" ");
             }
-            board.append(color.noHighlight().noSquare());
+            board.append(color.noHighlight().noSquare().lightText());
             board.append(" ").append(rank).append(" ").append('\n');
         }
-        board.append(fileLabels).append(color.getResetString());
+        board.append(fileLabels).append('\n');
+        board.append("FEN: ").append(fenString()).append('\n').append(color.getResetString());
         return board.toString();
     }
 
