@@ -119,7 +119,7 @@ public class ChessBoard {
 
     public String prettyBoard() {
         StringBuilder test = new StringBuilder();
-        ChessColor color = new ChessColor(null).lightSquare().lightPiece().build();
+        ChessColor color = new ChessColor().lightSquare().lightPiece() ;
         test.append(color);
         test.append(" Hello ");
         test.append(color.getResetString());

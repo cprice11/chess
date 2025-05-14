@@ -110,63 +110,74 @@ public class ChessColor {
     }
 
     // foreground modifiers
-    public void lightPiece() {
+    public ChessColor lightPiece() {
         this.foreground = palette.lightPiece;
+        return this;
     }
 
-    public void darkPiece() {
+    public ChessColor darkPiece() {
         this.foreground = palette.darkPiece;
+        return this;
     }
 
-    public void lightText() {
+    public ChessColor lightText() {
         this.foreground = palette.lightText;
+        return this;
     }
 
-    public void darkText() {
+    public ChessColor darkText() {
         this.foreground = palette.darkText;
+        return this;
     }
 
 
     // background modifiers
-    public void lightSquare() {
+    public ChessColor lightSquare() {
         squareColor = SquareColor.LIGHT;
         calculate();
-
+        return this;
     }
 
-    public void darkSquare() {
+    public ChessColor darkSquare() {
         squareColor = SquareColor.DARK;
         calculate();
+        return this;
     }
 
-    public void noSquare() {
+    public ChessColor noSquare() {
         squareColor = SquareColor.NONE;
         calculate();
+        return this;
     }
 
-    public void primaryHighlight() {
+    public ChessColor primaryHighlight() {
         highlight = Highlight.PRIMARY;
         calculate();
+        return this;
     }
 
-    public void secondaryHighlight() {
+    public ChessColor secondaryHighlight() {
         highlight = Highlight.SECONDARY;
         calculate();
+        return this;
     }
 
-    public void ternaryHighlight() {
+    public ChessColor ternaryHighlight() {
         highlight = Highlight.TERNARY;
         calculate();
+        return this;
     }
 
-    public void errorHighlight() {
+    public ChessColor errorHighlight() {
         highlight = Highlight.ERROR;
         calculate();
+        return this;
     }
 
-    public void noHighlight() {
+    public ChessColor noHighlight() {
         highlight = Highlight.NONE;
         calculate();
+        return this;
     }
 
     public String getResetString() {
