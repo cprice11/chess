@@ -11,6 +11,13 @@ import java.util.*;
 public class ChessGame {
     private TeamColor turn = TeamColor.WHITE;
     private ChessBoard board = new ChessBoard();
+    private boolean whiteCanCastleKingside = true;
+    private boolean whiteCanCastleQueenside = true;
+    private boolean blackCanCastleKingside = true;
+    private boolean blackCanCastleQueenside = true;
+    private ChessPosition enPassant = null;
+    private int halfMoveClock = 0;
+    private int fullMoveNumber = 1;
 
     @Override
     public boolean equals(Object o) {
@@ -140,5 +147,28 @@ public class ChessGame {
 
     public TeamColor getOtherTeam(TeamColor color) {
         return color == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+    }
+
+    public String fenString() {
+        StringBuilder fenString = new StringBuilder(board.positionFenString());
+        fenString.append(' ').append(turn == TeamColor.WHITE ? 'w' : 'b').append(' ');
+        if (whiteCanCastleKingside || whiteCanCastleQueenside || blackCanCastleKingside || blackCanCastleQueenside) {
+            fenString.append(whiteCanCastleKingside ? 'K' : null);
+            fenString.append(whiteCanCastleQueenside ? 'Q' : null);
+            fenString.append(blackCanCastleKingside ? 'k' : null);
+            fenString.append(blackCanCastleQueenside ? 'q' : null);
+        } else fenString.append('-');
+        fenString.append(' ');
+        if (enPassant == null) fenString.append('-');
+        else fenString.append(enPassant);
+        fenString.append(' ');
+        fenString.append(halfMoveClock).append(' ');
+        fenString.append(fullMoveNumber);
+        return fenString.toString();
+    }
+
+    @Override
+    public String toString() {
+        return fenString();
     }
 }
