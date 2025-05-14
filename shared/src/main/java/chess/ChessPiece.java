@@ -1,6 +1,9 @@
 package chess;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -9,41 +12,26 @@ import java.util.*;
  * signature of the existing methods.
  */
 public class ChessPiece {
-
-    private final PieceType type;
     private final ChessGame.TeamColor color;
+    private final ChessPiece.PieceType type;
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessPiece otherPiece = (ChessPiece) o;
-        return type == otherPiece.type && color == otherPiece.color;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return color == that.color && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, color);
+        return Objects.hash(color, type);
     }
 
-    @Override
-    public String toString() {
-        String letter = switch (type) {
-            case KING -> "K";
-            case QUEEN -> "Q";
-            case BISHOP -> "B";
-            case KNIGHT -> "N";
-            case ROOK -> "R";
-            case PAWN -> "P";
-//            default -> null;
-        };
-        letter = color == ChessGame.TeamColor.BLACK ? letter.toLowerCase() : letter;
-        return letter;
-    }
-
-    public ChessPiece(ChessGame.TeamColor color, ChessPiece.PieceType type) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.color = pieceColor;
         this.type = type;
-        this.color = color;
     }
 
     /**
@@ -62,14 +50,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return this.color;
+        return color;
     }
 
     /**
-     * @return Which type of chess piece this piece is
+     * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        return this.type;
+        return type;
     }
 
     /**
@@ -82,194 +70,215 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         return switch (piece.getPieceType()) {
-            case ROOK -> rookMoves(board, myPosition, piece);
-            case BISHOP -> bishopMoves(board, myPosition, piece);
-            case QUEEN -> queenMoves(board, myPosition, piece);
-            case KNIGHT -> knightMoves(board, myPosition, piece);
             case KING -> kingMoves(board, myPosition, piece);
+            case QUEEN -> queenMoves(board, myPosition, piece);
+            case BISHOP -> bishopMoves(board, myPosition, piece);
+            case KNIGHT -> knightMoves(board, myPosition, piece);
+            case ROOK -> rookMoves(board, myPosition, piece);
             case PAWN -> pawnMoves(board, myPosition, piece);
-//            default -> new HashSet<ChessMove>();
         };
     }
 
     /**
-     * Calculates all the positions a rook can move to
+     * Calculates all the positions a king piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        Collection<ChessMove> moves = new HashSet<>();
-        moves.addAll(slideMoves(board, myPosition, piece, 1, 0));
-        moves.addAll(slideMoves(board, myPosition, piece, -1, 0));
-        moves.addAll(slideMoves(board, myPosition, piece,0, 1));
-        moves.addAll(slideMoves(board, myPosition, piece,0, -1));
-        return moves;
-    }
-
-    /**
-     * Calculates all the positions a bishop can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     */
-    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        Collection<ChessMove> moves = new HashSet<>();
-        moves.addAll(slideMoves(board, myPosition, piece, 1, -1));
-        moves.addAll(slideMoves(board, myPosition, piece, 1, 1));
-        moves.addAll(slideMoves(board, myPosition, piece,-1, -1));
-        moves.addAll(slideMoves(board, myPosition, piece,-1, 1));
-        return moves;
-    }
-
-    /**
-     * Calculates all the positions a queen can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     */
-    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        Collection<ChessMove> moves = new HashSet<>();
-        moves.addAll(rookMoves(board, myPosition, piece));
-        moves.addAll(bishopMoves(board, myPosition, piece));
-        return moves;
-    }
-
-    /**
-     * Calculates all the positions a knight can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     */
-    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        int currentRank = myPosition.getRank();
-        int currentFile = myPosition.getFile();
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
         HashSet<ChessPosition> hops = new HashSet<>();
-        hops.add(new ChessPosition(currentRank + 2, currentFile - 1));
-        hops.add(new ChessPosition(currentRank + 2, currentFile + 1));
-        hops.add(new ChessPosition(currentRank - 2, currentFile - 1));
-        hops.add(new ChessPosition(currentRank - 2, currentFile + 1));
-        hops.add(new ChessPosition(currentRank + 1, currentFile - 2));
-        hops.add(new ChessPosition(currentRank - 1, currentFile - 2));
-        hops.add(new ChessPosition(currentRank + 1, currentFile + 2));
-        hops.add(new ChessPosition(currentRank - 1, currentFile + 2));
-        return movesFromPositions(board, myPosition, piece, hops);
+        int startRank = start.getRank();
+        int startFile = start.getFile();
+        hops.add(new ChessPosition(startRank + 1, startFile - 1));
+        hops.add(new ChessPosition(startRank + 1, startFile));
+        hops.add(new ChessPosition(startRank + 1, startFile + 1));
+        hops.add(new ChessPosition(startRank, startFile - 1));
+        hops.add(new ChessPosition(startRank, startFile + 1));
+        hops.add(new ChessPosition(startRank - 1, startFile - 1));
+        hops.add(new ChessPosition(startRank - 1, startFile));
+        hops.add(new ChessPosition(startRank - 1, startFile + 1));
+        return movesFromPositions(board, start, piece, hops);
     }
 
     /**
-     * Calculates all the positions a king can move to
+     * Calculates all the positions a queen piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        int currentRank = myPosition.getRank();
-        int currentFile = myPosition.getFile();
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        moves.addAll(rookMoves(board, start, piece));
+        moves.addAll(bishopMoves(board, start, piece));
+        return moves;
+    }
+
+    /**
+     * Calculates all the positions a bishop piece can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        moves.addAll(slidingMoves(board, start, piece, 1, -1));
+        moves.addAll(slidingMoves(board, start, piece, 1, 1));
+        moves.addAll(slidingMoves(board, start, piece, -1, -1));
+        moves.addAll(slidingMoves(board, start, piece, -1, 1));
+        return moves;
+    }
+
+    /**
+     * Calculates all the positions a knight piece can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
         HashSet<ChessPosition> hops = new HashSet<>();
-        hops.add(new ChessPosition(currentRank + 1, currentFile - 1));
-        hops.add(new ChessPosition(currentRank + 1, currentFile));
-        hops.add(new ChessPosition(currentRank + 1, currentFile + 1));
-        hops.add(new ChessPosition(currentRank, currentFile - 1));
-        hops.add(new ChessPosition(currentRank, currentFile + 1));
-        hops.add(new ChessPosition(currentRank - 1, currentFile - 1));
-        hops.add(new ChessPosition(currentRank - 1, currentFile));
-        hops.add(new ChessPosition(currentRank - 1, currentFile + 1));
-        return movesFromPositions(board, myPosition, piece, hops);
+        int startRank = start.getRank();
+        int startFile = start.getFile();
+        hops.add(new ChessPosition(startRank + 2, startFile - 1));
+        hops.add(new ChessPosition(startRank + 2, startFile + 1));
+        hops.add(new ChessPosition(startRank + 1, startFile + 2));
+        hops.add(new ChessPosition(startRank - 1, startFile + 2));
+        hops.add(new ChessPosition(startRank - 2, startFile + 1));
+        hops.add(new ChessPosition(startRank - 2, startFile - 1));
+        hops.add(new ChessPosition(startRank - 1, startFile - 2));
+        hops.add(new ChessPosition(startRank + 1, startFile - 2));
+        return movesFromPositions(board, start, piece, hops);
     }
 
     /**
-     * Calculates all the positions a pawn can move to
+     * Calculates all the positions a rook piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        Collection<ChessMove> moves = new HashSet<>();
-        int currentRank = myPosition.getRank();
-        int currentFile = myPosition.getFile();
-        int advancementValue = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
-        int promotionRank = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? 8 : 1;
-        boolean onStart = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? currentRank == 2 : currentRank == 7;
-        ChessPosition leftCapture = new ChessPosition(currentRank + advancementValue, currentFile - 1);
-        ChessPosition rightCapture = new ChessPosition(currentRank + advancementValue, currentFile + 1);
-        ChessPiece leftCapturePiece = board.getPiece(leftCapture);
-        ChessPiece rightCapturePiece = board.getPiece(rightCapture);
-        if (leftCapturePiece != null && leftCapturePiece.getTeamColor() != piece.getTeamColor()) {
-            moves.add(new ChessMove(myPosition, leftCapture, null));
-        }
-        if (rightCapturePiece != null && rightCapturePiece.getTeamColor() != piece.getTeamColor()) {
-            moves.add(new ChessMove(myPosition, rightCapture, null));
-        }
-        ChessPosition oneForward = new ChessPosition(currentRank + advancementValue, currentFile);
-        if (board.getPiece(oneForward) == null) {
-            moves.add(new ChessMove(myPosition, oneForward, null));
-            ChessPosition twoForward = new ChessPosition(currentRank + 2 * advancementValue, currentFile);
-            if (onStart && board.getPiece(twoForward) == null) {
-                moves.add(new ChessMove(myPosition, twoForward, null));
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        moves.addAll(slidingMoves(board, start, piece, 1, 0));
+        moves.addAll(slidingMoves(board, start, piece, -1, 0));
+        moves.addAll(slidingMoves(board, start, piece, 0, 1));
+        moves.addAll(slidingMoves(board, start, piece, 0, -1));
+        return moves;
+    }
+
+    /**
+     * Calculates all the positions a pawn piece can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     * @return Collection of valid moves
+     */
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
+        ChessGame.TeamColor color = piece.getTeamColor();
+        int startRank = start.getRank();
+        int startFile = start.getFile();
+        int advancementValue = color == ChessGame.TeamColor.WHITE ? 1 : -1;
+        int promotionRank = color == ChessGame.TeamColor.WHITE ? 8 : 1;
+        boolean onStartSquare = color == ChessGame.TeamColor.WHITE ? startRank == 2 : startRank == 7;
+
+        HashSet<ChessPosition> attacks = new HashSet<>();
+        attacks.add(new ChessPosition(startRank + advancementValue, startFile - 1));
+        attacks.add(new ChessPosition(startRank + advancementValue, startFile + 1));
+
+        HashSet<ChessMove> moves = new HashSet<>(movesFromPositions(board, start, piece, attacks));
+        moves.removeIf(move -> !move.isCapture());
+
+        ChessPosition oneForward = new ChessPosition(startRank + advancementValue, startFile);
+        ChessPiece oneForwardPiece = board.getPiece(oneForward);
+        if (oneForwardPiece == null && board.isOnBoard(oneForward)) {
+            moves.add(new ChessMove(start, oneForward, null));
+            ChessPosition twoForward = new ChessPosition(startRank + 2 * advancementValue, startFile);
+            if (onStartSquare && board.getPiece(twoForward) == null) {
+                moves.add(new ChessMove(start, twoForward, null));
             }
         }
-        Collection<ChessMove> movesWithPromotion = new HashSet<>();
+        HashSet<ChessMove> movesWithPromotion = new HashSet<>();
         moves.forEach(move -> {
             if (move.getEndPosition().getRank() == promotionRank) {
-                ChessPosition start = move.getStartPosition();
-                ChessPosition end = move.getEndPosition();
-                movesWithPromotion.add(new ChessMove(start, end, PieceType.ROOK));
-                movesWithPromotion.add(new ChessMove(start, end, PieceType.KNIGHT));
-                movesWithPromotion.add(new ChessMove(start, end, PieceType.BISHOP));
-                movesWithPromotion.add(new ChessMove(start, end, PieceType.QUEEN));
-            }
-            else {
-                movesWithPromotion.add(move);
-            }
+                movesWithPromotion.addAll(getPromotions(move));
+            } else movesWithPromotion.add(move);
         });
         return movesWithPromotion;
     }
 
     /**
-     * Calculates all the positions a chess piece can slide to unobstructed and possibly capture
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @param rankIteration how much the rank should change each step. -1, 0, or 1
-     * @param fileIteration how much the file should change each step. -1, 0, or 1
-     * @return Collection of valid moves
+     * Returns a collection of all promotion variations of a ChessMove.
+     * ROOK, KNIGHT, BISHOP, and QUEEN.
+     * @param move the move that the promotions will take their start and end positions from
+     * @return a collection of chess moves with all promotions
      */
-    private Collection<ChessMove> slideMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, int rankIteration, int fileIteration) {
-        int startRank = myPosition.getRank();
-        int startFile = myPosition.getFile();
-        Collection<ChessPosition> squares = new HashSet<>();
-        for (int i = 1; i < 8; i++) {
-            squares.add(new ChessPosition(startRank + i * rankIteration, startFile + i * fileIteration));
-        }
-        return movesFromPositions(board, myPosition, piece, squares);
+    private Collection<ChessMove> getPromotions(ChessMove move) {
+        Collection<ChessMove> promotions = new ArrayList<>();
+        promotions.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), PieceType.ROOK));
+        promotions.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), PieceType.KNIGHT));
+        promotions.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), PieceType.BISHOP));
+        promotions.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), PieceType.QUEEN));
+        return promotions;
     }
 
     /**
-     * Calculates moves from a collection of end positions that are to empty spaces or enemy captures
+     * Calculates all the positions a chess piece can slide to in a given direction
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> movesFromPositions(ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessPosition> positions) {
-        Collection<ChessMove> moves = new HashSet<>();
-        positions.forEach(targetPosition -> {
-            if (!board.isOnBoard(targetPosition)) return;
-            ChessPiece target = board.getPiece(targetPosition);
-            ChessMove move = new ChessMove(myPosition, targetPosition, null);
-            if (target == null) {
-                moves.add(move);
-            } else if (target.getTeamColor() != piece.getTeamColor()) {
-                move.setIsCapture(true);
-                moves.add(move);
+    private Collection<ChessMove> slidingMoves(ChessBoard board, ChessPosition start, ChessPiece piece, int rankIncrement, int fileIncrement) {
+        HashSet<ChessPosition> visiblePositions = new HashSet<>();
+        int startRank = start.getRank();
+        int startFile = start.getFile();
+
+        for (int i = 1; i <= ChessBoard.BOARD_SIZE; i++) {
+            ChessPosition nextSpace = new ChessPosition(startRank + i * rankIncrement, startFile + i * fileIncrement);
+            if (!board.isOnBoard(nextSpace)) break;
+            visiblePositions.add(nextSpace);
+            ChessPiece nextPiece = board.getPiece(nextSpace);
+            if (nextPiece != null) break;
+        }
+        return movesFromPositions(board, start, piece, visiblePositions);
+    }
+
+    /**
+     * Takes a collection of positions and returns moves calculated from them while handling captures.
+     * @param board the game board containing the pieces
+     * @param start the starting position of the move
+     * @param piece the piece on that position
+     * @param positions the collection of ChessPositions the moves would end on
+     * @return a collection of ChessMoves
+     */
+    private Collection<ChessMove> movesFromPositions(ChessBoard board, ChessPosition start, ChessPiece piece, Collection<ChessPosition> positions) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        ChessGame.TeamColor color = piece.getTeamColor();
+        positions.forEach(target -> {
+            if (!board.isOnBoard(target)) return;
+            ChessPiece targetPiece = board.getPiece(target);
+            ChessMove hopMove = new ChessMove(start, target, null);
+            if (targetPiece != null) {
+                if (targetPiece.getTeamColor() == color) return;
+                hopMove.setIsCapture(true);
             }
+            moves.add(hopMove);
         });
         return moves;
+    }
+
+    @Override
+    public String toString() {
+        String pieceChar = switch (type) {
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BISHOP -> "B";
+            case KNIGHT -> "N";
+            case ROOK -> "R";
+            case PAWN -> "P";
+        };
+        return color == ChessGame.TeamColor.WHITE ? pieceChar : pieceChar.toLowerCase();
     }
 }

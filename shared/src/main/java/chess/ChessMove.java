@@ -9,11 +9,10 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessMove {
-    private final ChessPosition startPosition;
-    private final ChessPosition endPosition;
+    private final ChessPosition start;
+    private final ChessPosition end;
     private final ChessPiece.PieceType promotionPiece;
-
-    boolean isCapture = false;
+    private boolean isCapture = false;
 
     @Override
     public boolean equals(Object o) {
@@ -21,18 +20,20 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(getStartPosition(), chessMove.getStartPosition()) && Objects.equals(getEndPosition(), chessMove.getEndPosition()) && getPromotionPiece() == chessMove.getPromotionPiece();
+        return     Objects.equals(start, chessMove.start)
+                && Objects.equals(end, chessMove.end)
+                && getPromotionPiece() == chessMove.getPromotionPiece();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStartPosition(), getEndPosition(), getPromotionPiece());
+        return Objects.hash(start, end, getPromotionPiece());
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
-        this.startPosition = startPosition;
-        this.endPosition = endPosition;
+        this.start = startPosition;
+        this.end = endPosition;
         this.promotionPiece = promotionPiece;
     }
 
@@ -40,14 +41,14 @@ public class ChessMove {
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
-        return startPosition;
+        return start;
     }
 
     /**
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
-        return endPosition;
+        return end;
     }
 
     /**
@@ -60,18 +61,26 @@ public class ChessMove {
         return promotionPiece;
     }
 
-    public void setIsCapture(boolean isCapture) {
-        this.isCapture = isCapture;
-    }
-
     public boolean isCapture() {
         return isCapture;
     }
 
+    public void setIsCapture(boolean isCapture) {
+        this.isCapture = isCapture;
+    }
+
     @Override
     public String toString() {
-        String promotionString = promotionPiece == null ? "" : promotionPiece.toString();
-        char separationChar = isCapture ? 'x' : '-';
-        return startPosition.toString() + separationChar + endPosition.toString() + promotionString;
+        String promotionString = promotionPiece == null ? "" :
+                "!" + switch (promotionPiece) {
+                    case KING -> "K";
+                    case QUEEN -> "Q";
+                    case BISHOP -> "B";
+                    case KNIGHT -> "N";
+                    case ROOK -> "R";
+                    case PAWN -> "P";
+                };
+        String separator = isCapture ? "x" : "-";
+        return start.toString() + separator + end.toString() + promotionString;
     }
 }
