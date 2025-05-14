@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -94,7 +93,10 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        board.printBoard();
+        ChessPosition kingSquare = board.getKingSquare(teamColor);
+        Collection<ChessPosition> threatenedPositions = board.getThreatenedPositions(getOtherTeam(teamColor));
+        return threatenedPositions.contains(kingSquare);
     }
 
     /**
@@ -134,5 +136,9 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    public TeamColor getOtherTeam(TeamColor color) {
+        return color == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 }

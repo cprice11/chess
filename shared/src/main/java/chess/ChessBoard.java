@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.Hashtable;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -57,6 +56,64 @@ public class ChessBoard {
         return pieces.remove(position);
     }
 
+    public Map<ChessPosition, ChessPiece> getPieces() {
+        return pieces;
+    }
+
+    public ChessPosition getKingSquare(ChessGame.TeamColor color) {
+        ChessPiece king = new ChessPiece(color, ChessPiece.PieceType.KING);
+        for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
+            if (entry.getValue() == king) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns all spaces the given team could capture on.
+     * @param color the color of the team
+     * @return a collection of positions showing all squares
+     * that could be captured on
+     */
+    public Collection<ChessPosition> getThreatenedPositions(ChessGame.TeamColor color) {
+        HashSet<ChessMove> opponentMoves = new HashSet<>(
+                getMovesForColor(color == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)
+        );
+        HashSet<ChessPosition> threatenedPositions = new HashSet<>();
+        for (ChessMove move : opponentMoves) {
+            if (move.getCanCapture()) {
+                threatenedPositions.add(move.getEndPosition());
+            }
+        }
+        return threatenedPositions;
+    }
+
+    public Collection<ChessMove> getCaptures(ChessGame.TeamColor color) {
+        HashSet<ChessMove> opponentMoves = new HashSet<>(getMovesForColor(color));
+        opponentMoves.removeIf(move -> !move.getIsCapture());
+        return opponentMoves;
+    }
+
+    public Collection<ChessPosition> getPositionsByColor(ChessGame.TeamColor color) {
+        HashSet<ChessPosition> teamPositions = new HashSet<>();
+        for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
+            if (entry.getValue().getTeamColor() == color) {
+                teamPositions.add(entry.getKey());
+            }
+        }
+        return teamPositions;
+    }
+
+    public Collection<ChessMove> getMovesForColor(ChessGame.TeamColor color) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        for (ChessPosition position : getPositionsByColor(color)) {
+            ChessPiece piece = getPiece(position);
+            moves.addAll(piece.pieceMoves(this, position));
+        }
+        return moves;
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
@@ -105,7 +162,7 @@ public class ChessBoard {
     private String fenRow(int rank) {
         StringBuilder row = new StringBuilder();
         int numBlanks = 0;
-        for (int file = 1; file <= BOARD_SIZE ; file++) {
+        for (int file = 1; file <= BOARD_SIZE; file++) {
             ChessPiece piece = pieces.get(new ChessPosition(rank, file));
             if (piece == null) {
                 numBlanks += 1;
@@ -122,7 +179,7 @@ public class ChessBoard {
     }
 
     public String prettyBoard() {
-        ChessColor color = new ChessColor() ;
+        ChessColor color = new ChessColor();
         String fileLabels = "   a  b  c  d  e  f  g  h \n";
         StringBuilder board = new StringBuilder();
         board.append(color).append(fileLabels);
