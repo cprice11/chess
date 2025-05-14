@@ -13,6 +13,8 @@ public class ChessMove {
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
 
+    boolean isCapture = false;
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -58,9 +60,18 @@ public class ChessMove {
         return promotionPiece;
     }
 
+    public void setIsCapture(boolean isCapture) {
+        this.isCapture = isCapture;
+    }
+
+    public boolean isCapture() {
+        return isCapture;
+    }
+
     @Override
     public String toString() {
         String promotionString = promotionPiece == null ? "" : promotionPiece.toString();
-        return startPosition.toString() + endPosition.toString() + promotionString;
+        char separationChar = isCapture ? 'x' : '-';
+        return startPosition.toString() + separationChar + endPosition.toString() + promotionString;
     }
 }

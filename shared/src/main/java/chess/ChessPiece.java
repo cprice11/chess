@@ -157,7 +157,7 @@ public class ChessPiece {
         hops.add(new ChessPosition(currentRank - 1, currentFile - 2));
         hops.add(new ChessPosition(currentRank + 1, currentFile + 2));
         hops.add(new ChessPosition(currentRank - 1, currentFile + 2));
-        return hopMoves(board, myPosition, piece, hops);
+        return movesFromPositions(board, myPosition, piece, hops);
     }
 
     /**
@@ -179,7 +179,7 @@ public class ChessPiece {
         hops.add(new ChessPosition(currentRank - 1, currentFile - 1));
         hops.add(new ChessPosition(currentRank - 1, currentFile));
         hops.add(new ChessPosition(currentRank - 1, currentFile + 1));
-        return hopMoves(board, myPosition, piece, hops);
+        return movesFromPositions(board, myPosition, piece, hops);
     }
 
     /**
@@ -243,21 +243,11 @@ public class ChessPiece {
     private Collection<ChessMove> slideMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, int rankIteration, int fileIteration) {
         int startRank = myPosition.getRank();
         int startFile = myPosition.getFile();
-        Collection<ChessMove> moves = new HashSet<>();
+        Collection<ChessPosition> squares = new HashSet<>();
         for (int i = 1; i < 8; i++) {
-            ChessPosition nextPosition = new ChessPosition(startRank + i * rankIteration, startFile + i * fileIteration);
-            if (!nextPosition.isOnBoard()) break;
-            ChessPiece nextPiece = board.getPiece(nextPosition);
-            ChessMove nextMove =  new ChessMove(myPosition, nextPosition, null);
-            if (nextPiece != null) {
-                if (nextPiece.getTeamColor() != piece.getTeamColor()) {
-                    moves.add(nextMove);
-                }
-                break;
-            }
-            moves.add(nextMove);
+            squares.add(new ChessPosition(startRank + i * rankIteration, startFile + i * fileIteration));
         }
-        return moves;
+        return movesFromPositions(board, myPosition, piece, squares);
     }
 
     /**
@@ -267,15 +257,19 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> hopMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessPosition> hops) {
+    private Collection<ChessMove> movesFromPositions(ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessPosition> positions) {
         Collection<ChessMove> moves = new HashSet<>();
-        hops.removeIf(hop -> {
-            if (!hop.isOnBoard()) return true;
-            ChessPiece nextPiece = board.getPiece(hop);
-            if (nextPiece == null) return false;
-            return nextPiece.getTeamColor() == piece.getTeamColor();
+        positions.forEach(targetPosition -> {
+            if (!board.isOnBoard(targetPosition)) return;
+            ChessPiece target = board.getPiece(targetPosition);
+            ChessMove move = new ChessMove(myPosition, targetPosition, null);
+            if (target == null) {
+                moves.add(move);
+            } else if (target.getTeamColor() != piece.getTeamColor()) {
+                move.setIsCapture(true);
+                moves.add(move);
+            }
         });
-        hops.forEach(hop -> moves.add(new ChessMove(myPosition, hop, null)));
         return moves;
     }
 }

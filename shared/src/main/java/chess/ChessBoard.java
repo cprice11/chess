@@ -128,4 +128,10 @@ public class ChessBoard {
         if (numBlanks != 0) row.append(numBlanks);
         return row.toString();
     }
+
+    public boolean isOnBoard(ChessPosition position) {
+        int rank = position.getRank();
+        int file = position.getFile();
+        return rank > 0 && rank <= BOARD_SIZE && file > 0 && file <= BOARD_SIZE;
+    }
 }
