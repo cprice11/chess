@@ -16,6 +16,7 @@ public class ChessGame {
     private boolean blackCanCastleKingside = true;
     private boolean blackCanCastleQueenside = true;
     private ChessPosition enPassant = null;
+    private ChessPosition positionVulnerableToEnPassant = null;
     private int halfMoveClock = 0;
     private int fullMoveNumber = 1;
 
@@ -87,10 +88,31 @@ public class ChessGame {
         if (piece == null) throw new InvalidMoveException("There is no piece at this move's start.");
         TeamColor color = piece.getTeamColor();
         if (color != getTeamTurn()) throw new InvalidMoveException("It is not this piece's turn.");
+        if (move.getIsCastle) {
+            makeCastle(move);
+            return;
+        }
+        if (move.isEnPassantCapture) {
+            makeEnPassantCapture(move);
+            return;
+        }
         if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException("This piece can't move to that position.");
         board.removePiece(start);
         board.addPiece(end, promotionPiece == null ? piece : new ChessPiece(color, promotionPiece));
+        enPassant = move.getEnPassant();
+        if (enPassant != null) {
+            board.addPiece(enPassant, new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
+            positionVulnerableToEnPassant = end;
+        }
         board.printBoard();
+    }
+
+    private void makeCastle(ChessMove move) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    private void makeEnPassantCapture(ChessMove move) {
+        throw new RuntimeException("Not implemented");
     }
 
     /**
