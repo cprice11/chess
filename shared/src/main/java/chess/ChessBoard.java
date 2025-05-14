@@ -156,7 +156,7 @@ public class ChessBoard {
         return rank >= 1 && rank <= BOARD_SIZE && file >= 1 && file <= BOARD_SIZE;
     }
 
-    public String fenString() {
+    public String positionFenString() {
         StringBuilder board = new StringBuilder(fenRow(BOARD_SIZE));
         for (int rank = BOARD_SIZE - 1; rank > 0; rank--) {
             board.append('/');
@@ -208,7 +208,7 @@ public class ChessBoard {
             board.append(" ").append(rank).append(" ").append('\n');
         }
         board.append(fileLabels).append('\n');
-        board.append("FEN: ").append(fenString()).append('\n').append(color.getResetString());
+        board.append("FEN: ").append(positionFenString()).append('\n').append(color.getResetString());
         return board.toString();
     }
 
@@ -218,6 +218,6 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return fenString();
+        return positionFenString();
     }
 }
