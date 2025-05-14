@@ -85,9 +85,7 @@ public class ChessBoard {
      * that could be captured on
      */
     public Collection<ChessPosition> getPositionsThreatenedByColor(ChessGame.TeamColor color) {
-        HashSet<ChessMove> opponentMoves = new HashSet<>(
-                getMovesForColor(color == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE)
-        );
+        HashSet<ChessMove> opponentMoves = new HashSet<>(getMovesForColor(color));
         HashSet<ChessPosition> threatenedPositions = new HashSet<>();
         for (ChessMove move : opponentMoves) {
             if (move.getCanCapture()) {
