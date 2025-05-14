@@ -90,7 +90,7 @@ public class ChessGame {
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
-     * @return True if the specified team is in check
+     * @return True if the specified team is in check, false otherwise.
      */
     public boolean isInCheck(TeamColor teamColor) {
         board.printBoard();
