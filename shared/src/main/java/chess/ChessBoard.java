@@ -173,7 +173,6 @@ public class ChessBoard {
             ChessPiece piece = pieces.get(new ChessPosition(rank, file));
             if (piece == null) {
                 numBlanks += 1;
-                if (numBlanks == BOARD_SIZE) row.append(numBlanks);
             } else {
                 if (numBlanks > 0) {
                     row.append(numBlanks);
@@ -181,6 +180,9 @@ public class ChessBoard {
                 }
                 row.append(piece);
             }
+        }
+        if (numBlanks > 0) {
+            row.append(numBlanks);
         }
         return row.toString();
     }
