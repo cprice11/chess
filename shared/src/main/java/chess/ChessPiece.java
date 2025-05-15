@@ -82,10 +82,14 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition start, ChessPiece piece) { // TODO: Castling
+        HashSet<ChessMove> moves = new HashSet<>();
         HashSet<ChessPosition> hops = new HashSet<>();
         int startRank = start.getRank();
         int startFile = start.getFile();
+        ChessGame.TeamColor color = piece.getTeamColor();
+        int homeRank = color == ChessGame.TeamColor.WHITE ? 1 : 8;
+        boolean onStartSquare = startRank == homeRank && startFile == 5; // Would need
         hops.add(new ChessPosition(startRank + 1, startFile - 1));
         hops.add(new ChessPosition(startRank + 1, startFile));
         hops.add(new ChessPosition(startRank + 1, startFile + 1));
@@ -94,7 +98,18 @@ public class ChessPiece {
         hops.add(new ChessPosition(startRank - 1, startFile - 1));
         hops.add(new ChessPosition(startRank - 1, startFile));
         hops.add(new ChessPosition(startRank - 1, startFile + 1));
-        return movesFromPositions(board, start, piece, hops);
+        moves.addAll(movesFromPositions(board, start, piece, hops));
+        if (onStartSquare) {
+            ChessPosition shortCastle = new ChessPosition(homeRank, 7);
+            ChessPosition shortCastleRookStart = new ChessPosition(homeRank, 8);
+            ChessPosition shortCastleRookEnd = new ChessPosition(homeRank, 6);
+            ChessPosition longCastle = new ChessPosition(homeRank, 3);
+            ChessPosition longCastleRookStart = new ChessPosition(homeRank, 1);
+            ChessPosition longCastleRookEnd = new ChessPosition(homeRank, 4);
+            moves.add(new ChessMove(start, shortCastle, null).isCastle(shortCastleRookStart, shortCastleRookEnd));
+            moves.add(new ChessMove(start, longCastle, null).isCastle(longCastleRookStart, longCastleRookEnd));
+        }
+        return moves;
     }
 
     /**
