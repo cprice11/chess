@@ -95,6 +95,10 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         validateMove(move);
+        TeamColor color = board.getPiece(move.getStartPosition()).getTeamColor();
+        if (color != getTeamTurn()) {
+            throw new InvalidMoveException("It is not this piece's turn.");
+        }
         updateFlags(move);
         // use special case methods if applicable
         if (move.isCastle()) {
@@ -114,7 +118,6 @@ public class ChessGame {
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
         ChessPiece piece = board.getPiece(start);
-        TeamColor color = piece.getTeamColor();
 
         board.removePiece(start);
         board.addPiece(end, promotionPiece == null ? piece : new ChessPiece(color, promotionPiece));
@@ -131,9 +134,6 @@ public class ChessGame {
             throw new InvalidMoveException("There is no piece at this move's start.");
         }
         TeamColor color = piece.getTeamColor();
-        if (color != getTeamTurn()) {
-            throw new InvalidMoveException("It is not this piece's turn.");
-        }
         if (!piece.pieceMoves(board, start).contains(move)) {
             throw new InvalidMoveException("This piece can't move to that position.");
         }
@@ -146,21 +146,18 @@ public class ChessGame {
         if (isInCheck(color)) {
             throw new InvalidMoveException("Cannot castle while in check");
         }
-        switch (color) { // Throw if king or relevant rook has moved.
-            case WHITE:
-                if (move.isLongCastle() && !whiteCanLongCastle) {
-                    throw new InvalidMoveException("White cannot long castle");
-                } else if (move.isShortCastle() && !whiteCanShortCastle) {
-                    throw new InvalidMoveException("White cannot short castle");
-                }
-                ;
-            case BLACK:
-                if (move.isLongCastle() && !blackCanLongCastle) {
-                    throw new InvalidMoveException("Black cannot long castle");
-                } else if (move.isShortCastle() && !blackCanShortCastle) {
-                    throw new InvalidMoveException("Black cannot short castle");
-                }
-                ;
+        if (color == TeamColor.WHITE) { // Throw if king or relevant rook has moved.
+            if (move.isLongCastle() && !whiteCanLongCastle) {
+                throw new InvalidMoveException("White cannot long castle");
+            } else if (move.isShortCastle() && !whiteCanShortCastle) {
+                throw new InvalidMoveException("White cannot short castle");
+            }
+        } else {
+            if (move.isLongCastle() && !blackCanLongCastle) {
+                throw new InvalidMoveException("Black cannot long castle");
+            } else if (move.isShortCastle() && !blackCanShortCastle) {
+                throw new InvalidMoveException("Black cannot short castle");
+            }
         }
         int homeRank = color == TeamColor.WHITE ? 1 : 8;
 
@@ -224,8 +221,7 @@ public class ChessGame {
             } else {
                 blackCanLongCastle = blackCanShortCastle = false;
             }
-        }
-        else if (type == ChessPiece.PieceType.ROOK) {
+        } else if (type == ChessPiece.PieceType.ROOK) {
             ChessPosition start = move.getStartPosition();
             if (start.equals(new ChessPosition(1, 1))) {
                 whiteCanLongCastle = false;
@@ -242,7 +238,9 @@ public class ChessGame {
         } else if (type == ChessPiece.PieceType.PAWN) {
             halfMoveClock = 0; // resets on pawn advance
         }
-        if (move.isCapture()) halfMoveClock = 0; // or captures
+        if (move.isCapture()) {
+            halfMoveClock = 0; // or captures
+        }
         fullMoveNumber += color == TeamColor.BLACK ? 1 : 0; // Increment clock on black turns
 
         turn = getOtherTeam(turn);
