@@ -9,20 +9,6 @@ public class ChessPosition {
     private final int rank;
     private final int file;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessPosition that = (ChessPosition) o;
-        return getRank() == that.getRank() && getFile() == that.getFile();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getRank(), getFile());
-    }
-
     public ChessPosition(int rank, int file) {
         this.rank = rank;
         this.file = file;
@@ -60,6 +46,9 @@ public class ChessPosition {
         return getFile();
     }
 
+    /**
+     * @return the letter of the position's file from a - h or '?'
+     */
     public char getFileChar() {
         return switch (file) {
             case 1 -> 'a';
@@ -72,6 +61,20 @@ public class ChessPosition {
             case 8 -> 'h';
             default -> '?';
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPosition that = (ChessPosition) o;
+        return getRank() == that.getRank() && getFile() == that.getFile();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRank(), getFile());
     }
 
     @Override

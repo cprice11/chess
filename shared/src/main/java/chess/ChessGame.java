@@ -18,20 +18,6 @@ public class ChessGame {
     private int halfMoveClock = 0;
     private int fullMoveNumber = 1;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessGame chessGame = (ChessGame) o;
-        return turn == chessGame.turn && Objects.equals(getBoard(), chessGame.getBoard());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(turn, getBoard());
-    }
-
     public ChessGame() {
         board.resetBoard();
     }
@@ -120,7 +106,17 @@ public class ChessGame {
         }
     }
 
+    /**
+     * Moves the pieces necessary for a given move on a given board.
+     * No other attributes are changed.
+     *
+     * @param move  the move to execute on the board.
+     * @param board the board the move is executed on.
+     */
     public void movePieces(ChessMove move, ChessBoard board) {
+        /* TODO: Some edge cases here might throw a exception if the wrong board is passed
+         * TODO:    It should either not do anything or throw an exception
+         */
         // use special case methods if applicable
         if (move.capturesByEnPassant()) {
             makeEnPassantCaptureMove(move, board);
@@ -147,7 +143,15 @@ public class ChessGame {
         makeStandardMove(move, board);
     }
 
+    /**
+     * Implicitly confirms a move is legal or throws an InvalidMoveException if it isn't.
+     * Doesn't check for turn so moves can be checked while waiting for opponent.
+     *
+     * @param move a ChessMove to validate
+     * @throws InvalidMoveException if move is illegal.
+     */
     private void validateMove(ChessMove move) throws InvalidMoveException {
+        // TODO: Might be worth checking for checkmate.
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece piece = board.getPiece(start);
@@ -254,12 +258,16 @@ public class ChessGame {
         board.addPiece(move.getEndPosition(), piece);
     }
 
+    /**
+     * Sets the games state flags following the execution of the given move.
+     *
+     * @param move the most recently executed move.
+     */
     private void updateFlags(ChessMove move) {
         moveHistory.add(move);
         ChessPiece piece = board.getPiece(move.getStartPosition());
         ChessPiece.PieceType type = piece.getPieceType();
         TeamColor color = piece.getTeamColor();
-
         // Castling flags
         if (type == ChessPiece.PieceType.KING) {
             if (color == TeamColor.WHITE) {
@@ -323,7 +331,7 @@ public class ChessGame {
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
-     * no valid moves
+     * no valid moves but not being in check.
      *
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
@@ -361,6 +369,11 @@ public class ChessGame {
         return color == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
+    /**
+     * The state of the game as expressed in <a href="https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation">Forsyth–Edwards Notation (FEN)</a>
+     *
+     * @return a FEN string
+     */
     public String fenString() {
         StringBuilder fenString = new StringBuilder(board.positionFenString());
         fenString.append(' ').append(turn == TeamColor.WHITE ? 'w' : 'b').append(' ');
@@ -382,6 +395,20 @@ public class ChessGame {
         fenString.append(halfMoveClock).append(' ');
         fenString.append(fullMoveNumber);
         return fenString.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return turn == chessGame.turn && Objects.equals(getBoard(), chessGame.getBoard());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(turn, getBoard());
     }
 
     @Override

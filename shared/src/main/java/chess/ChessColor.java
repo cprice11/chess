@@ -20,7 +20,6 @@ public class ChessColor {
     private Highlight highlight = Highlight.NONE;
     private SquareColor squareColor = SquareColor.NONE;
 
-
     public enum Highlight {
         NONE,
         PRIMARY,
@@ -49,70 +48,6 @@ public class ChessColor {
     public ChessColor() {
     }
 
-    public Color getForeground() {
-        return foreground;
-    }
-
-    public void setForeground(Color foreground) {
-        this.foreground = foreground;
-    }
-
-    public Color getBackground() {
-        return background;
-    }
-
-    public void setBackground(Color background) {
-        this.background = background;
-    }
-
-    public ColorPalette getColorPalette() {
-        return this.palette;
-    }
-
-    public void setColorPalette(ColorPalette palette) {
-        this.palette = palette;
-        calculate();
-    }
-
-    private void calculate() {
-        this.background = switch (squareColor) {
-            case NONE -> switch (highlight) {
-                case NONE -> palette.surface;
-                case PRIMARY -> palette.lightPrimary;
-                case SECONDARY -> palette.lightSecondary;
-                case TERNARY -> palette.lightTernary;
-                case ERROR -> palette.lightError;
-            };
-            case LIGHT -> switch (highlight) {
-                case NONE -> palette.lightSquare;
-                case PRIMARY -> palette.lightPrimary;
-                case SECONDARY -> palette.lightSecondary;
-                case TERNARY -> palette.lightTernary;
-                case ERROR -> palette.lightError;
-            };
-            case DARK -> switch (highlight) {
-                case NONE -> palette.darkSquare;
-                case PRIMARY -> palette.darkPrimary;
-                case SECONDARY -> palette.darkSecondary;
-                case TERNARY -> palette.darkTernary;
-                case ERROR -> palette.darkError;
-            };
-        };
-    }
-
-    private String foregroundString() {
-        return "38;2;" + foreground.getRed() + ";" + foreground.getGreen() + ";" + foreground.getBlue();
-    }
-
-    private String backgroundString() {
-        return "48;2;" + background.getRed() + ";" + background.getGreen() + ";" + background.getBlue();
-    }
-
-    @Override
-    public String toString() {
-        return "\u001B[" + foregroundString() + ";" + backgroundString() + "m";
-    }
-
     // foreground modifiers
     public ChessColor lightPiece() {
         this.foreground = palette.lightPiece;
@@ -133,7 +68,6 @@ public class ChessColor {
         this.foreground = palette.darkText;
         return this;
     }
-
 
     // background modifiers
     public ChessColor lightSquare() {
@@ -184,7 +118,96 @@ public class ChessColor {
         return this;
     }
 
+    /**
+     * @return the currently set foreground color
+     */
+    public Color getForeground() {
+        return foreground;
+    }
+
+    /**
+     * Directly set the foreground color instead of using decorators.
+     *
+     * @param foreground the color to update the foreground to
+     */
+    public void setForeground(Color foreground) {
+        this.foreground = foreground;
+    }
+
+    /**
+     * @return the currently set background color
+     */
+    public Color getBackground() {
+        return background;
+    }
+
+    /**
+     * Directly set the background color instead of using decorators.
+     *
+     * @param background the color to update the background to
+     */
+    public void setBackground(Color background) {
+        this.background = background;
+    }
+
+    /**
+     * @return the current color palette being used when decorators are called
+     */
+    public ColorPalette getColorPalette() {
+        return this.palette;
+    }
+
+    /**
+     * @param palette a new palette to use when decorators are called.
+     */
+    public void setColorPalette(ColorPalette palette) {
+        this.palette = palette;
+        calculate();
+    }
+
+    /**
+     * @return The ANSI escape code to reset text effects.
+     */
     public String getResetString() {
         return "\033[0m";
+    }
+
+    private void calculate() {
+        this.background = switch (squareColor) {
+            case NONE -> switch (highlight) {
+                case NONE -> palette.surface;
+                case PRIMARY -> palette.lightPrimary;
+                case SECONDARY -> palette.lightSecondary;
+                case TERNARY -> palette.lightTernary;
+                case ERROR -> palette.lightError;
+            };
+            case LIGHT -> switch (highlight) {
+                case NONE -> palette.lightSquare;
+                case PRIMARY -> palette.lightPrimary;
+                case SECONDARY -> palette.lightSecondary;
+                case TERNARY -> palette.lightTernary;
+                case ERROR -> palette.lightError;
+            };
+            case DARK -> switch (highlight) {
+                case NONE -> palette.darkSquare;
+                case PRIMARY -> palette.darkPrimary;
+                case SECONDARY -> palette.darkSecondary;
+                case TERNARY -> palette.darkTernary;
+                case ERROR -> palette.darkError;
+            };
+        };
+    }
+
+    private String foregroundString() {
+        return "38;2;" + foreground.getRed() + ";" + foreground.getGreen() + ";" + foreground.getBlue();
+    }
+
+    private String backgroundString() {
+        return "48;2;" + background.getRed() + ";" + background.getGreen() + ";" + background.getBlue();
+    }
+
+    @Override
+    public String toString() {
+        return "\u001B[" + foregroundString() + ";" + backgroundString() + "m";
     }
 }

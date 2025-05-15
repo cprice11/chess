@@ -20,40 +20,7 @@ public class ChessMove {
     private boolean isLongCastle = false;
     private ChessPosition castlingRookStart = null;
     private ChessPosition castlingRookEnd = null;
-
     private boolean decorated = false;
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(start, chessMove.start)
-                && Objects.equals(end, chessMove.end)
-                && getPromotionPiece() == chessMove.getPromotionPiece();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(start, end, getPromotionPiece());
-    }
-
-    @Override
-    public String toString() {
-        String promotionString = promotionPiece == null ? "" :
-                "!" + switch (promotionPiece) {
-                    case KING -> "K";
-                    case QUEEN -> "Q";
-                    case BISHOP -> "B";
-                    case KNIGHT -> "N";
-                    case ROOK -> "R";
-                    case PAWN -> "P";
-                    case EN_PASSANT -> "?";
-                };
-        String separator = isCapture ? "x" : "-";
-        return start.toString() + separator + end.toString() + promotionString;
-    }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
@@ -212,4 +179,35 @@ public class ChessMove {
         return castlingRookEnd;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessMove chessMove = (ChessMove) o;
+        return Objects.equals(start, chessMove.start)
+                && Objects.equals(end, chessMove.end)
+                && getPromotionPiece() == chessMove.getPromotionPiece();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, end, getPromotionPiece());
+    }
+
+    @Override
+    public String toString() {
+        String promotionString = promotionPiece == null ? "" :
+                "!" + switch (promotionPiece) {
+                    case KING -> "K";
+                    case QUEEN -> "Q";
+                    case BISHOP -> "B";
+                    case KNIGHT -> "N";
+                    case ROOK -> "R";
+                    case PAWN -> "P";
+                    case EN_PASSANT -> "?";
+                };
+        String separator = isCapture ? "x" : "-";
+        return start.toString() + separator + end.toString() + promotionString;
+    }
 }

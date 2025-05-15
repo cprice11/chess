@@ -12,20 +12,6 @@ public class ChessPiece {
     private final ChessGame.TeamColor color;
     private final ChessPiece.PieceType type;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessPiece that = (ChessPiece) o;
-        return color == that.color && type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(color, type);
-    }
-
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.color = pieceColor;
         this.type = type;
@@ -311,6 +297,20 @@ public class ChessPiece {
             case EN_PASSANT -> " ";
         };
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return color == that.color && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, type);
     }
 
     @Override

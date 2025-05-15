@@ -12,20 +12,6 @@ public class ChessBoard {
 
     public static final int BOARD_SIZE = 8;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessBoard that = (ChessBoard) o;
-        return Objects.equals(pieces, that.pieces);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(pieces);
-    }
-
     public ChessBoard() {
     }
 
@@ -53,14 +39,31 @@ public class ChessBoard {
         return pieces.get(position);
     }
 
+    /**
+     * Removes a chess piece from the chessboard
+     *
+     * @param position where to add the piece to remove from
+     * @return The removed piece or null if no piece is at that position
+     */
     public ChessPiece removePiece(ChessPosition position) {
         return pieces.remove(position);
     }
 
+    /**
+     * Gets a Map of all the occupied positions on the board
+     *
+     * @return a map from positions to pieces
+     */
     public Map<ChessPosition, ChessPiece> getPieces() {
         return pieces;
     }
 
+    /**
+     * Sets all positions on the board using a Map from positions to pieces
+     * Useful for copying a board state
+     *
+     * @param pieces a map of all occupied board positions and their pieces
+     */
     public void setPieces(Map<ChessPosition, ChessPiece> pieces) {
         this.pieces = new Hashtable<>(pieces);
     }
@@ -102,12 +105,12 @@ public class ChessBoard {
         return threatenedPositions;
     }
 
-    public Collection<ChessMove> getCaptures(ChessGame.TeamColor color) {
-        HashSet<ChessMove> opponentMoves = new HashSet<>(getMovesForColor(color));
-        opponentMoves.removeIf(move -> !move.isCapture());
-        return opponentMoves;
-    }
-
+    /**
+     * Returns the positions of all pieces of a given color.
+     *
+     * @param color the color of pieces to have their positions returned
+     * @return all positions with pieces matching color
+     */
     public Collection<ChessPosition> getPositionsByColor(ChessGame.TeamColor color) {
         HashSet<ChessPosition> teamPositions = new HashSet<>();
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
@@ -118,6 +121,13 @@ public class ChessBoard {
         return teamPositions;
     }
 
+    /**
+     * All moves the pieces of a given side can potentially make.
+     * The moves are not checked for legality but are decorated.
+     *
+     * @param color the color of the side to find moves for.
+     * @return the moves color's side could make.
+     */
     public Collection<ChessMove> getMovesForColor(ChessGame.TeamColor color) {
         HashSet<ChessMove> moves = new HashSet<>();
         for (ChessPosition position : getPositionsByColor(color)) {
@@ -158,12 +168,23 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
     }
 
+    /**
+     * Checks if a position would be on the game board.
+     *
+     * @param position a position to check. ChessPositions aren't limited to the board.
+     * @return whether the position is on or off of the board.
+     */
     public boolean isOnBoard(ChessPosition position) {
         int rank = position.getRank();
         int file = position.getFile();
         return rank >= 1 && rank <= BOARD_SIZE && file >= 1 && file <= BOARD_SIZE;
     }
 
+    /**
+     * The placement data of a <a href="https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_NotationFEN">FEN</a> string.
+     *
+     * @return the placement data portion of a FEN string
+     */
     public String positionFenString() {
         StringBuilder board = new StringBuilder(fenRow(BOARD_SIZE));
         for (int rank = BOARD_SIZE - 1; rank > 0; rank--) {
@@ -194,6 +215,12 @@ public class ChessBoard {
         return row.toString();
     }
 
+    /**
+     * String representing a game board to be displayed in a console in color.
+     * Assumes a monospace chess font e.g. NerdFonts
+     *
+     * @return a multi-line string displaying the gameboard.
+     */
     public String prettyBoard() {
         ChessColor color = new ChessColor();
         String fileLabels = "   a  b  c  d  e  f  g  h \n";
@@ -231,14 +258,26 @@ public class ChessBoard {
         return board.toString();
     }
 
+    /**
+     * Changes the display color of a given position when output with prettyBoard()
+     *
+     * @param position the position to update
+     * @param color the new color to use
+     */
     public void setHighlight(ChessPosition position, ChessColor.Highlight color) {
         highlights.put(position, color);
     }
 
+    /**
+     * Removes all highlight information that would be shown with prettyBoard()
+     */
     public void resetHighlights() {
         highlights.clear();
     }
 
+    /**
+     * Display the game board in the console
+     */
     public void printBoard() {
         System.out.println(prettyBoard());
     }
@@ -246,5 +285,19 @@ public class ChessBoard {
     @Override
     public String toString() {
         return positionFenString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.equals(pieces, that.pieces);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(pieces);
     }
 }
