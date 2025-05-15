@@ -81,37 +81,58 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        validateMove(move);
+        // use special case methods if applicable
+        if (move.isCastle()) {
+            makeCastleMove(move);
+            return;
+        }
+        if (move.capturesByEnPassant()) {
+            makeEnPassantCaptureMove(move);
+            return;
+        }
+        if (move.createsEnPassant()) {
+            makeEnPassantMove(move);
+            return;
+        }
+
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
         ChessPiece piece = board.getPiece(start);
-        if (piece == null) throw new InvalidMoveException("There is no piece at this move's start.");
         TeamColor color = piece.getTeamColor();
-        if (color != getTeamTurn()) throw new InvalidMoveException("It is not this piece's turn.");
-        if (move.getIsCastle) {
-            makeCastle(move);
-            return;
-        }
-        if (move.isEnPassantCapture) {
-            makeEnPassantCapture(move);
-            return;
-        }
-        if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException("This piece can't move to that position.");
+
         board.removePiece(start);
         board.addPiece(end, promotionPiece == null ? piece : new ChessPiece(color, promotionPiece));
-        enPassant = move.getEnPassant();
-        if (enPassant != null) {
-            board.addPiece(enPassant, new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
-            positionVulnerableToEnPassant = end;
-        }
         board.printBoard();
     }
 
-    private void makeCastle(ChessMove move) {
+    private void validateMove(ChessMove move) throws InvalidMoveException{
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
+        ChessPiece piece = board.getPiece(start);
+        // Fail fast if move isn't valid
+        if (piece == null) throw new InvalidMoveException("There is no piece at this move's start.");
+        TeamColor color = piece.getTeamColor();
+        if (color != getTeamTurn()) throw new InvalidMoveException("It is not this piece's turn.");
+        if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException("This piece can't move to that position.");
+    }
+
+    private void makeCastleMove(ChessMove move) {
         throw new RuntimeException("Not implemented");
     }
 
-    private void makeEnPassantCapture(ChessMove move) {
+    private void makeEnPassantMove(ChessMove move, ChessPiece piece, TeamColor color) {
+        enPassant = move.passedPosition();
+        ChessPosition end = move.getEndPosition();
+        board.removePiece(move.getStartPosition());
+        board.addPiece(move.getEndPosition(), piece);
+        board.addPiece(enPassant, new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
+        positionVulnerableToEnPassant = end;
+    }
+
+    private void makeEnPassantCaptureMove(ChessMove move) {
         throw new RuntimeException("Not implemented");
     }
 
