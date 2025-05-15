@@ -279,15 +279,6 @@ public class ChessBoard {
         highlights.clear();
     }
 
-    /**
-     * Display the game board in the console
-     */
-    public void printBoard() {
-        for (String row : prettyRows()) {
-            System.out.println(row);
-        }
-    }
-
     @Override
     public String toString() {
         return positionFenString();

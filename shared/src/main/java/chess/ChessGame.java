@@ -458,7 +458,7 @@ public class ChessGame {
             longestTurnNumber = String.valueOf(moveNumber + i).length();
         }
         int historyRowSize = longestTurnNumber + longestWhiteHistoryRow + longestBlackHistoryRow + 4;
-        history.set(0, history.get(0) + " ".repeat(historyRowSize - 9) + color.noHighlight());
+        history.set(0, history.getFirst() + " ".repeat(historyRowSize - 9) + color.noHighlight());
         for (int i = 0; i < whiteMovesHistory.size(); i++) {
             StringBuilder whiteMove = new StringBuilder(whiteMovesHistory.get(i).toString());
             whiteMove.append(" ".repeat(longestWhiteHistoryRow - whiteMove.length()));
