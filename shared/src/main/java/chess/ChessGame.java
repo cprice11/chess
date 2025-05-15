@@ -84,6 +84,10 @@ public class ChessGame {
                 return true;
             }
         });
+        for (ChessMove move : moves) {
+            board.setHighlight(move.getEndPosition(), ChessColor.Highlight.PRIMARY);
+        }
+        board.printBoard();
         return moves;
     }
 
@@ -101,6 +105,7 @@ public class ChessGame {
         }
         updateFlags(move);
         movePieces(move, board);
+        board.setHighlight(new ChessPosition(1, 1), ChessColor.Highlight.SECONDARY);
         if (move.capturesByEnPassant()) {
             enPassant = null;
             positionVulnerableToEnPassant = null;
@@ -111,6 +116,12 @@ public class ChessGame {
             enPassant = null;
             positionVulnerableToEnPassant = null;
         }
+        if (move.createsEnPassant()) {
+            enPassant = move.passedPosition();
+            positionVulnerableToEnPassant = move.getEndPosition();
+            board.setHighlight(enPassant, ChessColor.Highlight.PRIMARY);
+        }
+        board.printBoard();
     }
 
     public void movePieces(ChessMove move, ChessBoard board) throws InvalidMoveException {
@@ -119,9 +130,14 @@ public class ChessGame {
             makeEnPassantCaptureMove(move, board);
             return;
         }
-        if (enPassant != null) {
-            board.removePiece(enPassant);
+        ChessPosition enPassantPosition = null;
+        for (Map.Entry<ChessPosition, ChessPiece> entry : board.getPieces().entrySet()) {
+            if (entry.getValue().getPieceType() == ChessPiece.PieceType.EN_PASSANT) {
+                enPassantPosition = entry.getKey();
+                break;
+            }
         }
+        if (enPassantPosition != null) board.removePiece(enPassantPosition);
         if (move.createsEnPassant()) {
             makeEnPassantMove(move, board);
             return;
@@ -158,6 +174,7 @@ public class ChessGame {
         }
         ChessBoard testBoard = new ChessBoard();
         testBoard.setPieces(board.getPieces());
+        testBoard.setHighlight(new ChessPosition(1, 1), ChessColor.Highlight.ERROR);
         movePieces(move, testBoard);
         ChessPosition kingPosition = testBoard.getKingSquare(color);
         Collection<ChessPosition> threatenedPositions = testBoard.getPositionsThreatenedByColor(getOtherTeam(color));
@@ -233,7 +250,7 @@ public class ChessGame {
         TeamColor color = piece.getTeamColor();
         board.removePiece(move.getStartPosition());
         board.addPiece(move.getEndPosition(), piece);
-        board.addPiece(enPassant, new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
+        board.addPiece(move.passedPosition(), new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
     }
 
     private void makeEnPassantCaptureMove(ChessMove move, ChessBoard board) {

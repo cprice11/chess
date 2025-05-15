@@ -10,6 +10,7 @@ import java.util.*;
  */
 public class ChessBoard {
     private Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
+    private Hashtable<ChessPosition, ChessColor.Highlight> highlights = new Hashtable<>();
     private static final boolean useSymbols = true;
 
     public static final int BOARD_SIZE = 8;
@@ -130,6 +131,7 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
+        highlights.clear();
         pieces.clear();
         addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
@@ -203,6 +205,15 @@ public class ChessBoard {
                 color = (rank + file) % 2 == 1 ? color.lightSquare() : color.darkSquare();
                 ChessPosition square = new ChessPosition(rank, file);
                 ChessPiece piece = pieces.get(square);
+                ChessColor.Highlight highlight = highlights.get(square);
+                color = switch (highlight) {
+                    case NONE -> color.noHighlight();
+                    case PRIMARY -> color.primaryHighlight();
+                    case SECONDARY -> color.secondaryHighlight();
+                    case TERNARY -> color.ternaryHighlight();
+                    case ERROR -> color.errorHighlight();
+                    case null -> color.noHighlight();
+                };
                 String pieceString = " ";
                 if (piece != null) {
                     pieceString = useSymbols ? piece.prettyString() : piece.toString();
@@ -217,6 +228,14 @@ public class ChessBoard {
         board.append(fileLabels).append('\n');
         board.append("FEN: ").append(positionFenString()).append('\n').append(color.getResetString());
         return board.toString();
+    }
+
+    public void setHighlight(ChessPosition position, ChessColor.Highlight color) {
+        highlights.put(position, color);
+    }
+
+    public void resetHighlights() {
+        highlights.clear();
     }
 
     public void printBoard() {

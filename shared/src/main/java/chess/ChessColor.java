@@ -7,7 +7,7 @@ public class ChessColor {
             Color.decode("#FFFFFF"), Color.decode("#000000"),
             Color.decode("#302E2B"),
             Color.decode("#F9F9F9"), Color.decode("#343534"),
-            Color.decode("#B9CA42"), Color.decode("#739552"),
+            Color.decode("#d8daa4"), Color.decode("#739552"),
             Color.decode("#F5F580"), Color.decode("#B9CA42"),
             Color.decode("#82CBBA"), Color.decode("#46A07C"),
             Color.decode("#4EB7B4"), Color.decode("#302D29"),
