@@ -123,7 +123,7 @@ public class ChessGame {
         makeStandardMove(move);
     }
 
-    private ChessMove validateMove(ChessMove move) throws InvalidMoveException {
+    private void validateMove(ChessMove move) throws InvalidMoveException {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
@@ -138,12 +138,11 @@ public class ChessGame {
         }
         move.decorate(board);
         if (move.isCastle()) {
-            move = validateCastleMove(move, color);
+            validateCastleMove(move, color);
         }
-        return move;
     }
 
-    private ChessMove validateCastleMove(ChessMove move, TeamColor color) throws InvalidMoveException {
+    private void validateCastleMove(ChessMove move, TeamColor color) throws InvalidMoveException {
         if (isInCheck(color)) {
             throw new InvalidMoveException("Cannot castle while in check");
         }
@@ -183,7 +182,6 @@ public class ChessGame {
         if (threatenedPositions.contains(safePosition)) {
             throw new InvalidMoveException("Cannot castle through check");
         }
-        return move;
     }
 
     private void makeStandardMove(ChessMove move) {
