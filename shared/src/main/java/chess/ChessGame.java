@@ -88,7 +88,6 @@ public class ChessGame {
         for (ChessMove move : moves) {
             board.setHighlight(move.getEndPosition(), ChessColor.Highlight.PRIMARY);
         }
-        board.printBoard();
         return moves;
     }
 
@@ -107,7 +106,6 @@ public class ChessGame {
         }
         updateFlags(move);
         movePieces(move, board);
-        board.setHighlight(new ChessPosition(1, 1), ChessColor.Highlight.SECONDARY);
         if (move.capturesByEnPassant()) {
             enPassant = null;
             positionVulnerableToEnPassant = null;
@@ -121,9 +119,8 @@ public class ChessGame {
         if (move.createsEnPassant()) {
             enPassant = move.passedPosition();
             positionVulnerableToEnPassant = move.getEndPosition();
-            board.setHighlight(enPassant, ChessColor.Highlight.PRIMARY);
+            board.setHighlight(enPassant, ChessColor.Highlight.SECONDARY);
         }
-        board.printBoard();
     }
 
     public void movePieces(ChessMove move, ChessBoard board) {
@@ -177,7 +174,6 @@ public class ChessGame {
         }
         ChessBoard testBoard = new ChessBoard();
         testBoard.setPieces(board.getPieces());
-        testBoard.setHighlight(new ChessPosition(1, 1), ChessColor.Highlight.ERROR);
         movePieces(move, testBoard);
         ChessPosition kingPosition = testBoard.getKingSquare(color);
         Collection<ChessPosition> threatenedPositions = testBoard.getPositionsThreatenedByColor(getOtherTeam(color));
@@ -236,16 +232,13 @@ public class ChessGame {
         TeamColor color = piece.getTeamColor();
         board.removePiece(start);
         board.addPiece(end, promotionPiece == null ? piece : new ChessPiece(color, promotionPiece));
-        board.printBoard();
     }
 
     private void makeCastleMove(ChessMove move, ChessBoard board) {
-        board.printBoard();
         ChessPiece king = board.removePiece(move.getStartPosition());
         ChessPiece rook = board.removePiece(move.getCastlingRookStart());
         board.addPiece(move.getEndPosition(), king);
         board.addPiece(move.getCastlingRookEnd(), rook);
-        board.printBoard();
     }
 
     private void makeEnPassantMove(ChessMove move, ChessBoard board) {
