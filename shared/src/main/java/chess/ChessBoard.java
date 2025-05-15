@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class ChessBoard {
     private Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
-    private Hashtable<ChessPosition, ChessColor.Highlight> highlights = new Hashtable<>();
+    private final Hashtable<ChessPosition, ChessColor.Highlight> highlights = new Hashtable<>();
     private static final boolean useSymbols = true;
 
     public static final int BOARD_SIZE = 8;
@@ -29,7 +29,8 @@ public class ChessBoard {
         return Objects.hashCode(pieces);
     }
 
-    public ChessBoard() {}
+    public ChessBoard() {
+    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -38,7 +39,9 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        if (piece == null || position == null) return;
+        if (piece == null || position == null) {
+            return;
+        }
         pieces.put(position, piece);
     }
 
@@ -76,7 +79,7 @@ public class ChessBoard {
         ChessPiece king = new ChessPiece(color, ChessPiece.PieceType.KING);
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
             ChessPiece piece = entry.getValue();
-            if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color) {
+            if (piece.equals(king)) {
                 return entry.getKey();
             }
         }
@@ -85,6 +88,7 @@ public class ChessBoard {
 
     /**
      * Returns all spaces the given team could capture on.
+     *
      * @param color the color of the team
      * @return a collection of positions showing all squares
      * that could be captured on

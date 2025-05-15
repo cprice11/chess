@@ -43,7 +43,8 @@ public class ChessColor {
             Color lightError, Color darkError) {
     }
 
-    public ChessColor() {}
+    public ChessColor() {
+    }
 
     public Color getForeground() {
         return foreground;

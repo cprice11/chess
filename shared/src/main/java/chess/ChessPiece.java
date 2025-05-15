@@ -83,7 +83,6 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition start, ChessPiece piece) { // TODO: Castling
-        HashSet<ChessMove> moves = new HashSet<>();
         HashSet<ChessPosition> hops = new HashSet<>();
         int startRank = start.getRank();
         int startFile = start.getFile();
@@ -98,7 +97,7 @@ public class ChessPiece {
         hops.add(new ChessPosition(startRank - 1, startFile - 1));
         hops.add(new ChessPosition(startRank - 1, startFile));
         hops.add(new ChessPosition(startRank - 1, startFile + 1));
-        moves.addAll(movesFromPositions(board, start, piece, hops));
+        HashSet<ChessMove> moves = new HashSet<>(movesFromPositions(board, start, piece, hops));
         if (onStartSquare) {
             ChessPosition shortCastle = new ChessPosition(homeRank, 7);
             ChessPosition shortCastleRookStart = new ChessPosition(homeRank, 8);
@@ -251,10 +250,14 @@ public class ChessPiece {
 
         for (int i = 1; i <= ChessBoard.BOARD_SIZE; i++) {
             ChessPosition nextSpace = new ChessPosition(startRank + i * rankIncrement, startFile + i * fileIncrement);
-            if (!board.isOnBoard(nextSpace)) break;
+            if (!board.isOnBoard(nextSpace)) {
+                break;
+            }
             visiblePositions.add(nextSpace);
             ChessPiece nextPiece = board.getPiece(nextSpace);
-            if (nextPiece != null) break;
+            if (nextPiece != null) {
+                break;
+            }
         }
         return movesFromPositions(board, start, piece, visiblePositions);
     }
@@ -272,7 +275,9 @@ public class ChessPiece {
         HashSet<ChessMove> moves = new HashSet<>();
         ChessGame.TeamColor color = piece.getTeamColor();
         positions.forEach(target -> {
-            if (!board.isOnBoard(target)) return;
+            if (!board.isOnBoard(target)) {
+                return;
+            }
             ChessPiece targetPiece = board.getPiece(target);
             ChessMove hopMove = new ChessMove(start, target, null);
             if (targetPiece != null) {

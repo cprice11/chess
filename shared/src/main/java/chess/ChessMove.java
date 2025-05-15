@@ -92,7 +92,9 @@ public class ChessMove {
     // Decorator methods
     public void decorate(ChessBoard board) {
         ChessPiece target = board.getPiece(end);
-        if (target != null) isCapture(true);
+        if (target != null) {
+            isCapture(true);
+        }
         ChessPiece piece = board.getPiece(start);
         ChessPiece.PieceType type = piece.getPieceType();
         ChessGame.TeamColor color = piece.getTeamColor();
@@ -102,7 +104,7 @@ public class ChessMove {
             }
             if (Math.abs(end.getRank() - start.getRank()) == 2) {
                 int passedRank = color == ChessGame.TeamColor.WHITE ? 3 : 6;
-                createsEnPassant(new ChessPosition(passedRank ,start.getFile()));
+                createsEnPassant(new ChessPosition(passedRank, start.getFile()));
             }
             if (target != null && target.getPieceType() == ChessPiece.PieceType.EN_PASSANT) {
                 capturesByEnPassant(true);
@@ -150,8 +152,11 @@ public class ChessMove {
         this.isCastle = true;
         this.castlingRookStart = castlingRookStart;
         this.castlingRookEnd = castlingRookEnd;
-        if (isShortCastle) this.isShortCastle = true;
-        else this.isLongCastle = true;
+        if (isShortCastle) {
+            this.isShortCastle = true;
+        } else {
+            this.isLongCastle = true;
+        }
         decorated = true;
         return this;
     }

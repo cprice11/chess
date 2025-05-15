@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
-    private Vector<ChessMove> moveHistory = new Vector<>();
+    private final Vector<ChessMove> moveHistory = new Vector<>();
     private TeamColor turn = TeamColor.WHITE;
     private boolean whiteCanShortCastle = true;
     private boolean whiteCanLongCastle = true;
@@ -71,6 +71,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        board.resetHighlights();
         ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) {
             return null;
@@ -98,6 +99,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        board.resetHighlights();
         validateMove(move);
         TeamColor color = board.getPiece(move.getStartPosition()).getTeamColor();
         if (color != getTeamTurn()) {
@@ -124,7 +126,7 @@ public class ChessGame {
         board.printBoard();
     }
 
-    public void movePieces(ChessMove move, ChessBoard board) throws InvalidMoveException {
+    public void movePieces(ChessMove move, ChessBoard board) {
         // use special case methods if applicable
         if (move.capturesByEnPassant()) {
             makeEnPassantCaptureMove(move, board);
@@ -137,7 +139,9 @@ public class ChessGame {
                 break;
             }
         }
-        if (enPassantPosition != null) board.removePiece(enPassantPosition);
+        if (enPassantPosition != null) {
+            board.removePiece(enPassantPosition);
+        }
         if (move.createsEnPassant()) {
             makeEnPassantMove(move, board);
             return;
@@ -152,7 +156,6 @@ public class ChessGame {
     private void validateMove(ChessMove move) throws InvalidMoveException {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
-        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
         ChessPiece piece = board.getPiece(start);
         // Fail fast if move isn't valid
         if (piece == null) {
@@ -162,7 +165,7 @@ public class ChessGame {
         if (!piece.pieceMoves(board, start).contains(move)) {
             throw new InvalidMoveException("This piece can't move to that position.");
         }
-        move.decorate(board);
+        if (!move.decorated()) move.decorate(board);
         if (move.isCastle()) {
             validateCastleMove(move, color);
         }
@@ -316,11 +319,13 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)) return false;
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
         Collection<ChessMove> moves = new HashSet<>();
         for (ChessPosition position : board.getPositionsByColor(teamColor)) {
             moves.addAll(validMoves(position));
-        };
+        }
         return moves.isEmpty();
     }
 
@@ -332,11 +337,13 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (isInCheck(teamColor)) return false;
+        if (isInCheck(teamColor)) {
+            return false;
+        }
         Collection<ChessMove> moves = new HashSet<>();
         for (ChessPosition position : board.getPositionsByColor(teamColor)) {
             moves.addAll(validMoves(position));
-        };
+        }
         return moves.isEmpty();
     }
 
