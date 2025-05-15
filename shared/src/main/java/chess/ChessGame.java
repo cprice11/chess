@@ -308,10 +308,10 @@ public class ChessGame {
         StringBuilder fenString = new StringBuilder(board.positionFenString());
         fenString.append(' ').append(turn == TeamColor.WHITE ? 'w' : 'b').append(' ');
         if (whiteCanShortCastle || whiteCanLongCastle || blackCanShortCastle || blackCanLongCastle) {
-            fenString.append(whiteCanShortCastle ? 'K' : null);
-            fenString.append(whiteCanLongCastle ? 'Q' : null);
-            fenString.append(blackCanShortCastle ? 'k' : null);
-            fenString.append(blackCanLongCastle ? 'q' : null);
+            fenString.append(whiteCanShortCastle ? 'K' : "");
+            fenString.append(whiteCanLongCastle ? 'Q' : "");
+            fenString.append(blackCanShortCastle ? 'k' : "");
+            fenString.append(blackCanLongCastle ? 'q' : "");
         } else {
             fenString.append('-');
         }
