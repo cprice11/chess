@@ -13,8 +13,13 @@ public class ChessMove {
     private final ChessPosition end;
     private final ChessPiece.PieceType promotionPiece;
     private boolean isCapture = false;
-    private boolean canCapture = true;
+    private boolean cannotCapture = false;
+    private boolean createsEnPassant = false;
+    private boolean capturesByEnPassant = false;
     private ChessPosition passedPosition = null;
+    private boolean isCastle = false;
+    private ChessPosition castlingRookStart = null;
+    private ChessPosition castlingRookEnd = null;
 
     @Override
     public boolean equals(Object o) {
@@ -22,7 +27,7 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        return     Objects.equals(start, chessMove.start)
+        return Objects.equals(start, chessMove.start)
                 && Objects.equals(end, chessMove.end)
                 && getPromotionPiece() == chessMove.getPromotionPiece();
     }
@@ -30,6 +35,22 @@ public class ChessMove {
     @Override
     public int hashCode() {
         return Objects.hash(start, end, getPromotionPiece());
+    }
+
+    @Override
+    public String toString() {
+        String promotionString = promotionPiece == null ? "" :
+                "!" + switch (promotionPiece) {
+                    case KING -> "K";
+                    case QUEEN -> "Q";
+                    case BISHOP -> "B";
+                    case KNIGHT -> "N";
+                    case ROOK -> "R";
+                    case PAWN -> "P";
+                    case EN_PASSANT -> "?";
+                };
+        String separator = isCapture ? "x" : "-";
+        return start.toString() + separator + end.toString() + promotionString;
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
@@ -63,45 +84,73 @@ public class ChessMove {
         return promotionPiece;
     }
 
-    public boolean getIsCapture() {
-        return isCapture;
-    }
-
+    // Decorator methods
     public ChessMove isCapture(boolean isCapture) {
+        if (cannotCapture) {
+            throw new RuntimeException("Move cannot be capture while cannotCapture is true");
+        }
         this.isCapture = isCapture;
         return this;
     }
 
-    public ChessPosition getEnPassant() {
-        return this.passedPosition;
+    public ChessMove capturesByEnPassant(boolean capturesByEnPassant) {
+        isCapture(true);
+        this.capturesByEnPassant = capturesByEnPassant;
+        return this;
     }
 
     public ChessMove createsEnPassant(ChessPosition passedPosition) {
+        createsEnPassant = true;
         this.passedPosition = passedPosition;
         return this;
     }
 
-    public boolean getCanCapture() {
-        return canCapture;
-    }
-
-    public ChessMove canCapture(boolean canCapture) {
-        this.canCapture = canCapture;
+    public ChessMove isCastle(ChessPosition castlingRookStart, ChessPosition castlingRookEnd) {
+        this.isCastle = true;
+        this.castlingRookStart = castlingRookStart;
+        this.castlingRookEnd = castlingRookEnd;
         return this;
     }
 
-    @Override
-    public String toString() {
-        String promotionString = promotionPiece == null ? "" :
-                "!" + switch (promotionPiece) {
-                    case KING -> "K";
-                    case QUEEN -> "Q";
-                    case BISHOP -> "B";
-                    case KNIGHT -> "N";
-                    case ROOK -> "R";
-                    case PAWN -> "P";
-                };
-        String separator = isCapture ? "x" : "-";
-        return start.toString() + separator + end.toString() + promotionString;
+    public ChessMove cannotCapture(boolean canCapture) {
+        if (isCapture) {
+            throw new RuntimeException("The cannotCapture flag cannot be set while isCapture is true");
+        }
+        this.cannotCapture = canCapture;
+        return this;
     }
+
+    // getters
+    public ChessPosition passedPosition() {
+        return this.passedPosition;
+    }
+
+    public boolean isCapture() {
+        return isCapture;
+    }
+
+    public boolean cannotCapture() {
+        return cannotCapture;
+    }
+
+    public boolean isCastle() {
+        return isCastle;
+    }
+
+    public boolean capturesByEnPassant() {
+        return capturesByEnPassant;
+    }
+
+    public boolean createsEnPassant() {
+        return createsEnPassant;
+    }
+
+    public ChessPosition getCastlingRookStart() {
+        return castlingRookStart;
+    }
+
+    public ChessPosition getCastlingRookEnd() {
+        return castlingRookEnd;
+    }
+
 }

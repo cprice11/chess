@@ -183,7 +183,7 @@ public class ChessPiece {
         attacks.add(new ChessPosition(startRank + advancementValue, startFile - 1));
         attacks.add(new ChessPosition(startRank + advancementValue, startFile + 1));
         HashSet<ChessMove> moves = new HashSet<>(movesFromPositions(board, start, piece, attacks));
-        moves.removeIf(move -> !move.getIsCapture());
+        moves.removeIf(move -> !move.isCapture());
 
         ChessPosition oneForward = new ChessPosition(startRank + advancementValue, startFile);
         ChessPiece oneForwardPiece = board.getPiece(oneForward);

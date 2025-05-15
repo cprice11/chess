@@ -88,7 +88,7 @@ public class ChessBoard {
         HashSet<ChessMove> opponentMoves = new HashSet<>(getMovesForColor(color));
         HashSet<ChessPosition> threatenedPositions = new HashSet<>();
         for (ChessMove move : opponentMoves) {
-            if (move.getCanCapture()) {
+            if (move.cannotCapture()) {
                 threatenedPositions.add(move.getEndPosition());
             }
         }
@@ -97,7 +97,7 @@ public class ChessBoard {
 
     public Collection<ChessMove> getCaptures(ChessGame.TeamColor color) {
         HashSet<ChessMove> opponentMoves = new HashSet<>(getMovesForColor(color));
-        opponentMoves.removeIf(move -> !move.getIsCapture());
+        opponentMoves.removeIf(move -> !move.isCapture());
         return opponentMoves;
     }
 
