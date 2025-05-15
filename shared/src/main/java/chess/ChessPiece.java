@@ -82,7 +82,7 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition start, ChessPiece piece) { // TODO: Castling
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition start, ChessPiece piece) {
         HashSet<ChessPosition> hops = new HashSet<>();
         int startRank = start.getRank();
         int startFile = start.getFile();
@@ -305,7 +305,7 @@ public class ChessPiece {
             case KNIGHT -> "\uDB82\uDC58";
             case ROOK -> "\uDB82\uDC5B";
             case PAWN -> "\uDB82\uDC59";
-            case EN_PASSANT -> "E"; // TODO: This should be a space after debugging
+            case EN_PASSANT -> " ";
         };
 
     }
@@ -319,7 +319,7 @@ public class ChessPiece {
             case KNIGHT -> "N";
             case ROOK -> "R";
             case PAWN -> "P";
-            case EN_PASSANT -> "E"; // TODO: This should be a space after debugging
+            case EN_PASSANT -> " ";
         };
         return color == ChessGame.TeamColor.WHITE ? pieceChar : pieceChar.toLowerCase();
     }
