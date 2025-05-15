@@ -8,7 +8,7 @@ import java.util.*;
 public class ChessBoard {
     private Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
     private final Hashtable<ChessPosition, ChessColor.Highlight> highlights = new Hashtable<>();
-    private static final boolean useSymbols = true;
+    private static final boolean USE_SYMBOLS = true;
 
     public static final int BOARD_SIZE = 8;
 
@@ -244,7 +244,7 @@ public class ChessBoard {
                 };
                 String pieceString = " ";
                 if (piece != null) {
-                    pieceString = useSymbols ? piece.prettyString() : piece.toString();
+                    pieceString = USE_SYMBOLS ? piece.prettyString() : piece.toString();
                     color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? color.lightPiece() : color.darkPiece();
                 }
                 board.append(color);

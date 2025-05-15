@@ -370,7 +370,8 @@ public class ChessGame {
     }
 
     /**
-     * The state of the game as expressed in <a href="https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation">Forsyth–Edwards Notation (FEN)</a>
+     * The state of the game as expressed in
+     * <a href="https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation">Forsyth–Edwards Notation (FEN)</a>
      *
      * @return a FEN string
      */
