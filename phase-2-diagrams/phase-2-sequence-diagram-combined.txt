@@ -1,0 +1,251 @@
+fontawesome6solid f43c "**Client**\nA Terminal client of Chess" as A
+fontawesome6solid f233 "**Server**\nPublic http server" as Server
+participant "**Services**\nUser, Auth, Game, Dev" as Services
+participant "**DataAccessException**" as DataAccessException
+fontawesome6solid f1c0 "**Database**" as db
+
+<background:#gray>
+entryspacing 0.6
+
+group #navy Registration #white
+    rbox over DataAccessException, db:Register a new user.
+    group #navy POST #white
+        box right of A:/user\n{username, password, email}
+    end
+    A -> Server: 
+    box over Services:User
+    activate Services #8b8db3
+    Server -> Services: register(username, password, email)
+    Services -> DataAccessException: getUser(username)
+    DataAccessException -> db: SELECT username From Users\nWHERE username=<username>
+    aboxleft left of DataAccessException#pink:403 if taken
+    DataAccessException --> Services:UserData
+    Services -> DataAccessException:createUser(username, password, email)
+    DataAccessException -> db:INSERT <username>, <password>,\n<email> INTO Users
+    box over Services:Auth
+    activate Services #b6dbb7
+    Services -> DataAccessException: createAuth(username)
+    DataAccessException -> db:INSERT <authToken>, <username>\nINTO Auth
+    DataAccessException --> Services:AuthData
+    deactivate Services
+    Services --> Server:AuthData
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{"username": "", "authToken": ""}
+    end
+    group #a00000 400 #white
+        box right of A:{ "message": "Error: bad request" }
+    end
+    group #a00000 403 #white
+        box right of A:{ "message": "Error: already taken" }
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
+end
+
+group #orange Login #white
+    rbox over DataAccessException, db:<wordwrap:40>Logs in an existing user (returns a new authToken).
+    group #navy POST #white
+        box right of A:/session\n{username, password}
+    end
+    A -> Server: 
+    box over Services:User
+    activate Services #8b8db3
+    Server -> Services:login(username, #password*)
+    note right of Server: *Ideally the password\nis hashed locally
+    Services -> DataAccessException:getUser(username)
+    DataAccessException -> db:SELECT username FROM Users\nWHERE username=<username>
+    aboxleft left of DataAccessException#pink:401 on fail
+    DataAccessException --> Services:UserData
+    box over Services: Auth
+    activate Services #b6dbb7
+    Services -> DataAccessException:createAuth(username)
+    DataAccessException -> db:INSERT <username>, <authToken> \nINTO Auth
+    DataAccessException --> Services:AuthData
+    deactivate Services
+    Services --> Server:AuthData
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{"username": "", "authToken": ""}
+    end
+    group #a00000 401 #white
+        box right of A:{ "message": "Error: unauthorized" }
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
+end
+
+group #green Logout #white
+    rbox over DataAccessException, db:<wordwrap:34>Logs out the user represented by the authToken.
+    group #navy DELETE #white
+        box right of A:/session\n{authToken}
+    end
+    A -> Server:
+    box over Services:Auth
+    activate Services #b6dbb7
+    Server -> Services:logout(authToken)
+    Services -> DataAccessException: verify(authToken)
+    DataAccessException -> db:SELECT * FROM Auth \nWHERE token=authToken
+    aboxleft left of DataAccessException#pink:401 on fail
+    DataAccessException --> Services:AuthData
+    Services -> DataAccessException: deleteAuth(authToken)
+    DataAccessException -> db:DELETE FROM Auth \nWHERE authToken=<authToken>
+    DataAccessException --> Services:
+    Services --> Server:
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{}
+    end
+    group #a00000 401 #white
+        box right of A:{ "message": "Error: unauthorized" }
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
+end
+
+group #red List Games #white
+    rbox over DataAccessException, db:Gives a list of all games.
+    group #navy GET #white
+        box right of A:/game\n{authToken}
+    end
+    A -> Server:
+    box over Services:Game
+    activate Services #pink
+    Server -> Services: getGames(authToken)
+    box over Services:Auth
+    activate Services #b6dbb7
+    Services -> DataAccessException: verify(authToken)
+    DataAccessException -> db:SELECT * FROM Auth \nWHERE token=authToken
+    aboxleft left of DataAccessException#pink:401 on fail
+    DataAccessException --> Services:AuthData
+    deactivate Services
+    Services -> DataAccessException:getGameSummaries()
+    DataAccessException -> db:SELECT gameID, whiteUserName, \nblackUserName, gameName FROM Games
+    DataAccessException --> Services:List<Summary>
+    note left of DataAccessException:Summary:\n--\ngameID\nwhiteUsername\nblackUsername\ngameName
+    Services --> Server:List<Summary>
+    deactivate Services
+    Server -> A:
+    group #00a000 200 #white
+        box right of A:{ "games": [\n  { "gameID": int,\n    "whiteUsername": String,\n    "blackUsername": String,\n    "gameName: String},\n  ...\n]}
+    end
+    group #a00000 401 #white
+        box right of A:{ "message": "Error: unauthorized" }
+    end
+end
+
+group #purple Create Game #white
+    rbox over DataAccessException, db:<wordwrap:30>Creates a new game.
+    group #navy POST #white
+        box right of A:/game\nauthToken\n{gameName}
+    end
+    A -> Server:
+    box over Services: Game
+    activate Services #pink
+    Server -> Services:createGame(authToken, gameName)
+    box over Services:Auth
+    activate Services #b6dbb7
+    Services -> DataAccessException:verify(authToken)
+    DataAccessException -> db:SELECT username FROM Auth \nWHERE authToken=authToken
+    aboxleft left of DataAccessException#pink:401 on fail
+    DataAccessException --> Services:AuthData
+    deactivate Services
+    Services -> DataAccessException:createGame(gameName)
+    DataAccessException -> db:INSERT INTO Games \n(<gameName>)
+    DataAccessException --> Services:gameID
+    Services --> Server: gameID
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{"gameId": }
+    end
+    group #a00000 400 #white
+        box right of A:{ "message": "Error: bad request" }
+    end
+    group #a00000 401 #white
+        box right of A:{ "message": "Error: unauthorized" }
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
+end
+
+group #yellow Join Game #black
+    rbox over DataAccessException, db:<wordwrap:40>Verifies that the specified game exists, and, if a color is specified, adds the caller as the requested color to the game. If no color is specified the user is joined as an observer. This request is idempotent.
+    group #navy PUT #white
+        box right of A:/game\nauthToken\n{PlayerColor, gameID}
+    end
+    A -> Server:
+    box over Services: Game
+    activate Services #pink
+    Server -> Services:joinGame(authToken, playerColor, gameID)
+    box over Services: Auth
+    activate Services #b6dbb7
+    Services -> DataAccessException:verify(authToken)
+    DataAccessException -> db:SELECT username FROM Auth \nWHERE authToken=<authToken>
+    aboxleft left of DataAccessException#pink:401 on fail
+    DataAccessException --> Services:AuthData
+    deactivate Services
+    Services -> DataAccessException: getGame(gameID)
+    DataAccessException -> db:SELECT * FROM Games\nWHERE gameID=<gameID>
+    DataAccessException --> Services:Game
+    aboxleft left of Services#pink:403 if taken
+    Services -> DataAccessException:startGame(gameID, username, color)
+    DataAccessException -> db:UPDATE Games \nSET <color>Username=<username>\nWHERE gameID=<gameID>
+    DataAccessException --> Services:
+    Services --> Server:
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{}
+    end
+    group #a00000 400 #white
+        box right of A:{ "message": "Error: bad request" }
+    end
+    group #a00000 401 #white
+        box right of A:{ "message": "Error: unauthorized" }
+    end
+    group #a00000 403 #white
+        box right of A:{ "message": "Error: already taken" }
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
+end
+
+group #gray Clear Application #white
+    rbox over DataAccessException, db:<wordwrap:40>Clears the database. Removes all users, games, and authTokens.
+    group #navy DELETE #white
+        box right of A:/db
+    end
+    A -> Server: 
+    box over Services:Dev
+    activate Services #gray
+    Server -> Services:clearDatabase()
+    Services -> DataAccessException:deleteUsers()
+    DataAccessException->db:TRUNCATE TABLE Users
+    DataAccessException --> Services:
+    Services->DataAccessException:deleteGames()
+    DataAccessException->db:TRUNCATE TABLE Games
+    DataAccessException --> Services:
+    Services->DataAccessException:deleteAuth()
+    DataAccessException -> db:TRUNCATE TABLE Auth
+    DataAccessException --> Services:
+    Services --> Server:
+    deactivate Services
+    Server --> A:
+    group #00a000 200 #white
+        box right of A:{}
+    end
+    group #a00000 500 #white
+        box right of A: { "message": "Error: (description of error)" }
+    end
+end
+
+bottomparticipants
