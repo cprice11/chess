@@ -112,11 +112,11 @@ public class ChessMove {
         return this;
     }
 
-    public ChessMove cannotCapture(boolean canCapture) {
+    public ChessMove cannotCapture(boolean cannotCapture) {
         if (isCapture) {
             throw new RuntimeException("The cannotCapture flag cannot be set while isCapture is true");
         }
-        this.cannotCapture = canCapture;
+        this.cannotCapture = cannotCapture;
         return this;
     }
 
