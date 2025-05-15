@@ -104,7 +104,7 @@ public class ChessMove {
                 int passedRank = color == ChessGame.TeamColor.WHITE ? 3 : 6;
                 createsEnPassant(new ChessPosition(passedRank ,start.getFile()));
             }
-            if (target.getPieceType() == ChessPiece.PieceType.EN_PASSANT) {
+            if (target != null && target.getPieceType() == ChessPiece.PieceType.EN_PASSANT) {
                 capturesByEnPassant(true);
             }
         } else if (type == ChessPiece.PieceType.KING) {
