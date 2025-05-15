@@ -101,31 +101,29 @@ public class ChessGame {
         }
         updateFlags(move);
         // use special case methods if applicable
-        if (move.isCastle()) {
-            makeCastleMove(move);
-            return;
-        }
         if (move.capturesByEnPassant()) {
             makeEnPassantCaptureMove(move);
+            enPassant = null;
+            positionVulnerableToEnPassant = null;
             return;
+        }
+        if (enPassant != null) {
+            board.removePiece(enPassant);
+            enPassant = null;
+            positionVulnerableToEnPassant = null;
         }
         if (move.createsEnPassant()) {
             makeEnPassantMove(move);
             return;
         }
-
-        ChessPosition start = move.getStartPosition();
-        ChessPosition end = move.getEndPosition();
-        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
-        ChessPiece piece = board.getPiece(start);
-
-        board.removePiece(start);
-        board.addPiece(end, promotionPiece == null ? piece : new ChessPiece(color, promotionPiece));
-        board.printBoard();
+        if (move.isCastle()) {
+            makeCastleMove(move);
+            return;
+        }
+        makeStandardMove(move);
     }
 
     private ChessMove validateMove(ChessMove move) throws InvalidMoveException {
-        move.decorate(board);
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
@@ -138,6 +136,7 @@ public class ChessGame {
         if (!piece.pieceMoves(board, start).contains(move)) {
             throw new InvalidMoveException("This piece can't move to that position.");
         }
+        move.decorate(board);
         if (move.isCastle()) {
             move = validateCastleMove(move, color);
         }
@@ -187,6 +186,17 @@ public class ChessGame {
         return move;
     }
 
+    private void makeStandardMove(ChessMove move) {
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
+        ChessPiece piece = board.getPiece(start);
+        TeamColor color = piece.getTeamColor();
+        board.removePiece(start);
+        board.addPiece(end, promotionPiece == null ? piece : new ChessPiece(color, promotionPiece));
+        board.printBoard();
+    }
+
     private void makeCastleMove(ChessMove move) {
         board.printBoard();
         ChessPiece king = board.removePiece(move.getStartPosition());
@@ -199,12 +209,12 @@ public class ChessGame {
     private void makeEnPassantMove(ChessMove move) {
         ChessPiece piece = board.getPiece(move.getStartPosition());
         TeamColor color = piece.getTeamColor();
-        enPassant = move.passedPosition();
         ChessPosition end = move.getEndPosition();
+        enPassant = move.passedPosition();
+        positionVulnerableToEnPassant = end;
         board.removePiece(move.getStartPosition());
         board.addPiece(move.getEndPosition(), piece);
         board.addPiece(enPassant, new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
-        positionVulnerableToEnPassant = end;
     }
 
     private void makeEnPassantCaptureMove(ChessMove move) {
