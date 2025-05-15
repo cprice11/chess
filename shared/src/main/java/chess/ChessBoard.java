@@ -89,8 +89,9 @@ public class ChessBoard {
         HashSet<ChessPosition> threatenedPositions = new HashSet<>();
         for (ChessMove move : opponentMoves) {
             if (move.cannotCapture()) {
-                threatenedPositions.add(move.getEndPosition());
+                continue;
             }
+            threatenedPositions.add(move.getEndPosition());
         }
         return threatenedPositions;
     }
