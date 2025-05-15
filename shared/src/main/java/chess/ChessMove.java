@@ -12,6 +12,7 @@ public class ChessMove {
     private final ChessPosition start;
     private final ChessPosition end;
     private final ChessPiece.PieceType promotionPiece;
+
     private boolean isCapture = false;
     private boolean cannotCapture = false;
     private boolean createsEnPassant = false;
@@ -22,6 +23,8 @@ public class ChessMove {
     private boolean isLongCastle = false;
     private ChessPosition castlingRookStart = null;
     private ChessPosition castlingRookEnd = null;
+
+    private boolean decorated = false;
 
     @Override
     public boolean equals(Object o) {
@@ -87,23 +90,59 @@ public class ChessMove {
     }
 
     // Decorator methods
+    public void decorate(ChessBoard board) {
+        ChessPiece target = board.getPiece(end);
+        if (target != null) isCapture(true);
+        ChessPiece piece = board.getPiece(start);
+        ChessPiece.PieceType type = piece.getPieceType();
+        ChessGame.TeamColor color = piece.getTeamColor();
+        if (type == ChessPiece.PieceType.PAWN) {
+            if (start.getFile() == end.getFile()) {
+                cannotCapture(true);
+            }
+            if (Math.abs(end.getRank() - start.getRank()) == 2) {
+                int passedRank = color == ChessGame.TeamColor.WHITE ? 3 : 6;
+                createsEnPassant(new ChessPosition(passedRank ,start.getFile()));
+            }
+            if (target.getPieceType() == ChessPiece.PieceType.EN_PASSANT) {
+                capturesByEnPassant(true);
+            }
+        } else if (type == ChessPiece.PieceType.KING) {
+            int homeRank = color == ChessGame.TeamColor.WHITE ? 1 : 8;
+            ChessPosition homePosition = new ChessPosition(homeRank, 5);
+            if (start.equals(homePosition)) {
+                int endFile = end.getFile();
+                if (endFile == 3) {
+                    isCastle(new ChessPosition(homeRank, 1), new ChessPosition(homeRank, 4), false);
+                }
+                if (endFile == 7) {
+                    isCastle(new ChessPosition(homeRank, 8), new ChessPosition(homeRank, 6), true);
+                }
+            }
+        }
+        decorated = true;
+    }
+
     public ChessMove isCapture(boolean isCapture) {
         if (cannotCapture) {
             throw new RuntimeException("Move cannot be capture while cannotCapture is true");
         }
         this.isCapture = isCapture;
+        this.decorated = true;
         return this;
     }
 
     public ChessMove capturesByEnPassant(boolean capturesByEnPassant) {
         isCapture(true);
         this.capturesByEnPassant = capturesByEnPassant;
+        decorated = true;
         return this;
     }
 
     public ChessMove createsEnPassant(ChessPosition passedPosition) {
         createsEnPassant = true;
         this.passedPosition = passedPosition;
+        decorated = true;
         return this;
     }
 
@@ -113,6 +152,7 @@ public class ChessMove {
         this.castlingRookEnd = castlingRookEnd;
         if (isShortCastle) this.isShortCastle = true;
         else this.isLongCastle = true;
+        decorated = true;
         return this;
     }
 
@@ -121,12 +161,13 @@ public class ChessMove {
             throw new RuntimeException("The cannotCapture flag cannot be set while isCapture is true");
         }
         this.cannotCapture = cannotCapture;
+        decorated = true;
         return this;
     }
 
     // getters
-    public ChessPosition passedPosition() {
-        return this.passedPosition;
+    public boolean decorated() {
+        return decorated;
     }
 
     public boolean isCapture() {
@@ -155,6 +196,10 @@ public class ChessMove {
 
     public boolean createsEnPassant() {
         return createsEnPassant;
+    }
+
+    public ChessPosition passedPosition() {
+        return this.passedPosition;
     }
 
     public ChessPosition getCastlingRookStart() {
