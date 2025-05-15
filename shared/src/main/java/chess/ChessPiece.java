@@ -71,6 +71,7 @@ public class ChessPiece {
             case KNIGHT -> knightMoves(board, myPosition, piece);
             case ROOK -> rookMoves(board, myPosition, piece);
             case PAWN -> pawnMoves(board, myPosition, piece);
+            case EN_PASSANT -> null;
         };
     }
 
@@ -188,10 +189,10 @@ public class ChessPiece {
         ChessPosition oneForward = new ChessPosition(startRank + advancementValue, startFile);
         ChessPiece oneForwardPiece = board.getPiece(oneForward);
         if (oneForwardPiece == null && board.isOnBoard(oneForward)) {
-            moves.add(new ChessMove(start, oneForward, null).canCapture(false));
+            moves.add(new ChessMove(start, oneForward, null).cannotCapture(true));
             ChessPosition twoForward = new ChessPosition(startRank + 2 * advancementValue, startFile);
             if (onStartSquare && board.getPiece(twoForward) == null) {
-                moves.add(new ChessMove(start, twoForward, null).canCapture(false).createsEnPassant(oneForward));
+                moves.add(new ChessMove(start, twoForward, null).cannotCapture(true).createsEnPassant(oneForward));
             }
         }
         HashSet<ChessMove> movesWithPromotion = new HashSet<>();
