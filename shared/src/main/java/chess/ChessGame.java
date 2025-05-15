@@ -9,12 +9,13 @@ import java.util.*;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor turn = TeamColor.WHITE;
     private ChessBoard board = new ChessBoard();
-    private boolean whiteCanCastleKingside = true;
-    private boolean whiteCanCastleQueenside = true;
-    private boolean blackCanCastleKingside = true;
-    private boolean blackCanCastleQueenside = true;
+    private Vector<ChessMove> moveHistory = new Vector<>();
+    private TeamColor turn = TeamColor.WHITE;
+    private boolean whiteCanShortCastle = true;
+    private boolean whiteCanLongCastle = true;
+    private boolean blackCanShortCastle = true;
+    private boolean blackCanLongCastle = true;
     private ChessPosition enPassant = null;
     private ChessPosition positionVulnerableToEnPassant = null;
     private int halfMoveClock = 0;
@@ -71,7 +72,19 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        return piece == null ? null : piece.pieceMoves(board, startPosition);
+        if (piece == null) {
+            return null;
+        }
+        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
+        moves.removeIf(move -> {
+            try {
+                validateMove(move);
+            } catch (InvalidMoveException e) {
+                return true;
+            }
+            return false;
+        });
+        return moves;
     }
 
     /**
@@ -82,6 +95,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         validateMove(move);
+        updateFlags(move);
         // use special case methods if applicable
         if (move.isCastle()) {
             makeCastleMove(move);
@@ -107,23 +121,82 @@ public class ChessGame {
         board.printBoard();
     }
 
-    private void validateMove(ChessMove move) throws InvalidMoveException{
+    private void validateMove(ChessMove move) throws InvalidMoveException {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
         ChessPiece piece = board.getPiece(start);
         // Fail fast if move isn't valid
-        if (piece == null) throw new InvalidMoveException("There is no piece at this move's start.");
+        if (piece == null) {
+            throw new InvalidMoveException("There is no piece at this move's start.");
+        }
         TeamColor color = piece.getTeamColor();
-        if (color != getTeamTurn()) throw new InvalidMoveException("It is not this piece's turn.");
-        if (!piece.pieceMoves(board, start).contains(move)) throw new InvalidMoveException("This piece can't move to that position.");
+        if (color != getTeamTurn()) {
+            throw new InvalidMoveException("It is not this piece's turn.");
+        }
+        if (!piece.pieceMoves(board, start).contains(move)) {
+            throw new InvalidMoveException("This piece can't move to that position.");
+        }
+        if (move.isCastle()) {
+            validateCastleMove(move, color);
+        }
+    }
+
+    private void validateCastleMove(ChessMove move, TeamColor color) throws InvalidMoveException {
+        if (isInCheck(color)) {
+            throw new InvalidMoveException("Cannot castle while in check");
+        }
+        switch (color) { // Throw if king or relevant rook has moved.
+            case WHITE:
+                if (move.isLongCastle() && !whiteCanLongCastle) {
+                    throw new InvalidMoveException("White cannot long castle");
+                } else if (move.isShortCastle() && !whiteCanShortCastle) {
+                    throw new InvalidMoveException("White cannot short castle");
+                }
+                ;
+            case BLACK:
+                if (move.isLongCastle() && !blackCanLongCastle) {
+                    throw new InvalidMoveException("Black cannot long castle");
+                } else if (move.isShortCastle() && !blackCanShortCastle) {
+                    throw new InvalidMoveException("Black cannot short castle");
+                }
+                ;
+        }
+        int homeRank = color == TeamColor.WHITE ? 1 : 8;
+
+        Collection<ChessPosition> inBetweenPositions = new ArrayList<>(); // These must be clear in order to castle
+        if (move.isShortCastle()) {
+            inBetweenPositions.add(new ChessPosition(homeRank, 6));
+            inBetweenPositions.add(new ChessPosition(homeRank, 7));
+        } else {
+            inBetweenPositions.add(new ChessPosition(homeRank, 2));
+            inBetweenPositions.add(new ChessPosition(homeRank, 3));
+            inBetweenPositions.add(new ChessPosition(homeRank, 4));
+        }
+        for (ChessPosition position : inBetweenPositions) {
+            ChessPiece piece = board.getPiece(position);
+            if (piece != null) {
+                throw new InvalidMoveException("The piece at " + position + " blocks the castle");
+            }
+        }
+
+        Collection<ChessPosition> threatenedPositions = board.getPositionsThreatenedByColor(getOtherTeam(color));
+        ChessPosition safePosition = move.isShortCastle() ? new ChessPosition(homeRank, 6) : new ChessPosition(homeRank, 4);
+        if (threatenedPositions.contains(safePosition)) {
+            throw new InvalidMoveException("Cannot castle through check");
+        }
     }
 
     private void makeCastleMove(ChessMove move) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece king = board.removePiece(move.getStartPosition());
+        ChessPiece rook = board.removePiece(move.getCastlingRookStart());
+        board.addPiece(move.getEndPosition(), king);
+        board.addPiece(move.getCastlingRookEnd(), rook);
     }
 
-    private void makeEnPassantMove(ChessMove move, ChessPiece piece, TeamColor color) {
+    private void makeEnPassantMove(ChessMove move) {
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        TeamColor color = piece.getTeamColor();
         enPassant = move.passedPosition();
         ChessPosition end = move.getEndPosition();
         board.removePiece(move.getStartPosition());
@@ -133,7 +206,46 @@ public class ChessGame {
     }
 
     private void makeEnPassantCaptureMove(ChessMove move) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.removePiece(move.getStartPosition());
+        board.removePiece(positionVulnerableToEnPassant);
+        board.addPiece(move.getEndPosition(), piece);
+    }
+
+    private void updateFlags(ChessMove move) {
+        moveHistory.add(move);
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        ChessPiece.PieceType type = piece.getPieceType();
+        TeamColor color = piece.getTeamColor();
+
+        // Castling flags
+        if (type == ChessPiece.PieceType.KING) {
+            if (color == TeamColor.WHITE) {
+                whiteCanLongCastle = whiteCanShortCastle = false;
+            } else {
+                blackCanLongCastle = blackCanShortCastle = false;
+            }
+        }
+        else if (type == ChessPiece.PieceType.ROOK) {
+            ChessPosition start = move.getStartPosition();
+            if (start.equals(new ChessPosition(1, 1))) {
+                whiteCanLongCastle = false;
+            }
+            if (start.equals(new ChessPosition(1, 8))) {
+                whiteCanShortCastle = false;
+            }
+            if (start.equals(new ChessPosition(8, 1))) {
+                blackCanLongCastle = false;
+            }
+            if (start.equals(new ChessPosition(8, 8))) {
+                blackCanShortCastle = false;
+            }
+        } else if (type == ChessPiece.PieceType.PAWN) {
+            halfMoveClock = 0; // resets on pawn advance
+        }
+        if (move.isCapture()) halfMoveClock = 0; // or captures
+        fullMoveNumber += color == TeamColor.BLACK ? 1 : 0; // Increment clock on black turns
+
+        turn = getOtherTeam(turn);
     }
 
     /**
@@ -195,15 +307,20 @@ public class ChessGame {
     public String fenString() {
         StringBuilder fenString = new StringBuilder(board.positionFenString());
         fenString.append(' ').append(turn == TeamColor.WHITE ? 'w' : 'b').append(' ');
-        if (whiteCanCastleKingside || whiteCanCastleQueenside || blackCanCastleKingside || blackCanCastleQueenside) {
-            fenString.append(whiteCanCastleKingside ? 'K' : null);
-            fenString.append(whiteCanCastleQueenside ? 'Q' : null);
-            fenString.append(blackCanCastleKingside ? 'k' : null);
-            fenString.append(blackCanCastleQueenside ? 'q' : null);
-        } else fenString.append('-');
+        if (whiteCanShortCastle || whiteCanLongCastle || blackCanShortCastle || blackCanLongCastle) {
+            fenString.append(whiteCanShortCastle ? 'K' : null);
+            fenString.append(whiteCanLongCastle ? 'Q' : null);
+            fenString.append(blackCanShortCastle ? 'k' : null);
+            fenString.append(blackCanLongCastle ? 'q' : null);
+        } else {
+            fenString.append('-');
+        }
         fenString.append(' ');
-        if (enPassant == null) fenString.append('-');
-        else fenString.append(enPassant);
+        if (enPassant == null) {
+            fenString.append('-');
+        } else {
+            fenString.append(enPassant);
+        }
         fenString.append(' ');
         fenString.append(halfMoveClock).append(' ');
         fenString.append(fullMoveNumber);

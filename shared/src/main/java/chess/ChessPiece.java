@@ -106,8 +106,8 @@ public class ChessPiece {
             ChessPosition longCastle = new ChessPosition(homeRank, 3);
             ChessPosition longCastleRookStart = new ChessPosition(homeRank, 1);
             ChessPosition longCastleRookEnd = new ChessPosition(homeRank, 4);
-            moves.add(new ChessMove(start, shortCastle, null).isCastle(shortCastleRookStart, shortCastleRookEnd));
-            moves.add(new ChessMove(start, longCastle, null).isCastle(longCastleRookStart, longCastleRookEnd));
+            moves.add(new ChessMove(start, shortCastle, null).isCastle(shortCastleRookStart, shortCastleRookEnd, true));
+            moves.add(new ChessMove(start, longCastle, null).isCastle(longCastleRookStart, longCastleRookEnd, false));
         }
         return moves;
     }

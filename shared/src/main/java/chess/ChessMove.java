@@ -18,6 +18,8 @@ public class ChessMove {
     private boolean capturesByEnPassant = false;
     private ChessPosition passedPosition = null;
     private boolean isCastle = false;
+    private boolean isShortCastle = false;
+    private boolean isLongCastle = false;
     private ChessPosition castlingRookStart = null;
     private ChessPosition castlingRookEnd = null;
 
@@ -105,10 +107,12 @@ public class ChessMove {
         return this;
     }
 
-    public ChessMove isCastle(ChessPosition castlingRookStart, ChessPosition castlingRookEnd) {
+    public ChessMove isCastle(ChessPosition castlingRookStart, ChessPosition castlingRookEnd, boolean isShortCastle) {
         this.isCastle = true;
         this.castlingRookStart = castlingRookStart;
         this.castlingRookEnd = castlingRookEnd;
+        if (isShortCastle) this.isShortCastle = true;
+        else this.isLongCastle = true;
         return this;
     }
 
@@ -135,6 +139,14 @@ public class ChessMove {
 
     public boolean isCastle() {
         return isCastle;
+    }
+
+    public boolean isShortCastle() {
+        return isShortCastle;
+    }
+
+    public boolean isLongCastle() {
+        return isLongCastle;
     }
 
     public boolean capturesByEnPassant() {
