@@ -100,9 +100,8 @@ public class ChessGame {
             throw new InvalidMoveException("It is not this piece's turn.");
         }
         updateFlags(move);
-        // use special case methods if applicable
+        movePieces(move, board);
         if (move.capturesByEnPassant()) {
-            makeEnPassantCaptureMove(move);
             enPassant = null;
             positionVulnerableToEnPassant = null;
             return;
@@ -112,15 +111,26 @@ public class ChessGame {
             enPassant = null;
             positionVulnerableToEnPassant = null;
         }
+    }
+
+    public void movePieces(ChessMove move, ChessBoard board) throws InvalidMoveException {
+        // use special case methods if applicable
+        if (move.capturesByEnPassant()) {
+            makeEnPassantCaptureMove(move, board);
+            return;
+        }
+        if (enPassant != null) {
+            board.removePiece(enPassant);
+        }
         if (move.createsEnPassant()) {
-            makeEnPassantMove(move);
+            makeEnPassantMove(move, board);
             return;
         }
         if (move.isCastle()) {
-            makeCastleMove(move);
+            makeCastleMove(move, board);
             return;
         }
-        makeStandardMove(move);
+        makeStandardMove(move, board);
     }
 
     private void validateMove(ChessMove move) throws InvalidMoveException {
@@ -139,6 +149,20 @@ public class ChessGame {
         move.decorate(board);
         if (move.isCastle()) {
             validateCastleMove(move, color);
+        }
+        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+            Collection<ChessPosition> threatenedPositions = board.getPositionsThreatenedByColor(getOtherTeam(color));
+            if (threatenedPositions.contains(end)) {
+                throw new InvalidMoveException("The king cannot move into check");
+            }
+        }
+        ChessBoard testBoard = new ChessBoard();
+        testBoard.setPieces(board.getPieces());
+        movePieces(move, testBoard);
+        ChessPosition kingPosition = testBoard.getKingSquare(color);
+        Collection<ChessPosition> threatenedPositions = testBoard.getPositionsThreatenedByColor(getOtherTeam(color));
+        if (threatenedPositions.contains(kingPosition)) {
+            throw new InvalidMoveException("The king cannot end in check");
         }
     }
 
@@ -184,7 +208,7 @@ public class ChessGame {
         }
     }
 
-    private void makeStandardMove(ChessMove move) {
+    private void makeStandardMove(ChessMove move, ChessBoard board) {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
@@ -195,7 +219,7 @@ public class ChessGame {
         board.printBoard();
     }
 
-    private void makeCastleMove(ChessMove move) {
+    private void makeCastleMove(ChessMove move, ChessBoard board) {
         board.printBoard();
         ChessPiece king = board.removePiece(move.getStartPosition());
         ChessPiece rook = board.removePiece(move.getCastlingRookStart());
@@ -204,18 +228,15 @@ public class ChessGame {
         board.printBoard();
     }
 
-    private void makeEnPassantMove(ChessMove move) {
+    private void makeEnPassantMove(ChessMove move, ChessBoard board) {
         ChessPiece piece = board.getPiece(move.getStartPosition());
         TeamColor color = piece.getTeamColor();
-        ChessPosition end = move.getEndPosition();
-        enPassant = move.passedPosition();
-        positionVulnerableToEnPassant = end;
         board.removePiece(move.getStartPosition());
         board.addPiece(move.getEndPosition(), piece);
         board.addPiece(enPassant, new ChessPiece(color, ChessPiece.PieceType.EN_PASSANT));
     }
 
-    private void makeEnPassantCaptureMove(ChessMove move) {
+    private void makeEnPassantCaptureMove(ChessMove move, ChessBoard board) {
         ChessPiece piece = board.removePiece(move.getStartPosition());
         board.removePiece(positionVulnerableToEnPassant);
         board.addPiece(move.getEndPosition(), piece);

@@ -9,7 +9,7 @@ import java.util.*;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
+    private Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
     private static final boolean useSymbols = true;
 
     public static final int BOARD_SIZE = 8;
@@ -58,6 +58,10 @@ public class ChessBoard {
 
     public Map<ChessPosition, ChessPiece> getPieces() {
         return pieces;
+    }
+
+    public void setPieces(Map<ChessPosition, ChessPiece> pieces) {
+        this.pieces = new Hashtable<>(pieces);
     }
 
     /**
