@@ -162,7 +162,9 @@ public class ChessGame {
         if (!piece.pieceMoves(board, start).contains(move)) {
             throw new InvalidMoveException("This piece can't move to that position.");
         }
-        if (!move.decorated()) move.decorate(board);
+        if (!move.decorated()) {
+            move.decorate(board);
+        }
         if (move.isCastle()) {
             validateCastleMove(move, color);
         }
