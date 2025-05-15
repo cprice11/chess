@@ -114,7 +114,8 @@ public class ChessBoard {
     public Collection<ChessPosition> getPositionsByColor(ChessGame.TeamColor color) {
         HashSet<ChessPosition> teamPositions = new HashSet<>();
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
-            if (entry.getValue().getTeamColor() == color) {
+            ChessPiece piece = entry.getValue();
+            if (piece.getTeamColor() == color && piece.getPieceType() != ChessPiece.PieceType.EN_PASSANT) {
                 teamPositions.add(entry.getKey());
             }
         }
@@ -199,7 +200,7 @@ public class ChessBoard {
         int numBlanks = 0;
         for (int file = 1; file <= BOARD_SIZE; file++) {
             ChessPiece piece = pieces.get(new ChessPosition(rank, file));
-            if (piece == null) {
+            if (piece == null || piece.getPieceType() == ChessPiece.PieceType.EN_PASSANT) {
                 numBlanks += 1;
             } else {
                 if (numBlanks > 0) {
@@ -221,14 +222,15 @@ public class ChessBoard {
      *
      * @return a multi-line string displaying the gameboard.
      */
-    public String prettyBoard() {
+    public List<String> prettyRows() {
         ChessColor color = new ChessColor();
-        String fileLabels = "   a  b  c  d  e  f  g  h \n";
-        StringBuilder board = new StringBuilder();
-        board.append(color).append(fileLabels);
+        String fileLabels = "    a  b  c  d  e  f  g  h    ";
+        ArrayList<String> lineList = new ArrayList<>();
+        lineList.addLast(color + fileLabels);
         for (int rank = BOARD_SIZE; rank > 0; rank--) {
-            board.append(color.noHighlight().noSquare());
-            board.append(" ").append(rank).append(" ");
+            StringBuilder row = new StringBuilder();
+            row.append(color.noHighlight().noSquare());
+            row.append(" ").append(rank).append(" ");
             for (int file = 1; file <= BOARD_SIZE; file++) {
                 color = (rank + file) % 2 == 1 ? color.lightSquare() : color.darkSquare();
                 ChessPosition square = new ChessPosition(rank, file);
@@ -247,29 +249,31 @@ public class ChessBoard {
                     pieceString = USE_SYMBOLS ? piece.prettyString() : piece.toString();
                     color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? color.lightPiece() : color.darkPiece();
                 }
-                board.append(color);
-                board.append(" ").append(pieceString).append(" ");
+                row.append(color);
+                row.append(" ").append(pieceString).append(" ");
             }
-            board.append(color.noHighlight().noSquare().lightText());
-            board.append(" ").append(rank).append(" ").append('\n');
+            row.append(color.noHighlight().noSquare().lightText());
+            row.append(" ").append(rank).append(" ");
+            lineList.add(row.toString());
         }
-        board.append(fileLabels).append('\n');
-        board.append("FEN: ").append(positionFenString()).append('\n').append(color.getResetString());
-        return board.toString();
+        lineList.add(fileLabels);
+        lineList.add("FEN: " + positionFenString());
+        lineList.add(color.getResetString());
+        return lineList;
     }
 
     /**
-     * Changes the display color of a given position when output with prettyBoard()
+     * Changes the display color of a given position when output with prettyRows()
      *
      * @param position the position to update
-     * @param color the new color to use
+     * @param color    the new color to use
      */
     public void setHighlight(ChessPosition position, ChessColor.Highlight color) {
         highlights.put(position, color);
     }
 
     /**
-     * Removes all highlight information that would be shown with prettyBoard()
+     * Removes all highlight information that would be shown with prettyRows()
      */
     public void resetHighlights() {
         highlights.clear();
@@ -279,7 +283,9 @@ public class ChessBoard {
      * Display the game board in the console
      */
     public void printBoard() {
-        System.out.println(prettyBoard());
+        for (String row : prettyRows()) {
+            System.out.println(row);
+        }
     }
 
     @Override
