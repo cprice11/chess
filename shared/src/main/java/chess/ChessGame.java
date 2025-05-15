@@ -79,10 +79,10 @@ public class ChessGame {
         moves.removeIf(move -> {
             try {
                 validateMove(move);
+                return false;
             } catch (InvalidMoveException e) {
                 return true;
             }
-            return false;
         });
         return moves;
     }
@@ -124,7 +124,8 @@ public class ChessGame {
         board.printBoard();
     }
 
-    private void validateMove(ChessMove move) throws InvalidMoveException {
+    private ChessMove validateMove(ChessMove move) throws InvalidMoveException {
+        move.decorate(board);
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
@@ -138,11 +139,12 @@ public class ChessGame {
             throw new InvalidMoveException("This piece can't move to that position.");
         }
         if (move.isCastle()) {
-            validateCastleMove(move, color);
+            move = validateCastleMove(move, color);
         }
+        return move;
     }
 
-    private void validateCastleMove(ChessMove move, TeamColor color) throws InvalidMoveException {
+    private ChessMove validateCastleMove(ChessMove move, TeamColor color) throws InvalidMoveException {
         if (isInCheck(color)) {
             throw new InvalidMoveException("Cannot castle while in check");
         }
@@ -182,13 +184,16 @@ public class ChessGame {
         if (threatenedPositions.contains(safePosition)) {
             throw new InvalidMoveException("Cannot castle through check");
         }
+        return move;
     }
 
     private void makeCastleMove(ChessMove move) {
+        board.printBoard();
         ChessPiece king = board.removePiece(move.getStartPosition());
         ChessPiece rook = board.removePiece(move.getCastlingRookStart());
         board.addPiece(move.getEndPosition(), king);
         board.addPiece(move.getCastlingRookEnd(), rook);
+        board.printBoard();
     }
 
     private void makeEnPassantMove(ChessMove move) {
@@ -253,7 +258,6 @@ public class ChessGame {
      * @return True if the specified team is in check, false otherwise.
      */
     public boolean isInCheck(TeamColor teamColor) {
-        board.printBoard();
         ChessPosition kingSquare = board.getKingSquare(teamColor);
         Collection<ChessPosition> threatenedPositions = board.getPositionsThreatenedByColor(getOtherTeam(teamColor));
         return threatenedPositions.contains(kingSquare);
