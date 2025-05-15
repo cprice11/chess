@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
+/**
+ * Represents a chess piece with color and type of piece
+ */
 public class ChessPiece {
     private final ChessGame.TeamColor color;
     private final ChessPiece.PieceType type;

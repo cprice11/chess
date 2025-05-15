@@ -2,6 +2,9 @@ package chess;
 
 import java.awt.*;
 
+/**
+ * Generates ANSI escape codes to color terminal output
+ */
 public class ChessColor {
     private ColorPalette palette = new ColorPalette(
             Color.decode("#FFFFFF"), Color.decode("#000000"),
