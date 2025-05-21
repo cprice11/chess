@@ -8,13 +8,11 @@
 
 ## ~~Phase 3~~
 
+- [ ] Replace old sequence diagrams
 - [x] Setup
 - [ ] Create classes
-  - [ ] Data Models
-    - [ ] UserData
-    - [ ] GameData
-    - [ ] AuthData
-  - [ ] Data Access
+  - [x] Data Models
+  - [-] Data Access
     - [ ] Interfaces 
     - [ ] Memory
   - [ ] Services
