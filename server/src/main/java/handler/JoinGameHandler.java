@@ -12,8 +12,7 @@ public class JoinGameHandler extends RequestHandler{
         System.out.println("Joining game");
         String authToken = request.headers("authorization");
         JoinGameRequestBody requestBody = gson.fromJson(request.body(), JoinGameRequestBody.class);
-
-        if (authToken == null) {
+        if (authToken == null || requestBody.gameID < 1) {
             return error(response, 400, "Error: bad request");
         }
         try {
@@ -22,7 +21,7 @@ public class JoinGameHandler extends RequestHandler{
             return error(response, 401, "Error: unauthorized");
         } catch (AlreadyTakenException e) {
             return error(response, 403, "Error: already taken");
-        }catch (Exception e) {
+        } catch (Exception e) {
             return error(response, 500, "Error: " + e.getMessage());
         }
 
