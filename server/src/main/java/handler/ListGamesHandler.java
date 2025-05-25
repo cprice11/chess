@@ -8,7 +8,7 @@ import spark.Response;
 import java.util.Collection;
 
 public class ListGamesHandler extends RequestHandler{
-    private record ListGamesResponse(Collection<GameSummary> summaries){};
+    private record ListGamesResponse(Collection<GameSummary> games){};
     public Object handle(Request request, Response response) {
         System.out.println("Logging out user");
         String authToken = request.headers("authorization");
