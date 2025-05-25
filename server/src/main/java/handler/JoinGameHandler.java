@@ -1,11 +1,32 @@
 package handler;
 
+import chess.ChessGame;
+import service.AlreadyTakenException;
+import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
 public class JoinGameHandler extends RequestHandler{
+    private record JoinGameRequestBody(ChessGame.TeamColor playerColor, int gameID){};
     public Object handle(Request request, Response response) {
-        System.out.println("Not implemented");
-        return response;
+        System.out.println("Joining game");
+        AuthHeader authHeader = gson.fromJson(request.headers().toString(), AuthHeader.class);
+        JoinGameRequestBody requestBody = gson.fromJson(request.body(), JoinGameRequestBody.class);
+
+        if (authHeader.authToken() == null) {
+            return error(response, 400, "Error: bad request");
+        }
+        try {
+            gameService.joinGame(authHeader.authToken(), requestBody.playerColor, requestBody.gameID);
+        } catch (UnauthorizedException e) {
+            return error(response, 401, "Error: Unauthorized");
+        } catch (AlreadyTakenException e) {
+            return error(response, 403, "Error: already taken");
+        }catch (Exception e) {
+            return error(response, 500, e.getMessage());
+        }
+
+        response.status(200);
+        return gson.toJson(new Object());
     }
 }
