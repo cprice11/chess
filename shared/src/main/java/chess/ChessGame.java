@@ -20,7 +20,7 @@ public class ChessGame {
 
     public ChessGame() {
         board.resetBoard();
-        ConsolePrinter.printGame(this);
+//        ConsolePrinter.printGame(this);
     }
 
     /**
