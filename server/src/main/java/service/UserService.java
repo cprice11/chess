@@ -43,6 +43,8 @@ public class UserService extends Service{
     }
 
     public void logoutUser(String authToken) {
+        AuthData auth = authDAO.getAuthByAuthToken(authToken);
+        if (auth == null) throw new UnauthorizedException();
         authDAO.deleteAuthByAuthToken(authToken);
     }
 }
