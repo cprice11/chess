@@ -11,9 +11,13 @@ public class LogoutTests extends UnitTests{
     @Order(1)
     @DisplayName("positive logout")
     public void logoutUser() {
-        user.logoutUser(authA.authToken());
-        Assertions.assertNull(authDAO.getAuthByUsername(authA.username()));
-        Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
+        try {
+            user.logoutUser(authA.authToken());
+            Assertions.assertNull(authDAO.getAuthByUsername(authA.username()));
+            Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
+        } catch (Exception e) {
+            Assertions.fail("Unexpected exception thrown");
+        }
     }
 
     @Test

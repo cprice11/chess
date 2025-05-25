@@ -29,8 +29,10 @@ public class RegisterTests extends UnitTests{
         try {
             user.registerUser(reuseUsername);
             Assertions.fail();
-        } catch ( DataAccessException e ) {
+        } catch ( AlreadyTakenException e ) {
             System.out.println("Successfully threw exception");
+        } catch ( Exception e ) {
+            Assertions.fail("Threw an unexpected exception");
         }
     }
 }

@@ -3,6 +3,7 @@ package handler;
 import dataModels.AuthData;
 import dataModels.UserData;
 import dataaccess.DataAccessException;
+import service.AlreadyTakenException;
 import spark.Request;
 import spark.Response;
 
@@ -17,7 +18,7 @@ public class RegisterUserHandler extends RequestHandler {
         }
         try {
             auth = userService.registerUser(user);
-        } catch (DataAccessException e) {
+        } catch (AlreadyTakenException e) {
             return error(response, 403, "Error: already taken");
         } catch (Exception e) {
             return error(response, 500, e.getMessage());

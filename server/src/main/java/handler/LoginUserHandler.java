@@ -2,6 +2,7 @@ package handler;
 
 import dataModels.AuthData;
 import dataaccess.DataAccessException;
+import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
@@ -17,12 +18,13 @@ public class LoginUserHandler extends RequestHandler{
         }
         try {
             auth = userService.loginUser(r.username(), r.password());
-        } catch (Exception e) {
-            return error(response, 500, e.getMessage());
-        }
-        if (auth == null) {
+        } catch (UnauthorizedException e ) {
             return error(response, 401, "Unauthorized");
         }
+        catch (Exception e) {
+            return error(response, 500, e.getMessage());
+        }
+
 
         response.status(200);
         return gson.toJson(auth.authToken(), loginResponse.class);
