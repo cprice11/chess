@@ -12,7 +12,7 @@ public class JoinGameHandler extends RequestHandler{
         System.out.println("Joining game");
         String authToken = request.headers("authorization");
         JoinGameRequestBody requestBody = gson.fromJson(request.body(), JoinGameRequestBody.class);
-        if (authToken == null || requestBody.gameID < 1) {
+        if (authToken == null || requestBody.gameID < 1 || requestBody.playerColor == null) {
             return error(response, 400, "Error: bad request");
         }
         try {
