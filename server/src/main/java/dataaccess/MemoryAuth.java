@@ -13,7 +13,9 @@ public class MemoryAuth implements AuthDAO{
     }
 
     public void addAuth(AuthData auth) throws DataAccessException {
-        if (getAuthByAuthToken(auth.authToken()) != null) throw new DataAccessException("AuthToken already in database");
+        if (getAuthByAuthToken(auth.authToken()) != null) {
+            throw new DataAccessException("AuthToken already in database");
+        }
         db.put(auth.authToken(), auth);
         print();
     }
