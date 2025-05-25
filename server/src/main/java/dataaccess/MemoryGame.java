@@ -1,18 +1,17 @@
 package dataaccess;
 
-import dataModels.AuthData;
 import dataModels.GameData;
 import dataModels.GameSummary;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.function.BiConsumer;
 
 public class MemoryGame implements GameDAO{
     HashMap<Integer, GameData> db = new HashMap<>();
-    public void addGame(GameData game) {
+
+    public void addGame(GameData game) throws DataAccessException {
+        if (db.get(game.gameID()) != null) throw new DataAccessException("Invalid ID");
         db.put(game.gameID(), game);
     }
 
@@ -20,7 +19,8 @@ public class MemoryGame implements GameDAO{
         return db.get(gameID);
     }
 
-    public void updateGame(int gameID, GameData game) {
+    public void updateGame(int gameID, GameData game) throws DataAccessException{
+        if (db.get(gameID) == null) throw new DataAccessException("Game with ID '" + gameID + "' does not exist");
         db.put(gameID, game);
     }
 

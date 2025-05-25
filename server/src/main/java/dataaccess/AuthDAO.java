@@ -1,12 +1,14 @@
 package dataaccess;
 
 import dataModels.AuthData;
-import dataModels.UserData;
 
 public interface AuthDAO {
-    void addAuth(AuthData auth);
-    AuthData getAuth(String username);
-    void updateAuth(String username, String authToken);
-    void deleteAuth(String username);
+    void addAuth(AuthData auth) throws DataAccessException;
+    AuthData getAuthByUsername(String username);
+    AuthData getAuthByAuthToken(String authToken);
+    void updateAuth(String username, String authToken) throws DataAccessException;
+    void deleteAuth(AuthData authData);
+    void deleteAuthByAuthToken(String authToken);
+    void deleteAuthByUsername(String username);
     void clearAll();
 }
