@@ -1,11 +1,31 @@
 package handler;
 
+import dataModels.GameSummary;
+import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
+import java.util.Collection;
+
 public class ListGamesHandler extends RequestHandler{
+    private record ListGamesResponse(Collection<GameSummary> summaries){};
     public Object handle(Request request, Response response) {
-        System.out.println("Not implemented");
-        return response;
+        System.out.println("Logging out user");
+        AuthHeader authHeader = gson.fromJson(request.headers().toString(), AuthHeader.class);
+
+        if (authHeader.authToken() == null) {
+            return error(response, 400, "Error: bad request");
+        }
+        Collection<GameSummary> gameSummaries;
+        try {
+            gameSummaries = gameService.listGames(authHeader.authToken());
+        } catch (UnauthorizedException e) {
+            return error(response, 401, "Error: Unauthorized");
+        } catch (Exception e) {
+            return error(response, 500, e.getMessage());
+        }
+
+        response.status(200);
+        return gson.toJson(new ListGamesResponse(gameSummaries), ListGamesResponse.class);
     }
 }

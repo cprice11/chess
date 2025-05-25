@@ -3,9 +3,12 @@ package service;
 import chess.ChessGame;
 import dataModels.AuthData;
 import dataModels.GameData;
+import dataModels.GameSummary;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+
+import java.util.Collection;
 
 public class GameService extends Service{
     private final AuthDAO authDAO;
@@ -46,5 +49,13 @@ public class GameService extends Service{
             return;
         }
         throw new AlreadyTakenException();
+    }
+
+    public Collection<GameSummary> listGames(String authToken) throws UnauthorizedException{
+        AuthData auth = authDAO.getAuthByAuthToken(authToken);
+        if (auth == null) {
+            throw new UnauthorizedException();
+        }
+        return gameDAO.getGameSummaries();
     }
 }
