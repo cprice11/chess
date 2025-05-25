@@ -3,7 +3,7 @@ package service;
 import java.util.UUID;
 
 public class Service {
-    public static String generateToken() {
+    public String generateToken() {
         return UUID.randomUUID().toString();
     }
 }
