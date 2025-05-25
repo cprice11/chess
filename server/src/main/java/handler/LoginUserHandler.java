@@ -11,14 +11,20 @@ public class LoginUserHandler extends RequestHandler{
     public Object handle(Request request, Response response) {
         loginRequest r = gson.fromJson(request.body(), loginRequest.class);
         AuthData auth;
+
+        if (r.username() == null || r.password() == null) {
+            return error(response, 400, "Bad request");
+        }
         try {
             auth = userService.loginUser(r.username(), r.password());
-        } catch (DataAccessException e) {
-            return error(response, 403, "Unauthorized");
+        } catch (Exception e) {
+            return error(response, 500, e.getMessage());
         }
         if (auth == null) {
-            return error(response, 401, "Some 401 error");
+            return error(response, 401, "Unauthorized");
         }
+
+        response.status(200);
         return gson.toJson(auth.authToken(), loginResponse.class);
     }
 }
