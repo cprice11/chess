@@ -23,7 +23,7 @@ public class UnitTests {
     public final UserData userC = new UserData("userC", "userCpass", "c@email.com");
 
     public final DevService dev = new DevService(authDAO, gameDAO, userDAO);
-    public final GameService game = new GameService();
+    public final GameService game = new GameService(authDAO, gameDAO);
     public final UserService user = new UserService(authDAO, userDAO);
 
     @BeforeEach
