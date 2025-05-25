@@ -20,7 +20,7 @@ public class LogoutUserHandler extends RequestHandler{
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: Unauthorized");
         } catch (Exception e) {
-            return error(response, 500, e.getMessage());
+            return error(response, 500, "Error: " + e.getMessage());
         }
 
         response.status(200);

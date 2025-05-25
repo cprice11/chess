@@ -37,8 +37,11 @@ public class UserService extends Service{
         if (!Objects.equals(inDataBase.password(), password)) {
             throw new UnauthorizedException();
         }
-        AuthData auth = new AuthData(username, generateToken());
-        authDAO.addAuth(auth);
+        AuthData auth = authDAO.getAuthByUsername(username);
+        if (auth == null) {
+            auth = new AuthData(username, generateToken());
+            authDAO.addAuth(auth);
+        }
         return auth;
     }
 

@@ -14,15 +14,14 @@ public class LoginUserHandler extends RequestHandler{
         AuthData auth;
 
         if (r.username() == null || r.password() == null) {
-            return error(response, 400, "Bad request");
+            return error(response, 400, "Error: bad request");
         }
         try {
             auth = userService.loginUser(r.username(), r.password());
         } catch (UnauthorizedException e ) {
-            return error(response, 401, "Unauthorized");
-        }
-        catch (Exception e) {
-            return error(response, 500, e.getMessage());
+            return error(response, 401, "Error: unauthorized");
+        } catch (Exception e) {
+            return error(response, 500, "Error: " + e.getMessage());
         }
 
         response.status(200);

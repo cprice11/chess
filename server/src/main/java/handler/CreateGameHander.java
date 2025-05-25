@@ -19,9 +19,9 @@ public class CreateGameHander extends RequestHandler{
         try {
             gameID = gameService.createGame(authHeader.authToken(), requestBody.gameName);
         } catch (UnauthorizedException e) {
-            return error(response, 401, "Error: Unauthorized");
+            return error(response, 401, "Error: unauthorized");
         } catch (Exception e) {
-            return error(response, 500, e.getMessage());
+            return error(response, 500, "Error: " + e.getMessage());
         }
 
         response.status(200);

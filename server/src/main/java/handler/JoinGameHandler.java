@@ -19,11 +19,11 @@ public class JoinGameHandler extends RequestHandler{
         try {
             gameService.joinGame(authHeader.authToken(), requestBody.playerColor, requestBody.gameID);
         } catch (UnauthorizedException e) {
-            return error(response, 401, "Error: Unauthorized");
+            return error(response, 401, "Error: unauthorized");
         } catch (AlreadyTakenException e) {
             return error(response, 403, "Error: already taken");
         }catch (Exception e) {
-            return error(response, 500, e.getMessage());
+            return error(response, 500, "Error: " + e.getMessage());
         }
 
         response.status(200);

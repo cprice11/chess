@@ -20,9 +20,9 @@ public class ListGamesHandler extends RequestHandler{
         try {
             gameSummaries = gameService.listGames(authHeader.authToken());
         } catch (UnauthorizedException e) {
-            return error(response, 401, "Error: Unauthorized");
+            return error(response, 401, "Error: unauthorized");
         } catch (Exception e) {
-            return error(response, 500, e.getMessage());
+            return error(response, 500, "Error: " + e.getMessage());
         }
 
         response.status(200);
