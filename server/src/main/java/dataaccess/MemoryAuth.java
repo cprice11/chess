@@ -33,24 +33,9 @@ public class MemoryAuth implements AuthDAO{
         return db.get(authToken);
     }
 
-//    public void updateAuth(AuthData auth, String authToken) throws DataAccessException {
-//        deleteAuth(auth);
-//        addAuth(new AuthData(auth.username(), authToken));
-//    }
-
-//    public void deleteAuth(AuthData authData) {
-//        db.remove(authData.authToken());
-//    }
-
     public void deleteAuthByAuthToken(String authToken) {
         db.remove(authToken);
     }
-
-//    public void deleteAuthByUsername(String username) {
-//        AuthData auth = getAuthByUsername(username);
-//        if (auth == null) return;
-//        deleteAuth(auth);
-//    }
 
     public void clearAll() {
         db.clear();

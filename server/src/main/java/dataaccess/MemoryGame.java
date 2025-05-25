@@ -28,10 +28,6 @@ public class MemoryGame implements GameDAO{
         db.put(gameID, game);
     }
 
-//    public void deleteGame(int gameID) {
-//        db.remove(gameID);
-//    }
-
     public Collection<GameSummary> getGameSummaries() {
         ArrayList<GameSummary> summaries = new ArrayList<>();
         db.forEach((gameID, game) -> summaries.add(
@@ -43,10 +39,4 @@ public class MemoryGame implements GameDAO{
     public void clearAll() {
         db.clear();
     }
-
-//    public void print() {
-//        db.forEach((i, g) -> {
-//            System.out.println("ID: " + i + " name: " + g.gameName());
-//        });
-//    }
 }
