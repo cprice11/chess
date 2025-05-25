@@ -16,15 +16,16 @@ public class LogoutTests extends UnitTests{
         Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
     }
 
-//    @Test
-//    @Order(2)
-//    @DisplayName("wrong password")
-//    public void registerReusedUsername() {
-//        try {
-//            user.loginUser(userA.username(), userB.password());
-//            Assertions.fail();
-//        } catch (Exception e) {
-//            System.out.println("Good throw");
-//        }
-//    }
+    @Test
+    @Order(2)
+    @DisplayName("double logout")
+    public void registerReusedUsername() {
+        try {
+            user.logoutUser(authA.authToken());
+            user.logoutUser(authA.authToken());
+            Assertions.fail();
+        } catch (Exception e) {
+            System.out.println("Good throw");
+        }
+    }
 }
