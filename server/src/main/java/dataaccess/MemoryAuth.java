@@ -15,6 +15,7 @@ public class MemoryAuth implements AuthDAO{
 
     public void addAuth(AuthData auth) {
         db.add(auth);
+        print();
     }
 
     @Override
@@ -38,5 +39,11 @@ public class MemoryAuth implements AuthDAO{
 
     public void clearAll() {
         db.clear();
+    }
+
+    public void print() {
+        for (AuthData a : db) {
+            System.out.println("username: " + a.username() + " authToken: " + a.authToken());
+        }
     }
 }

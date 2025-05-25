@@ -6,7 +6,7 @@ import dataModels.GameSummary;
 import java.util.Collection;
 
 public interface GameDAO {
-    void addGame(int gameID, GameData game);
+    void addGame(GameData game);
     GameData getGame(int gameID);
     void updateGame(int gameID, GameData game);
     void deleteGame(int gameID);

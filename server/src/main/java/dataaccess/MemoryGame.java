@@ -1,16 +1,19 @@
 package dataaccess;
 
+import dataModels.AuthData;
 import dataModels.GameData;
 import dataModels.GameSummary;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 
 public class MemoryGame implements GameDAO{
     HashMap<Integer, GameData> db = new HashMap<>();
-    public void addGame(int gameID, GameData game) {
-        db.put(gameID, game);
+    public void addGame(GameData game) {
+        db.put(game.gameID(), game);
     }
 
     public GameData getGame(int gameID) {
@@ -35,5 +38,11 @@ public class MemoryGame implements GameDAO{
 
     public void clearAll() {
         db.clear();
+    }
+
+    public void print() {
+        db.forEach((i, g) -> {
+            System.out.println("ID: " + i + " name: " + g.gameName());
+        });
     }
 }
