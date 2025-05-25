@@ -16,7 +16,7 @@ public class RegisterTests extends UnitTests{
         AuthData registered_auth;
         try {
             registered_auth = user.registerUser(userC);
-            Assertions.assertEquals(registered_auth, authDAO.getAuth(userC.username()));
+            Assertions.assertEquals(registered_auth, authDAO.getAuthByUsername(userC.username()));
         } catch (Exception e) {
             Assertions.fail();
         }

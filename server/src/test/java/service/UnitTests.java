@@ -5,6 +5,7 @@ import dataModels.AuthData;
 import dataModels.GameData;
 import dataModels.UserData;
 import dataaccess.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
 public class UnitTests {
@@ -30,11 +31,15 @@ public class UnitTests {
         authDAO.clearAll();
         gameDAO.clearAll();
         userDAO.clearAll();
-        authDAO.addAuth(authA);
-        authDAO.addAuth(authB);
-        gameDAO.addGame(gameA);
-        gameDAO.addGame(gameB);
-        userDAO.addUser(userA);
-        userDAO.addUser(userB);
+        try {
+            authDAO.addAuth(authA);
+            authDAO.addAuth(authB);
+            gameDAO.addGame(gameA);
+            gameDAO.addGame(gameB);
+            userDAO.addUser(userA);
+            userDAO.addUser(userB);
+        } catch (DataAccessException e) {
+            Assertions.fail("Failed during setup");
+        }
     }
 }

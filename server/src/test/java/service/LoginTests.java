@@ -1,8 +1,6 @@
 package service;
 
 import dataModels.AuthData;
-import dataModels.UserData;
-import dataaccess.DataAccessException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -14,8 +12,9 @@ public class LoginTests extends UnitTests{
     @DisplayName("Positive login")
     public void loginUser() {
         try {
+            user.logoutUser(authA.authToken());
             AuthData goodAuth = user.loginUser(userA.username(), userA.password());
-            Assertions.assertEquals(goodAuth, authDAO.getAuth(goodAuth.username()));
+            Assertions.assertEquals(goodAuth, authDAO.getAuthByUsername(goodAuth.username()));
         } catch (Exception e) {
             Assertions.fail();
         }
