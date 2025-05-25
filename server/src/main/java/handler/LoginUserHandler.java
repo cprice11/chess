@@ -25,7 +25,6 @@ public class LoginUserHandler extends RequestHandler{
             return error(response, 500, e.getMessage());
         }
 
-
         response.status(200);
         return gson.toJson(auth.authToken(), loginResponse.class);
     }

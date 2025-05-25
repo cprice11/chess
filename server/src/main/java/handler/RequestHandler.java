@@ -22,7 +22,7 @@ public abstract class RequestHandler implements Route {
     abstract public Object handle(Request request, Response response);
 
     public Object error(Response response, int code, String message) {
-        response.status(401);
+        response.status(code);
         Message m = new Message(message);
         return(gson.toJson(m, Message.class));
     }
