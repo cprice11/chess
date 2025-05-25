@@ -1,8 +1,7 @@
 package service;
 
-import dataModels.AuthData;
-import dataModels.UserData;
-import dataaccess.DataAccessException;
+import datamodels.AuthData;
+import datamodels.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;

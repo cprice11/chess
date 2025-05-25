@@ -1,12 +1,13 @@
 package handler;
 
-import dataModels.AuthData;
+import datamodels.AuthData;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
 public class LoginUserHandler extends RequestHandler{
-    private record LoginRequest(String username, String password){};
+    private record LoginRequest(String username, String password) {
+    }
     public Object handle(Request request, Response response) {
         LoginRequest r = GSON.fromJson(request.body(), LoginRequest.class);
         AuthData auth;

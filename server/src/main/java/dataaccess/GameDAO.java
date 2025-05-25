@@ -1,7 +1,7 @@
 package dataaccess;
 
-import dataModels.GameData;
-import dataModels.GameSummary;
+import datamodels.GameData;
+import datamodels.GameSummary;
 
 import java.util.Collection;
 

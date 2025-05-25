@@ -1,7 +1,7 @@
 package dataaccess;
 
-import dataModels.GameData;
-import dataModels.GameSummary;
+import datamodels.GameData;
+import datamodels.GameSummary;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,7 +11,9 @@ public class MemoryGame implements GameDAO{
     HashMap<Integer, GameData> db = new HashMap<>();
 
     public void addGame(GameData game) throws DataAccessException {
-        if (db.get(game.gameID()) != null) throw new DataAccessException("Invalid ID");
+        if (db.get(game.gameID()) != null) {
+            throw new DataAccessException("Invalid ID");
+        }
         db.put(game.gameID(), game);
     }
 
@@ -20,7 +22,9 @@ public class MemoryGame implements GameDAO{
     }
 
     public void updateGame(int gameID, GameData game) throws DataAccessException{
-        if (db.get(gameID) == null) throw new DataAccessException("Game with ID '" + gameID + "' does not exist");
+        if (db.get(gameID) == null) {
+            throw new DataAccessException("Game with ID '" + gameID + "' does not exist");
+        }
         db.put(gameID, game);
     }
 
@@ -30,9 +34,9 @@ public class MemoryGame implements GameDAO{
 
     public Collection<GameSummary> getGameSummaries() {
         ArrayList<GameSummary> summaries = new ArrayList<>();
-        db.forEach((gameID, game)  -> {
-            summaries.add(new GameSummary(gameID, game.blackUsername(), game.whiteUsername(), game.gameName()));
-        });
+        db.forEach((gameID, game) -> summaries.add(
+                new GameSummary(gameID, game.blackUsername(), game.whiteUsername(), game.gameName())
+        ));
         return summaries;
     }
 

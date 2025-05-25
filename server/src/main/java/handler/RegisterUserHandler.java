@@ -1,7 +1,7 @@
 package handler;
 
-import dataModels.AuthData;
-import dataModels.UserData;
+import datamodels.AuthData;
+import datamodels.UserData;
 import service.AlreadyTakenException;
 import spark.Request;
 import spark.Response;

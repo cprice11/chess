@@ -1,12 +1,12 @@
 package service;
 
 import chess.ChessGame;
-import dataModels.AuthData;
-import dataModels.GameData;
-import dataModels.GameSummary;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import datamodels.AuthData;
+import datamodels.GameData;
+import datamodels.GameSummary;
 
 import java.util.Collection;
 
@@ -31,7 +31,8 @@ public class GameService extends Service{
         return gameIndex;
     }
 
-    public void joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID) throws UnauthorizedException, DataAccessException, AlreadyTakenException, Exception{
+    public void joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID)
+            throws Exception {
         AuthData auth = authDAO.getAuthByAuthToken(authToken);
         if (auth == null) {
             throw new UnauthorizedException();

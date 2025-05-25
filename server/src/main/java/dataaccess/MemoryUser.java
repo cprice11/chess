@@ -1,16 +1,15 @@
 package dataaccess;
 
-import dataModels.AuthData;
-import dataModels.UserData;
+import datamodels.UserData;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
 
 public class MemoryUser implements UserDAO{
     HashMap<String, UserData> db = new HashMap<>();
     public void addUser(UserData user) throws DataAccessException{
-        if (db.get(user.username()) != null) throw new DataAccessException("User '" + "' already exists in database.");
+        if (db.get(user.username()) != null) {
+            throw new DataAccessException("User '" + "' already exists in database.");
+        }
         db.put(user.username(), user);
     }
 
@@ -19,14 +18,16 @@ public class MemoryUser implements UserDAO{
     }
 
 //    public void updateUser(String username, UserData updatedUser) throws DataAccessException {
-//        if (getUser(username) == null) throw new DataAccessException("User '" + username + "' not in database");
+//        if (getUser(username) == null) {
+//          throw new DataAccessException("User '" + username + "' not in database");
+//        }
 //        deleteUser(username);
 //        addUser(updatedUser);
 //    }
 
-    public void deleteUser(String username) {
-        db.remove(username);
-    }
+//    public void deleteUser(String username) {
+//        db.remove(username);
+//    }
 
     public void clearAll() {
         db.clear();

@@ -1,7 +1,7 @@
 package service;
 
 import chess.ChessGame;
-import dataModels.GameData;
+import datamodels.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;

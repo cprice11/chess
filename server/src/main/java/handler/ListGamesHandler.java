@@ -1,6 +1,6 @@
 package handler;
 
-import dataModels.GameSummary;
+import datamodels.GameSummary;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
@@ -8,7 +8,8 @@ import spark.Response;
 import java.util.Collection;
 
 public class ListGamesHandler extends RequestHandler{
-    private record ListGamesResponse(Collection<GameSummary> games){};
+    private record ListGamesResponse(Collection<GameSummary> games) {
+    }
     public Object handle(Request request, Response response) {
         System.out.println("Logging out user");
         String authToken = request.headers("authorization");

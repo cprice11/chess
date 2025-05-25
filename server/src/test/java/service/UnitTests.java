@@ -1,10 +1,10 @@
 package service;
 
 import chess.ChessGame;
-import dataModels.AuthData;
-import dataModels.GameData;
-import dataModels.UserData;
 import dataaccess.*;
+import datamodels.AuthData;
+import datamodels.GameData;
+import datamodels.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 

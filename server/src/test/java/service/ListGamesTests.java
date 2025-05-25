@@ -1,6 +1,6 @@
 package service;
 
-import dataModels.GameSummary;
+import datamodels.GameSummary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class ListGamesTests extends UnitTests{
     @Test

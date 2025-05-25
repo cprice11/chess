@@ -1,10 +1,10 @@
 package service;
 
-import dataModels.AuthData;
-import dataModels.UserData;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import datamodels.AuthData;
+import datamodels.UserData;
 
 import java.util.Objects;
 
@@ -44,7 +44,9 @@ public class UserService extends Service{
 
     public void logoutUser(String authToken) throws UnauthorizedException {
         AuthData auth = authDAO.getAuthByAuthToken(authToken);
-        if (auth == null) throw new UnauthorizedException();
+        if (auth == null) {
+            throw new UnauthorizedException();
+        }
         authDAO.deleteAuthByAuthToken(authToken);
     }
 }
