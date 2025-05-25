@@ -14,10 +14,11 @@ public abstract class RequestHandler implements Route {
     protected static final GameDAO gameDAO = new MemoryGame();
     protected static final UserDAO userDAO = new MemoryUser();
     protected static final UserService userService = new UserService(authDAO, userDAO);
-    protected static final GameService gameService = new GameService();
+    protected static final GameService gameService = new GameService(authDAO, gameDAO);
     protected static final DevService devService = new DevService(authDAO, gameDAO, userDAO);
     private record Message(String message){};
     protected static final Gson gson = new Gson();
+    protected record AuthHeader(String authToken){};
     abstract public Object handle(Request request, Response response);
 
     public Object error(Response response, int code, String message) {

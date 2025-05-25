@@ -8,16 +8,15 @@ import spark.Request;
 import spark.Response;
 
 public class LogoutUserHandler extends RequestHandler{
-    private record LogoutRequest(String authToken){};
     public Object handle(Request request, Response response) {
         System.out.println("Logging out user");
-        LogoutRequest logout = gson.fromJson(request.headers().toString(), LogoutRequest.class);
+        AuthHeader authHeader = gson.fromJson(request.headers().toString(), AuthHeader.class);
 
-        if (logout == null) {
+        if (authHeader == null) {
             return error(response, 400, "Error: bad request");
         }
         try {
-            userService.logoutUser(logout.authToken);
+            userService.logoutUser(authHeader.authToken());
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: Unauthorized");
         } catch (Exception e) {
