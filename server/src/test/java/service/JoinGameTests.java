@@ -57,7 +57,7 @@ public class JoinGameTests extends UnitTests{
             int newGame = game.createGame(authA.authToken(), "A's game");
             game.joinGame(authA.authToken(), ChessGame.TeamColor.WHITE, newGame);
             game.joinGame(authB.authToken(), ChessGame.TeamColor.BLACK, newGame);
-            Assertions.assertThrows(AlreadyTakenException.class, () -> game.joinGame(authC.authToken(), ChessGame.TeamColor.WHITE, newGame));
+            Assertions.assertThrows(AlreadyTakenException.class, () -> game.joinGame(authB.authToken(), ChessGame.TeamColor.WHITE, newGame));
         } catch (Exception e) {
             Assertions.fail("Unexpected exception");
         }
