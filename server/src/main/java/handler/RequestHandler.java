@@ -18,7 +18,7 @@ public abstract class RequestHandler implements Route {
     protected static final DevService devService = new DevService(authDAO, gameDAO, userDAO);
     private record Message(String message){};
     protected static final Gson gson = new Gson();
-    protected record AuthHeader(String authToken){};
+    protected record AuthHeader(String authorization){};
     abstract public Object handle(Request request, Response response);
 
     public Object error(Response response, int code, String message) {

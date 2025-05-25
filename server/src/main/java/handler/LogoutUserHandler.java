@@ -1,8 +1,5 @@
 package handler;
 
-import dataModels.AuthData;
-import dataModels.UserData;
-import dataaccess.DataAccessException;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
@@ -10,13 +7,13 @@ import spark.Response;
 public class LogoutUserHandler extends RequestHandler{
     public Object handle(Request request, Response response) {
         System.out.println("Logging out user");
-        AuthHeader authHeader = gson.fromJson(request.headers().toString(), AuthHeader.class);
+        String authToken = request.headers("authorization");
 
-        if (authHeader == null) {
+        if (authToken == null) {
             return error(response, 400, "Error: bad request");
         }
         try {
-            userService.logoutUser(authHeader.authToken());
+            userService.logoutUser(authToken);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: Unauthorized");
         } catch (Exception e) {

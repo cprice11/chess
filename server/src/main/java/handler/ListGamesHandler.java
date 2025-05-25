@@ -11,14 +11,14 @@ public class ListGamesHandler extends RequestHandler{
     private record ListGamesResponse(Collection<GameSummary> summaries){};
     public Object handle(Request request, Response response) {
         System.out.println("Logging out user");
-        AuthHeader authHeader = gson.fromJson(request.headers().toString(), AuthHeader.class);
+        String authToken = request.headers("authorization");
 
-        if (authHeader.authToken() == null) {
+        if (authToken == null) {
             return error(response, 400, "Error: bad request");
         }
         Collection<GameSummary> gameSummaries;
         try {
-            gameSummaries = gameService.listGames(authHeader.authToken());
+            gameSummaries = gameService.listGames(authToken);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: unauthorized");
         } catch (Exception e) {
