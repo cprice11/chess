@@ -11,12 +11,12 @@ public class JoinGameHandler extends RequestHandler{
     public Object handle(Request request, Response response) {
         System.out.println("Joining game");
         String authToken = request.headers("authorization");
-        JoinGameRequestBody requestBody = gson.fromJson(request.body(), JoinGameRequestBody.class);
+        JoinGameRequestBody requestBody = GSON.fromJson(request.body(), JoinGameRequestBody.class);
         if (authToken == null || requestBody.gameID < 1 || requestBody.playerColor == null) {
             return error(response, 400, "Error: bad request");
         }
         try {
-            gameService.joinGame(authToken, requestBody.playerColor, requestBody.gameID);
+            GAME_SERVICE.joinGame(authToken, requestBody.playerColor, requestBody.gameID);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: unauthorized");
         } catch (AlreadyTakenException e) {
@@ -26,6 +26,6 @@ public class JoinGameHandler extends RequestHandler{
         }
 
         response.status(200);
-        return gson.toJson(new Object());
+        return GSON.toJson(new Object());
     }
 }

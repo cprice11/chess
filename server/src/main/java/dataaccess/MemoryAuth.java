@@ -15,7 +15,6 @@ public class MemoryAuth implements AuthDAO{
 
     public void addAuth(AuthData auth) throws DataAccessException {
         if (getAuthByAuthToken(auth.authToken()) != null) throw new DataAccessException("AuthToken already in database");
-//        if (getAuthByUsername(auth.username()) != null) throw new DataAccessException("username already in database");
         db.put(auth.authToken(), auth);
         print();
     }
@@ -33,10 +32,10 @@ public class MemoryAuth implements AuthDAO{
         return db.get(authToken);
     }
 
-    public void updateAuth(AuthData auth, String authToken) throws DataAccessException {
-        deleteAuth(auth);
-        addAuth(new AuthData(auth.username(), authToken));
-    }
+//    public void updateAuth(AuthData auth, String authToken) throws DataAccessException {
+//        deleteAuth(auth);
+//        addAuth(new AuthData(auth.username(), authToken));
+//    }
 
     public void deleteAuth(AuthData authData) {
         db.remove(authData.authToken());
@@ -46,11 +45,11 @@ public class MemoryAuth implements AuthDAO{
         db.remove(authToken);
     }
 
-    public void deleteAuthByUsername(String username) {
-        AuthData auth = getAuthByUsername(username);
-        if (auth == null) return;
-        deleteAuth(auth);
-    }
+//    public void deleteAuthByUsername(String username) {
+//        AuthData auth = getAuthByUsername(username);
+//        if (auth == null) return;
+//        deleteAuth(auth);
+//    }
 
     public void clearAll() {
         db.clear();

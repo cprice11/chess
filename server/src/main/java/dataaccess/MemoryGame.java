@@ -24,9 +24,9 @@ public class MemoryGame implements GameDAO{
         db.put(gameID, game);
     }
 
-    public void deleteGame(int gameID) {
-        db.remove(gameID);
-    }
+//    public void deleteGame(int gameID) {
+//        db.remove(gameID);
+//    }
 
     public Collection<GameSummary> getGameSummaries() {
         ArrayList<GameSummary> summaries = new ArrayList<>();
@@ -40,9 +40,9 @@ public class MemoryGame implements GameDAO{
         db.clear();
     }
 
-    public void print() {
-        db.forEach((i, g) -> {
-            System.out.println("ID: " + i + " name: " + g.gameName());
-        });
-    }
+//    public void print() {
+//        db.forEach((i, g) -> {
+//            System.out.println("ID: " + i + " name: " + g.gameName());
+//        });
+//    }
 }

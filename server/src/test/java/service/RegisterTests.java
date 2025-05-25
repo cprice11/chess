@@ -13,10 +13,10 @@ public class RegisterTests extends UnitTests{
     @Order(1)
     @DisplayName("Positive Register")
     public void registerUser() {
-        AuthData registered_auth;
+        AuthData registeredAuth;
         try {
-            registered_auth = user.registerUser(userC);
-            Assertions.assertEquals(registered_auth, authDAO.getAuthByUsername(userC.username()));
+            registeredAuth = user.registerUser(userC);
+            Assertions.assertEquals(registeredAuth, authDAO.getAuthByUsername(userC.username()));
         } catch (Exception e) {
             Assertions.fail();
         }

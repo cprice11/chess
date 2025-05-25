@@ -18,11 +18,11 @@ public class MemoryUser implements UserDAO{
         return db.get(username);
     }
 
-    public void updateUser(String username, UserData updatedUser) throws DataAccessException {
-        if (getUser(username) == null) throw new DataAccessException("User '" + username + "' not in database");
-        deleteUser(username);
-        addUser(updatedUser);
-    }
+//    public void updateUser(String username, UserData updatedUser) throws DataAccessException {
+//        if (getUser(username) == null) throw new DataAccessException("User '" + username + "' not in database");
+//        deleteUser(username);
+//        addUser(updatedUser);
+//    }
 
     public void deleteUser(String username) {
         db.remove(username);
@@ -32,9 +32,9 @@ public class MemoryUser implements UserDAO{
         db.clear();
     }
 
-    public void print() {
-        for (UserData user : db.values()) {
-            System.out.println("user: " + user.username() + ", password: " + user.password() + ", email: " + user.email());
-        }
-    }
+//    public void print() {
+//        for (UserData user : db.values()) {
+//            System.out.println("user: " + user.username() + ", password: " + user.password() + ", email: " + user.email());
+//        }
+//    }
 }

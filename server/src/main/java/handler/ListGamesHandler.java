@@ -18,7 +18,7 @@ public class ListGamesHandler extends RequestHandler{
         }
         Collection<GameSummary> gameSummaries;
         try {
-            gameSummaries = gameService.listGames(authToken);
+            gameSummaries = GAME_SERVICE.listGames(authToken);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: unauthorized");
         } catch (Exception e) {
@@ -26,6 +26,6 @@ public class ListGamesHandler extends RequestHandler{
         }
 
         response.status(200);
-        return gson.toJson(new ListGamesResponse(gameSummaries), ListGamesResponse.class);
+        return GSON.toJson(new ListGamesResponse(gameSummaries), ListGamesResponse.class);
     }
 }

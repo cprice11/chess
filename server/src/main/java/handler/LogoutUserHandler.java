@@ -13,7 +13,7 @@ public class LogoutUserHandler extends RequestHandler{
             return error(response, 400, "Error: bad request");
         }
         try {
-            userService.logoutUser(authToken);
+            USER_SERVICE.logoutUser(authToken);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: Unauthorized");
         } catch (Exception e) {
@@ -21,6 +21,6 @@ public class LogoutUserHandler extends RequestHandler{
         }
 
         response.status(200);
-        return gson.toJson(new Object());
+        return GSON.toJson(new Object());
     }
 }

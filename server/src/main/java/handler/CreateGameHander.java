@@ -10,14 +10,14 @@ public class CreateGameHander extends RequestHandler{
     public Object handle(Request request, Response response) {
         System.out.println("Logging out user");
         String authToken = request.headers("authorization");
-        CreateGameRequestBody requestBody = gson.fromJson(request.body(), CreateGameRequestBody.class);
+        CreateGameRequestBody requestBody = GSON.fromJson(request.body(), CreateGameRequestBody.class);
 
         if (authToken == null || requestBody.gameName == null) {
             return error(response, 400, "Error: bad request");
         }
         int gameID;
         try {
-            gameID = gameService.createGame(authToken, requestBody.gameName);
+            gameID = GAME_SERVICE.createGame(authToken, requestBody.gameName);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: unauthorized");
         } catch (Exception e) {
@@ -25,6 +25,6 @@ public class CreateGameHander extends RequestHandler{
         }
 
         response.status(200);
-        return gson.toJson(new CreateGameResponse(gameID));
+        return GSON.toJson(new CreateGameResponse(gameID));
     }
 }
