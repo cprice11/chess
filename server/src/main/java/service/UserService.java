@@ -41,6 +41,8 @@ public class UserService extends Service{
         if (auth == null) {
             auth = new AuthData(username, generateToken());
             authDAO.addAuth(auth);
+        } else {
+            authDAO.updateAuth(username, generateToken());
         }
         return auth;
     }

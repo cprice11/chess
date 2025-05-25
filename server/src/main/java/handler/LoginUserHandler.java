@@ -1,16 +1,14 @@
 package handler;
 
 import dataModels.AuthData;
-import dataaccess.DataAccessException;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
 public class LoginUserHandler extends RequestHandler{
-    private record loginRequest(String username, String password){};
-    private record loginResponse(String authToken){};
+    private record LoginRequest(String username, String password){};
     public Object handle(Request request, Response response) {
-        loginRequest r = gson.fromJson(request.body(), loginRequest.class);
+        LoginRequest r = gson.fromJson(request.body(), LoginRequest.class);
         AuthData auth;
 
         if (r.username() == null || r.password() == null) {
@@ -25,6 +23,6 @@ public class LoginUserHandler extends RequestHandler{
         }
 
         response.status(200);
-        return gson.toJson(auth.authToken(), loginResponse.class);
+        return gson.toJson(auth, AuthData.class);
     }
 }
