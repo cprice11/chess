@@ -29,6 +29,11 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
 
     @Override
     public void clearAll() {
-
+        String sql = "TRUNCATE game";
+        try {
+            executeUpdate(sql);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

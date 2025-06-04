@@ -15,6 +15,11 @@ public class MySqlUser extends MySqlDataAccess implements UserDAO {
 
     @Override
     public void clearAll() {
-
+        String sql = "TRUNCATE user";
+        try {
+            executeUpdate(sql);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

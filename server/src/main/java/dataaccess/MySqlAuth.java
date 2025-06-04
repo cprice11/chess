@@ -23,8 +23,12 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
 
     }
 
-    @Override
     public void clearAll() {
-
+        String sql = "TRUNCATE auth";
+        try {
+            executeUpdate(sql);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
