@@ -1,7 +1,5 @@
 package dataaccess;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,6 +10,7 @@ public class DatabaseManager {
     private static String dbUsername;
     private static String dbPassword;
     private static String connectionUrl;
+    private static boolean databaseInitialized = false;
 
     /*
      * Load the database information for the db.properties file.
@@ -28,20 +27,20 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
-    static public void createDatabase() throws DataAccessException {
+    static protected void createDatabase() throws DataAccessException {
+        if (databaseInitialized) {
+            return;
+        }
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
-        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
-            String hashedPassword = BCrypt.hashpw("Some really long string", BCrypt.gensalt());
-            String[] tables = {
-                    "auth (authToken varchar(36), username varchar(255));",
-                    "game",
-                    "user (username, password, email varchar(255);"};
+        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword); var createStatement = conn.prepareStatement(statement)) {
+            createStatement.executeUpdate();
+            var useStatement = conn.prepareStatement("USE chess;");
+            useStatement.executeUpdate();
+            String[] tables = {"auth (authToken varchar(36) PRIMARY KEY, username varchar(255));", "game (id int PRIMARY KEY, whiteUsername varchar(255), blackUsername varchar(255), gameName varchar(255), game JSON);", "user (username varchar(255) PRIMARY KEY, password varchar(60), email varchar(255));"};
             for (String table : tables) {
-
                 conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + table).executeUpdate();
             }
+            databaseInitialized = true;
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
         }
