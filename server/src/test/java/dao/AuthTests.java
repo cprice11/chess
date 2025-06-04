@@ -1,76 +1,161 @@
 package dao;
 
+import dataaccess.DataAccessException;
+import datamodels.AuthData;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class AuthTests extends DaoUnitTests {
+public class AuthTests extends DbUnitTests {
     // ClearAll
     @Test
     @DisplayName("Clear all auth")
     public void clearAuth() {
-        throw new RuntimeException("Not implemented yet");
+        addTwoAuth();
+        authDAO.clearAll();
+        try {
+            Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
     }
 
     // AddAuth
     @Test
     @DisplayName("Add and get")
     public void addAndRetrieveSuccessfully() {
-        throw new RuntimeException("Not implemented yet");
+        try {
+            Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
+            authDAO.addAuth(authA);
+            Assertions.assertEquals(authA, authDAO.getAuthByAuthToken(authA.authToken()));
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
     }
 
     @Test
     @DisplayName("Add twice")
     public void addDuplicateAuth() {
-        throw new RuntimeException("Not implemented yet");
+        try {
+            Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
+            authDAO.addAuth(authA);
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            authDAO.addAuth(authA);
+        });
     }
 
     @Test
     @DisplayName("Add malformed")
     public void addMalformedAuth() {
-        throw new RuntimeException("Not implemented yet");
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            authDAO.addAuth(null);
+        });
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            authDAO.addAuth(new AuthData("username", null));
+        });
     }
 
     // getAuth
     @Test
     @DisplayName("Get by token and username")
     public void goodGetAuthCalls() {
-        throw new RuntimeException("Not implemented yet");
+        addTwoAuth();
+        try {
+            Assertions.assertEquals(authA, authDAO.getAuthByAuthToken(authA.authToken()));
+            Assertions.assertEquals(authA.username(), authDAO.getAuthByUsername(authA.username()).username());
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
     }
 
     @Test
     @DisplayName("Using bad token or username fails")
     public void badDataGetAuthCalls() {
-        throw new RuntimeException("Not implemented yet");
+        addTwoAuth();
+        try {
+            Assertions.assertNull(authDAO.getAuthByAuthToken(authC.authToken()));
+            Assertions.assertNull(authDAO.getAuthByUsername(authC.username()));
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
     }
 
+    // I could be convinced that this should just return null
     @Test
     @DisplayName("Malformed get calls fail")
     public void malformedGetAuth() {
-        throw new RuntimeException("Not implemented yet");
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            authDAO.getAuthByAuthToken(null);
+        });
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            authDAO.getAuthByUsername(null);
+        });
     }
 
     // deleteAuth
     @Test
     @DisplayName("delete removes auth from database")
     public void goodDeleteAuth() {
-        throw new RuntimeException("Not implemented yet");
+        addTwoAuth();
+        try {
+            Assertions.assertEquals(authA, authDAO.getAuthByAuthToken(authA.authToken()));
+            authDAO.deleteAuthByAuthToken(authA.authToken());
+            Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
     }
 
+    // This may not work inside the try-catch block
     @Test
     @DisplayName("Can't delete with bad authToken")
     public void badDeleteAuth() {
-        throw new RuntimeException("Not implemented yet");
+        addTwoAuth();
+        try {
+            Assertions.assertThrows(DataAccessException.class, () -> {
+                authDAO.deleteAuthByAuthToken(authC.authToken());
+            });
+            Assertions.assertEquals(authA, authDAO.getAuthByAuthToken(authA.authToken()));
+            Assertions.assertEquals(authB, authDAO.getAuthByAuthToken(authB.authToken()));
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
     }
 
     @Test
     @DisplayName("Can't delete twice")
     public void repeatDeleteAuth() {
-        throw new RuntimeException("Not implemented yet");
+        addTwoAuth();
+        try {
+            Assertions.assertEquals(authA, authDAO.getAuthByAuthToken(authA.authToken()));
+            authDAO.deleteAuthByAuthToken(authA.authToken());
+            Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
+            Assertions.assertThrows(DataAccessException.class, () -> {
+                authDAO.deleteAuthByAuthToken(authA.authToken());
+            });
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
     }
 
     @Test
     @DisplayName("Malformed delete calls fail")
     public void malformedDeleteAuth() {
-        throw new RuntimeException("Not implemented yet");
+        addTwoAuth();
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            authDAO.deleteAuthByAuthToken(null);
+        });
+    }
+
+    public void addTwoAuth() {
+        try {
+            authDAO.addAuth(authA);
+            authDAO.addAuth(authB);
+        } catch (DataAccessException e) {
+            Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
+        }
     }
 }
