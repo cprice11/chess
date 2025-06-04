@@ -1,5 +1,7 @@
 package dataaccess;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,6 +33,15 @@ public class DatabaseManager {
         try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
+            String hashedPassword = BCrypt.hashpw("Some really long string", BCrypt.gensalt());
+            String[] tables = {
+                    "auth (authToken varchar(36), username varchar(255));",
+                    "game",
+                    "user (username, password, email varchar(255);"};
+            for (String table : tables) {
+
+                conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + table).executeUpdate();
+            }
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
         }

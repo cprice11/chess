@@ -1,11 +1,7 @@
 package server;
 
-import dataaccess.*;
 import handler.*;
-import service.DevService;
-import service.GameService;
-import service.UserService;
-import spark.*;
+import spark.Spark;
 
 public class Server {
 
