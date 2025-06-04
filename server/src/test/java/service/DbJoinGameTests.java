@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-public class JoinGameTests extends UnitTests {
+public class DbJoinGameTests extends DbUnitTests {
     @Test
     @Order(1)
     @DisplayName("Positive join game")
