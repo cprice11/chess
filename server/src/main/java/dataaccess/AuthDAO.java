@@ -5,6 +5,9 @@ import datamodels.AuthData;
 public interface AuthDAO {
     void addAuth(AuthData auth) throws DataAccessException;
 
+    // This may be better off being removed.
+    // I don't think it's ever being used outside of tests
+    // Also, some tests implied that one user can have multiple auths at once
     AuthData getAuthByUsername(String username);
 
     AuthData getAuthByAuthToken(String authToken) throws DataAccessException;
