@@ -3,7 +3,7 @@ package dao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class UserTests extends DaoUnitTests {
+public class UserTests extends DbUnitTests {
     // ClearAll
     @Test
     @DisplayName("Clear all user data")

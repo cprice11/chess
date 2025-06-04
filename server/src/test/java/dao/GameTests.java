@@ -3,7 +3,7 @@ package dao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class GameTests extends DaoUnitTests {
+public class GameTests extends DbUnitTests {
     // ClearAll
     @Test
     @DisplayName("Clear all games")
