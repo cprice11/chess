@@ -6,6 +6,14 @@ import java.sql.SQLException;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class MySqlDataAccess {
+    public MySqlDataAccess() {
+        try {
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     protected static ResultSet executeUpdate(String sqlStatement) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sqlStatement, RETURN_GENERATED_KEYS)) {
