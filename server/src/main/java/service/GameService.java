@@ -52,7 +52,7 @@ public class GameService extends Service{
         throw new AlreadyTakenException();
     }
 
-    public Collection<GameSummary> listGames(String authToken) throws UnauthorizedException{
+    public Collection<GameSummary> listGames(String authToken) throws UnauthorizedException, DataAccessException {
         AuthData auth = authDAO.getAuthByAuthToken(authToken);
         if (auth == null) {
             throw new UnauthorizedException();

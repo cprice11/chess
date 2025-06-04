@@ -42,7 +42,7 @@ public class UserService extends Service{
         return auth;
     }
 
-    public void logoutUser(String authToken) throws UnauthorizedException {
+    public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException {
         AuthData auth = authDAO.getAuthByAuthToken(authToken);
         if (auth == null) {
             throw new UnauthorizedException();

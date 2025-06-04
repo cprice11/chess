@@ -19,16 +19,9 @@ public class MySqlDataAccess {
             try (var preparedStatement = conn.prepareStatement(sqlStatement, RETURN_GENERATED_KEYS)) {
                 preparedStatement.executeUpdate();
                 return preparedStatement.getGeneratedKeys();
-                // PetShop has this whole deal going on, I don't think I need it right now
-//                if (returnStatement.next()) {
-//                    return returnStatement.getInt(1);
-//                }
-//                return 0;
             }
-        } catch (DataAccessException e) {
-            throw new DataAccessException(String.format("Attempting to access data incorrectly:\n\t%s\n\t%s", sqlStatement, e.getMessage()));
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", sqlStatement, e.getMessage()));
+            throw new DataAccessException(String.format("The following statement threw an exception when trying to access the database:\n\t%s\n\t%s", sqlStatement, e.getMessage()));
         }
     }
 }
