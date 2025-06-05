@@ -135,7 +135,7 @@ public class MySqlDataAccess {
         return new UserData(username, password, email);
     }
 
-    protected static boolean stringIsSafe(String dirtyString) {
-        return dirtyString.matches("[a-zA-Z0-9]+");
+    protected static boolean stringIsUnsafe(String dirtyString) {
+        return !dirtyString.matches("[a-zA-Z0-9]+");
     }
 }

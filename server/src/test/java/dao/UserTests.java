@@ -12,8 +12,8 @@ public class UserTests extends DbUnitTests {
     @DisplayName("Clear all user data")
     public void clearUser() {
         addTwoUsers();
-        userDAO.clearAll();
         try {
+            userDAO.clearAll();
             Assertions.assertNull(userDAO.getUser(userA.username()));
         } catch (DataAccessException e) {
             Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));

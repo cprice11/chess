@@ -27,10 +27,10 @@ public class UnitTests {
 
     @BeforeEach
     public void setupDataBase() {
-        authDAO.clearAll();
-        gameDAO.clearAll();
-        userDAO.clearAll();
         try {
+            authDAO.clearAll();
+            gameDAO.clearAll();
+            userDAO.clearAll();
             authDAO.addAuth(authA);
             authDAO.addAuth(authB);
             gameDAO.addGame(gameA);

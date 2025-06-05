@@ -13,7 +13,7 @@ public class MySqlUser extends MySqlDataAccess implements UserDAO {
         if (user == null || user.username() == null || user.password() == null) {
             throw new DataAccessException("user is null");
         }
-        if (!stringIsSafe(user.username())) {
+        if (stringIsUnsafe(user.username())) {
             return;
         }
         if (getUser(user.username()) != null) {
@@ -33,7 +33,7 @@ public class MySqlUser extends MySqlDataAccess implements UserDAO {
         if (username == null) {
             throw new DataAccessException("Username is null");
         }
-        if (!stringIsSafe(username)) {
+        if (stringIsUnsafe(username)) {
             return null;
         }
         Collection<UserData> matches = new ArrayList<>();

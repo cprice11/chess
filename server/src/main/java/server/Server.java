@@ -5,7 +5,7 @@ import spark.Spark;
 
 public class Server {
 
-    ClearHander clearHander = new ClearHander();
+    ClearHandler clearHandler = new ClearHandler();
     CreateGameHander createGameHander = new CreateGameHander();
     JoinGameHandler joinGameHandler = new JoinGameHandler();
     ListGamesHandler listGamesHandler = new ListGamesHandler();
@@ -26,7 +26,7 @@ public class Server {
         Spark.get("/game", listGamesHandler);
         Spark.post("/game", createGameHander);
         Spark.put("/game", joinGameHandler);
-        Spark.delete("/db", clearHander);
+        Spark.delete("/db", clearHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
