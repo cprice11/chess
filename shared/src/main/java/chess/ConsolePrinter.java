@@ -2,7 +2,6 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class ConsolePrinter {
 
@@ -12,7 +11,7 @@ public class ConsolePrinter {
     public static void printGame(ChessGame game) {
         ChessBoard board = game.getBoard();
         ChessColor color = new ChessColor();
-        Vector<ChessMove> moveHistory = game.moveHistory();
+        ArrayList<ChessMove> moveHistory = game.moveHistory();
         int numMoves = moveHistory.size();
         List<String> rows = board.prettyRows();
         String gameState;

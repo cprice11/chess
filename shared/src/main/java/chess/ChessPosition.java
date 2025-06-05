@@ -14,6 +14,22 @@ public class ChessPosition {
         this.file = file;
     }
 
+    public ChessPosition(String code) {
+        char fileChar = code.charAt(0);
+        this.file = switch (fileChar) {
+            case 'a' -> 1;
+            case 'b' -> 2;
+            case 'c' -> 3;
+            case 'd' -> 4;
+            case 'e' -> 5;
+            case 'f' -> 6;
+            case 'g' -> 7;
+            case 'h' -> 8;
+            default -> 0;
+        };
+        this.rank = code.charAt(1) - '0'; // Why does this work?
+    }
+
     /**
      * @return which rank this position is in
      * 1 codes for the white back rank

@@ -6,8 +6,8 @@ import java.util.*;
  * A chessboard that can hold and rearrange chess pieces.
  */
 public class ChessBoard {
-    private Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
-    private final Hashtable<ChessPosition, ChessColor.Highlight> highlights = new Hashtable<>();
+    private Map<ChessPosition, ChessPiece> pieces = new Hashtable<>();
+    private transient final Hashtable<ChessPosition, ChessColor.Highlight> highlights = new Hashtable<>();
     private static final boolean USE_SYMBOLS = true;
 
     public static final int BOARD_SIZE = 8;

@@ -15,7 +15,7 @@ public class DbJoinGameTests extends DbUnitTests {
     @DisplayName("Positive join game")
     public void fullJoinGame() {
         try {
-            int newGame = game.createGame(authA.authToken(), "A's game");
+            int newGame = game.createGame(authA.authToken(), "As game");
             game.joinGame(authA.authToken(), ChessGame.TeamColor.WHITE, newGame);
             game.joinGame(authB.authToken(), ChessGame.TeamColor.BLACK, newGame);
             GameData joinedGame = gameDAO.getGame(newGame);
@@ -56,7 +56,7 @@ public class DbJoinGameTests extends DbUnitTests {
     @DisplayName("join full game")
     public void joinFull() {
         try {
-            int newGame = game.createGame(authA.authToken(), "A's game");
+            int newGame = game.createGame(authA.authToken(), "game");
             game.joinGame(authA.authToken(), ChessGame.TeamColor.WHITE, newGame);
             game.joinGame(authB.authToken(), ChessGame.TeamColor.BLACK, newGame);
             Assertions.assertThrows(AlreadyTakenException.class, () -> game.joinGame(authB.authToken(), ChessGame.TeamColor.WHITE, newGame));

@@ -1,5 +1,8 @@
 package chess;
 
+import com.google.gson.*;
+
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -7,20 +10,33 @@ import java.util.*;
  */
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
-    private final Vector<ChessMove> moveHistory = new Vector<>();
+    private ArrayList<ChessMove> moveHistory = new ArrayList<>();
     private TeamColor turn = TeamColor.WHITE;
     private boolean whiteCanShortCastle = true;
     private boolean whiteCanLongCastle = true;
     private boolean blackCanShortCastle = true;
     private boolean blackCanLongCastle = true;
     private ChessPosition enPassant = null;
-    private ChessPosition positionVulnerableToEnPassant = null;
+    private transient ChessPosition positionVulnerableToEnPassant = null;
     private int halfMoveClock = 0;
     private int fullMoveNumber = 1;
-
+    private final static Gson gson = new Gson();
     public ChessGame() {
         board.resetBoard();
 //        ConsolePrinter.printGame(this);
+    }
+
+    public ChessGame(ChessBoard board, ArrayList<ChessMove> moveHistory, TeamColor turn, boolean whiteShort, boolean whiteLong, boolean blackShort, boolean blackLong, ChessPosition enPassant, int halfMoveClock, int fullMoveNumber) {
+        this.board = board;
+        this.moveHistory = moveHistory;
+        this.turn = turn;
+        this.whiteCanShortCastle = whiteShort;
+        this.whiteCanLongCastle = whiteLong;
+        this.blackCanShortCastle = blackShort;
+        this.blackCanLongCastle = blackLong;
+        this.enPassant = enPassant;
+        this.halfMoveClock = halfMoveClock;
+        this.fullMoveNumber = fullMoveNumber;
     }
 
     /**
@@ -374,7 +390,7 @@ public class ChessGame {
         return board;
     }
 
-    public Vector<ChessMove> moveHistory() {
+    public ArrayList<ChessMove> moveHistory() {
         return moveHistory;
     }
 
@@ -430,5 +446,52 @@ public class ChessGame {
     @Override
     public String toString() {
         return fenString();
+    }
+
+    public static class ChessGameDeserializer implements JsonDeserializer<ChessGame> {
+
+        @Override
+        public ChessGame deserialize
+                (JsonElement jElement, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            JsonObject jObject = jElement.getAsJsonObject();
+            // Board
+            JsonElement boardJson = jObject.get("board");
+            JsonElement piecesJson = boardJson.getAsJsonObject().get("pieces");
+            Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
+            var a = piecesJson.getAsJsonObject().asMap();
+            for (Map.Entry<String, JsonElement> entry : a.entrySet()) {
+                ChessPosition position = new ChessPosition(entry.getKey());
+                ChessPiece piece = gson.fromJson(entry.getValue(), ChessPiece.class);
+                pieces.put(position, piece);
+            }
+            ChessBoard board = new ChessBoard();
+            board.setPieces(pieces);
+            // Move History
+            List<JsonElement> movesJson = jObject.get("moveHistory").getAsJsonArray().asList();
+            ArrayList<ChessMove> moveHistory = new ArrayList<>();
+            for (JsonElement element : movesJson) {
+                JsonObject elementObject = element.getAsJsonObject();
+                JsonElement startJson = elementObject.get("start");
+                JsonElement endJson = elementObject.get("end");
+                JsonElement promotion = elementObject.get("promotionPiece");
+                ChessPosition start = gson.fromJson(startJson, ChessPosition.class);
+                ChessPosition end = gson.fromJson(endJson, ChessPosition.class);
+                ChessPiece.PieceType promotionPiece = gson.fromJson(promotion, ChessPiece.PieceType.class);
+                ChessMove move = new ChessMove(start, end, promotionPiece);
+                moveHistory.add(move);
+            }
+            String turnString = jObject.get("turn").getAsString();
+            ChessGame.TeamColor turn = Objects.equals(turnString, "WHITE") ?
+                    ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            boolean whiteShort = jObject.get("whiteCanShortCastle").getAsBoolean();
+            boolean whiteLong = jObject.get("whiteCanLongCastle").getAsBoolean();
+            boolean blackShort = jObject.get("blackCanShortCastle").getAsBoolean();
+            boolean blackLong = jObject.get("blackCanLongCastle").getAsBoolean();
+            ChessPosition enPassantSquare = gson.fromJson(jObject.get("enPassant"), ChessPosition.class);
+            int halfMove = jObject.get("halfMoveClock").getAsInt();
+            int fullMove = jObject.get("fullMoveNumber").getAsInt();
+            return new ChessGame(board, moveHistory, turn, whiteShort, whiteLong, blackShort, blackLong, enPassantSquare, halfMove, fullMove);
+        }
     }
 }

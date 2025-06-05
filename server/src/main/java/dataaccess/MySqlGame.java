@@ -59,15 +59,19 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
         if (game == null) {
             throw new DataAccessException("game is null");
         }
+        if (getGame(gameID) == null) {
+            throw new DataAccessException("game doesn't exist");
+        }
         if (stringIsUnsafe(game.blackUsername()) || stringIsUnsafe(game.whiteUsername()) || stringIsUnsafe(game.gameName())) {
             return;
         }
-        String sql = "UPDATE game SET blackUsername = ?, whiteUsername = ?, gameName = ?, game = ? WHERE gameID = ?";
+        String sql = "UPDATE game SET blackUsername = ?, whiteUsername = ?, gameName = ?, game = ? WHERE id = ?";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setString(1, game.blackUsername());
             statement.setString(2, game.whiteUsername());
             statement.setString(3, game.gameName());
             statement.setString(4, GSON.toJson(game.game(), ChessGame.class));
+            statement.setInt(5, gameID);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -86,9 +90,9 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
-        if (matches.isEmpty()) {
-            return null;
-        }
+//        if (matches.isEmpty()) {
+//            return null;
+//        }
         return matches;
     }
 

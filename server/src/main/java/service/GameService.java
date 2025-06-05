@@ -26,7 +26,7 @@ public class GameService extends Service{
             throw new UnauthorizedException();
         }
         gameIndex += 1;
-        GameData newGame = new GameData(gameIndex, null, null, gameName, null);
+        GameData newGame = new GameData(gameIndex, null, null, gameName, new ChessGame());
         gameDAO.addGame(newGame);
         return gameIndex;
     }
@@ -41,12 +41,12 @@ public class GameService extends Service{
         if (game == null) {
             throw new Exception("Game doesn't exist");
         }
-        if (playerColor == ChessGame.TeamColor.WHITE && game.whiteUsername() == null) {
-            gameDAO.updateGame(gameID, new GameData(gameID, auth.username(), game.blackUsername(), game.gameName(), game.game()));
+        if (playerColor == ChessGame.TeamColor.BLACK && game.blackUsername() == null) {
+            gameDAO.updateGame(gameID, new GameData(gameID, auth.username(), game.whiteUsername(), game.gameName(), game.game()));
             return;
         }
-        if (playerColor == ChessGame.TeamColor.BLACK && game.blackUsername() == null) {
-            gameDAO.updateGame(gameID, new GameData(gameID, game.whiteUsername(), auth.username(), game.gameName(), game.game()));
+        if (playerColor == ChessGame.TeamColor.WHITE && game.whiteUsername() == null) {
+            gameDAO.updateGame(gameID, new GameData(gameID, game.blackUsername(), auth.username(), game.gameName(), game.game()));
             return;
         }
         throw new AlreadyTakenException();

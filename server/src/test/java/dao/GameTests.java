@@ -4,7 +4,6 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import chess.InvalidMoveException;
-import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import datamodels.GameData;
 import datamodels.GameSummary;
@@ -34,9 +33,6 @@ public class GameTests extends DbUnitTests {
     @DisplayName("Add and get")
     public void addAndRetrieveSuccessfully() {
         try {
-            Gson gson = new Gson();
-            String json = gson.toJson(gameA.game(), ChessGame.class);
-            ChessGame backToGame = gson.fromJson(json, ChessGame.class);
             Assertions.assertNull(gameDAO.getGame(gameA.gameID()));
             gameDAO.addGame(gameA);
             Assertions.assertEquals(gameA, gameDAO.getGame(gameA.gameID()));
@@ -54,17 +50,13 @@ public class GameTests extends DbUnitTests {
         } catch (DataAccessException e) {
             Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
         }
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            gameDAO.addGame(gameA);
-        });
+        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.addGame(gameA));
     }
 
     @Test
     @DisplayName("Add malformed")
     public void addMalformedGame() {
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            gameDAO.addGame(null);
-        });
+        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.addGame(null));
     }
 
     // getGame
@@ -124,18 +116,14 @@ public class GameTests extends DbUnitTests {
     @DisplayName("Using bad id fails")
     public void badUpdateGameCalls() {
         addTwoGames();
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            gameDAO.updateGame(gameC.gameID(), gameA);
-        });
+        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.updateGame(gameC.gameID(), gameA));
     }
 
     @Test
     @DisplayName("Malformed update calls fail")
     public void malformedUpdateGame() {
         addTwoGames();
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            gameDAO.updateGame(gameC.gameID(), null);
-        });
+        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.updateGame(gameC.gameID(), null));
     }
 
     // Get game summaries

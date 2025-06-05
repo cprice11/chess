@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 import service.UnauthorizedException;
 
 public class DbCreateGameTests extends DbUnitTests {
+
+
     @Test
     @Order(1)
     @DisplayName("Positive create game")
     public void createGame() {
         try {
-            int aGameID = game.createGame(authA.authToken(), "A's game");
+            int aGameID = game.createGame(authA.authToken(), "As game");
             Assertions.assertNotNull(gameDAO.getGame(aGameID));
         } catch (Exception e) {
             Assertions.fail("Unexpected exception");

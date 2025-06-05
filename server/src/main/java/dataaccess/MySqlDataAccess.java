@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import datamodels.AuthData;
 import datamodels.GameData;
 import datamodels.GameSummary;
@@ -16,8 +17,13 @@ public class MySqlDataAccess {
     // server side but, at least it should work
     protected static final Gson GSON = new Gson();
     protected static Connection conn;
+    protected static GsonBuilder gsonBuilder;
+
+
 
     public MySqlDataAccess() {
+        gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(ChessGame.class, new ChessGame.ChessGameDeserializer());
         try {
             DatabaseManager.createDatabase();
             conn = DatabaseManager.getConnection();
@@ -34,20 +40,20 @@ public class MySqlDataAccess {
 
     protected static GameData gameFromResponse(ResultSet rs) throws SQLException {
         int gameID = rs.getInt("id");
-        String white = rs.getString("whiteUsername");
         String black = rs.getString("blackUsername");
+        String white = rs.getString("whiteUsername");
         String name = rs.getString("gameName");
         String gameJson = rs.getString("game");
-        ChessGame game = GSON.fromJson(gameJson, ChessGame.class);
-        return new GameData(gameID, white, black, name, game);
+        ChessGame game = gsonBuilder.create().fromJson(gameJson, ChessGame.class);
+        return new GameData(gameID, black, white, name, game);
     }
 
     protected static GameSummary summaryFromResponse(ResultSet rs) throws SQLException {
         int gameID = rs.getInt("id");
-        String white = rs.getString("whiteUsername");
         String black = rs.getString("blackUsername");
+        String white = rs.getString("whiteUsername");
         String name = rs.getString("gameName");
-        return new GameSummary(gameID, white, black, name);
+        return new GameSummary(gameID, black, white, name);
     }
 
     protected static UserData userFromResponse(ResultSet rs) throws SQLException {
@@ -58,6 +64,9 @@ public class MySqlDataAccess {
     }
 
     protected static boolean stringIsUnsafe(String dirtyString) {
-        return !dirtyString.matches("[a-zA-Z0-9-$]+");
+        if (dirtyString == null) {
+            return false;
+        }
+        return !dirtyString.matches("[a-zA-Z0-9-$ ]+");
     }
 }

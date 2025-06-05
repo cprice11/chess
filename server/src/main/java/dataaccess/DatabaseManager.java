@@ -36,7 +36,7 @@ public class DatabaseManager {
             createStatement.executeUpdate();
             var useStatement = conn.prepareStatement("USE chess;");
             useStatement.executeUpdate();
-            String[] tables = {"auth (authToken varchar(36) PRIMARY KEY, username varchar(255));", "game (id int PRIMARY KEY, whiteUsername varchar(255), blackUsername varchar(255), gameName varchar(255), game JSON);", "user (username varchar(255) PRIMARY KEY, password varchar(60), email varchar(255));"};
+            String[] tables = {"auth (authToken varchar(36) PRIMARY KEY, username varchar(255));", "game (id int PRIMARY KEY, blackUsername varchar(255), whiteUsername varchar(255), gameName varchar(255), game JSON);", "user (username varchar(255) PRIMARY KEY, password varchar(60), email varchar(255));"};
             for (String table : tables) {
                 conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + table).executeUpdate();
             }
