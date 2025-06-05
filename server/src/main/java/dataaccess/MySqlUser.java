@@ -2,6 +2,9 @@ package dataaccess;
 
 import datamodels.UserData;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -10,20 +13,40 @@ public class MySqlUser extends MySqlDataAccess implements UserDAO {
         if (user == null || user.username() == null || user.password() == null) {
             throw new DataAccessException("user is null");
         }
+        if (!stringIsSafe(user.username())) {
+            return;
+        }
         if (getUser(user.username()) != null) {
             throw new DataAccessException("username already in database");
         }
-        String sql = String.format("INSERT INTO user values (\"%s\", \"%s\", \"%s\")", user.username(), user.password(), user.email());
-        executeUpdate(sql);
+        try (PreparedStatement statement = conn.prepareStatement("INSERT INTO user values (?, ?, ?)")) {
+            statement.setString(1, user.username());
+            statement.setString(2, user.password());
+            statement.setString(3, user.email());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed while adding user");
+        }
     }
 
     public UserData getUser(String username) throws DataAccessException {
         if (username == null) {
             throw new DataAccessException("Username is null");
         }
-        String sql = String.format("SELECT * FROM user WHERE username = '%s';", username);
-        Collection<UserData> matches;
-        matches = queryUserData(sql);
+        if (!stringIsSafe(username)) {
+            return null;
+        }
+        Collection<UserData> matches = new ArrayList<>();
+        try (PreparedStatement statement = conn.prepareStatement("SELECT * FROM user WHERE username = ?")) {
+            statement.setString(1, username);
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    matches.add(userFromResponse(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
         if (matches.isEmpty()) {
             return null;
         }
@@ -33,12 +56,12 @@ public class MySqlUser extends MySqlDataAccess implements UserDAO {
         return new ArrayList<>(matches).getFirst();
     }
 
-    public void clearAll() {
+    public void clearAll() throws DataAccessException {
         String sql = "TRUNCATE user";
         try {
-            executeUpdate(sql);
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            conn.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 }

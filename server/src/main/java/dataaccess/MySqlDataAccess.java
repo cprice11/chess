@@ -7,6 +7,7 @@ import datamodels.GameData;
 import datamodels.GameSummary;
 import datamodels.UserData;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,10 +19,12 @@ public class MySqlDataAccess {
     // I don't like that we're rolling and unrolling JSON on the
     // server side but, at least it should work
     protected static final Gson GSON = new Gson();
+    protected static Connection conn;
 
     public MySqlDataAccess() {
         try {
             DatabaseManager.createDatabase();
+            conn = DatabaseManager.getConnection();
         } catch (DataAccessException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -56,8 +59,7 @@ public class MySqlDataAccess {
     protected static Collection<GameData> queryGameData(String sqlStatement) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sqlStatement, RETURN_GENERATED_KEYS)) {
-                preparedStatement.executeQuery();
-                ResultSet result = preparedStatement.getGeneratedKeys();
+                ResultSet result = preparedStatement.executeQuery();
                 Collection<GameData> matches = new ArrayList<>();
                 while (result.next()) {
                     matches.add(gameFromResponse(result));
@@ -102,13 +104,13 @@ public class MySqlDataAccess {
     }
 
 
-    private static AuthData authFromResponse(ResultSet rs) throws SQLException {
+    protected static AuthData authFromResponse(ResultSet rs) throws SQLException {
         String authToken = rs.getString("authToken");
         String username = rs.getString("username");
         return new AuthData(username, authToken);
     }
 
-    private static GameData gameFromResponse(ResultSet rs) throws SQLException {
+    protected static GameData gameFromResponse(ResultSet rs) throws SQLException {
         int gameID = rs.getInt("id");
         String white = rs.getString("whiteUsername");
         String black = rs.getString("blackUsername");
@@ -118,7 +120,7 @@ public class MySqlDataAccess {
         return new GameData(gameID, white, black, name, game);
     }
 
-    private static GameSummary summaryFromResponse(ResultSet rs) throws SQLException {
+    protected static GameSummary summaryFromResponse(ResultSet rs) throws SQLException {
         int gameID = rs.getInt("id");
         String white = rs.getString("whiteUsername");
         String black = rs.getString("blackUsername");
@@ -126,10 +128,14 @@ public class MySqlDataAccess {
         return new GameSummary(gameID, white, black, name);
     }
 
-    private static UserData userFromResponse(ResultSet rs) throws SQLException {
+    protected static UserData userFromResponse(ResultSet rs) throws SQLException {
         String username = rs.getString("username");
         String password = rs.getString("password");
         String email = rs.getString("email");
         return new UserData(username, password, email);
+    }
+
+    protected static boolean stringIsSafe(String dirtyString) {
+        return dirtyString.matches("[[a-zA-Z]+]");
     }
 }
