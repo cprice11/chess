@@ -75,7 +75,7 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
     }
 
     public Collection<GameSummary> getGameSummaries() throws DataAccessException {
-        String sql = "SELECT gameID, blackUsername, whiteUsername, gameName FROM game";
+        String sql = "SELECT id, blackUsername, whiteUsername, gameName FROM game";
         Collection<GameSummary> matches = new ArrayList<>();
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
             try (ResultSet rs = statement.executeQuery()) {

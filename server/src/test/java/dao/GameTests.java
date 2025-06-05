@@ -21,8 +21,8 @@ public class GameTests extends DbUnitTests {
     @DisplayName("Clear all games")
     public void clearGame() {
         addTwoGames();
-        gameDAO.clearAll();
         try {
+            gameDAO.clearAll();
             Assertions.assertNull(gameDAO.getGame(gameA.gameID()));
         } catch (DataAccessException e) {
             Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
@@ -154,11 +154,13 @@ public class GameTests extends DbUnitTests {
     @Test
     @DisplayName("Good get summaries call")
     public void getGameSummaries() {
+        addTwoGames();
         Collection<GameSummary> summaries = new HashSet<>();
         summaries.add(summaryA);
         summaries.add(summaryB);
         try {
-            Assertions.assertEquals(gameDAO.getGameSummaries(), summaries);
+            Collection<GameSummary> dbSummaries = new HashSet<>(gameDAO.getGameSummaries());
+            Assertions.assertEquals(summaries, dbSummaries);
         } catch (DataAccessException e) {
             Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
         }
