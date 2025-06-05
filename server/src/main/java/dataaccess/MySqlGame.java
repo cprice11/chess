@@ -4,6 +4,9 @@ import chess.ChessGame;
 import datamodels.GameData;
 import datamodels.GameSummary;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,18 +19,33 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
         if (getGame(game.gameID()) != null) {
             throw new DataAccessException("gameID already in database");
         }
-        String sql = String.format(
-                "INSERT INTO game values (\"%s\", \"%s\", \"%s\", \"%s\", '%s')",
-                game.gameID(), game.blackUsername(), game.whiteUsername(), game.gameName(),
-                GSON.toJson(game.game(), ChessGame.class)
-        );
-        executeUpdate(sql);
+        if (stringIsUnsafe(game.blackUsername()) || stringIsUnsafe(game.whiteUsername()) || stringIsUnsafe(game.gameName())) {
+            return;
+        }
+        try (PreparedStatement statement = conn.prepareStatement("INSERT INTO game values (?, ?, ?, ?, ?)")) {
+            statement.setInt(1, game.gameID());
+            statement.setString(2, game.blackUsername());
+            statement.setString(3, game.whiteUsername());
+            statement.setString(4, game.gameName());
+            statement.setString(5, GSON.toJson(game.game(), ChessGame.class));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
-        String sql = String.format("SELECT * FROM game WHERE id = %s", gameID);
-        Collection<GameData> matches;
-        matches = queryGameData(sql);
+        Collection<GameData> matches = new ArrayList<>();
+        try (PreparedStatement statement = conn.prepareStatement("SELECT * FROM game WHERE id = ?")) {
+            statement.setInt(1, gameID);
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    matches.add(gameFromResponse(result));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
         if (matches.isEmpty()) {
             return null;
         }
@@ -41,28 +59,45 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
         if (game == null) {
             throw new DataAccessException("game is null");
         }
-        String sql = String.format("UPDATE game SET blackUsername = %s, whiteUsername = %s, gameName = %s, game = %s WHERE gameID = \"%s\";",
-                game.blackUsername(), game.whiteUsername(), game.gameName(),
-                GSON.toJson(game.game(), ChessGame.class), gameID);
-        executeUpdate(sql);
+        if (stringIsUnsafe(game.blackUsername()) || stringIsUnsafe(game.whiteUsername()) || stringIsUnsafe(game.gameName())) {
+            return;
+        }
+
+        try (PreparedStatement statement = conn.prepareStatement("UPDATE game SET blackUsername = ?, whiteUsername = ?, gameName = ?, game = ? WHERE gameID = ?")) {
+            statement.setString(1, game.blackUsername());
+            statement.setString(2, game.whiteUsername());
+            statement.setString(3, game.gameName());
+            statement.setString(4, GSON.toJson(game.game(), ChessGame.class));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public Collection<GameSummary> getGameSummaries() throws DataAccessException {
         String sql = "SELECT gameID, blackUsername, whiteUsername, gameName FROM game";
-        Collection<GameSummary> matches;
-        matches = queryGameSummary(sql);
+        Collection<GameSummary> matches = new ArrayList<>();
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    matches.add(summaryFromResponse(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
         if (matches.isEmpty()) {
             return null;
         }
         return matches;
     }
 
-    public void clearAll() {
+    public void clearAll() throws DataAccessException {
         String sql = "TRUNCATE game";
-        try {
-            executeUpdate(sql);
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 }
