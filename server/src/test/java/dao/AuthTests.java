@@ -126,16 +126,16 @@ public class AuthTests extends DbUnitTests {
     }
 
     @Test
-    @DisplayName("Can't delete twice")
+    @DisplayName("Can delete twice")
     public void repeatDeleteAuth() {
         addTwoAuth();
         try {
             Assertions.assertEquals(authA, authDAO.getAuthByAuthToken(authA.authToken()));
             authDAO.deleteAuthByAuthToken(authA.authToken());
             Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
-            Assertions.assertThrows(DataAccessException.class, () -> {
-                authDAO.deleteAuthByAuthToken(authA.authToken());
-            });
+            authDAO.deleteAuthByAuthToken(authA.authToken());
+            // The database doesn't need to care if what it's deleting isn't there
+            // The logic for the 401 error is done by the service.
         } catch (DataAccessException e) {
             Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
         }
