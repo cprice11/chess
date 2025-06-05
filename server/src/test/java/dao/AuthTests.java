@@ -111,15 +111,15 @@ public class AuthTests extends DbUnitTests {
 
     // This may not work inside the try-catch block
     @Test
-    @DisplayName("Can't delete with bad authToken")
+    @DisplayName("Deleting one authToken doesn't delete a users other sessions")
     public void badDeleteAuth() {
         addTwoAuth();
+        AuthData secondA = new AuthData(authA.username(), "new-token-a");
         try {
-            Assertions.assertThrows(DataAccessException.class, () -> {
-                authDAO.deleteAuthByAuthToken(authC.authToken());
-            });
-            Assertions.assertEquals(authA, authDAO.getAuthByAuthToken(authA.authToken()));
-            Assertions.assertEquals(authB, authDAO.getAuthByAuthToken(authB.authToken()));
+            authDAO.addAuth(secondA);
+            authDAO.deleteAuthByAuthToken(authA.authToken());
+            Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
+            Assertions.assertEquals(secondA, authDAO.getAuthByAuthToken(secondA.authToken()));
         } catch (DataAccessException e) {
             Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
         }
