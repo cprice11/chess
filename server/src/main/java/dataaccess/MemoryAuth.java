@@ -17,7 +17,6 @@ public class MemoryAuth implements AuthDAO{
             throw new DataAccessException("AuthToken already in database");
         }
         db.put(auth.authToken(), auth);
-        print();
     }
 
     public AuthData getAuthByUsername(String username) {
@@ -39,11 +38,5 @@ public class MemoryAuth implements AuthDAO{
 
     public void clearAll() {
         db.clear();
-    }
-
-    public void print() {
-        for (Map.Entry<String, AuthData> entry : db.entrySet()) {
-            System.out.println("username: " + entry.getValue().username() + " authToken: " + entry.getKey());
-        }
     }
 }
