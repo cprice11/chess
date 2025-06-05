@@ -13,7 +13,6 @@ public class MySqlUser extends MySqlDataAccess implements UserDAO {
         return null;
     }
 
-    @Override
     public void clearAll() {
         String sql = "TRUNCATE user";
         try {
