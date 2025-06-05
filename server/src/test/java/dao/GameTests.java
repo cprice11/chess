@@ -91,18 +91,6 @@ public class GameTests extends DbUnitTests {
         }
     }
 
-    // because the ID is an int I'm not sure this test is useful
-//    @Test
-//    @DisplayName("Malformed get calls fail")
-//    public void malformedGetGame() {
-//        Assertions.assertThrows(DataAccessException.class, () -> {
-//            gameDAO.getGame(null);
-//        });
-//        Assertions.assertThrows(DataAccessException.class, () -> {
-//            gameDAO.getGame(null);
-//        });
-//    }
-
     // updateGame
     @Test
     @DisplayName("Update game one move at a time for fools mate")
