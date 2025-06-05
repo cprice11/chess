@@ -2,6 +2,9 @@ package dataaccess;
 
 import datamodels.AuthData;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -10,20 +13,39 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
         if (auth == null || auth.authToken() == null) {
             throw new DataAccessException("auth is null");
         }
+        if (stringIsUnsafe(auth.authToken()) || stringIsUnsafe(auth.username())) {
+            return;
+        }
         if (getAuthByAuthToken(auth.authToken()) != null) {
             throw new DataAccessException("AuthToken already in database");
         }
-        String sql = String.format("INSERT INTO auth values (\"%s\", \"%s\")", auth.authToken(), auth.username());
-        executeUpdate(sql);
+        try (PreparedStatement statement = conn.prepareStatement("INSERT INTO auth values (?, ?)")) {
+            statement.setString(1, auth.authToken());
+            statement.setString(2, auth.username());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed while adding auth");
+        }
     }
 
     public AuthData getAuthByUsername(String username) throws DataAccessException {
         if (username == null) {
             throw new DataAccessException("Username is null");
         }
-        String sql = String.format("SELECT * FROM auth WHERE username = \"%s\";", username);
-        Collection<AuthData> matches;
-        matches = queryAuthData(sql);
+        if (stringIsUnsafe(username)) {
+            return null;
+        }
+        Collection<AuthData> matches = new ArrayList<>();
+        try (PreparedStatement statement = conn.prepareStatement("SELECT * FROM auth WHERE username = ?")) {
+            statement.setString(1, username);
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    matches.add(authFromResponse(result));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
         if (matches.isEmpty()) {
             return null;
         }
@@ -34,14 +56,22 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
         if (authToken == null) {
             throw new DataAccessException("AuthToken is null");
         }
-        String sql = String.format("SELECT * FROM auth WHERE authToken = '%s';", authToken);
-        Collection<AuthData> matches;
-        matches = queryAuthData(sql);
-        if (matches.isEmpty()) {
+        if (stringIsUnsafe(authToken)) {
             return null;
         }
-        if (matches.size() > 1) {
-            throw new RuntimeException("Uh Oh, We've got two identical authTokens");
+        Collection<AuthData> matches = new ArrayList<>();
+        try (PreparedStatement statement = conn.prepareStatement("SELECT * FROM auth WHERE authToken = ?")) {
+            statement.setString(1, authToken);
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    matches.add(authFromResponse(result));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        if (matches.isEmpty()) {
+            return null;
         }
         return new ArrayList<>(matches).getFirst();
     }
@@ -50,8 +80,12 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
         if (authToken == null) {
             throw new DataAccessException("AuthToken is null");
         }
-        String sql = String.format("DELETE FROM auth WHERE authToken = \"%s\";", authToken);
-        executeUpdate(sql);
+        try (PreparedStatement statement = conn.prepareStatement("DELETE FROM auth WHERE authToken = ?")) {
+            statement.setString(1, authToken);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public void clearAll() {

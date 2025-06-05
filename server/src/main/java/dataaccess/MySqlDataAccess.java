@@ -136,6 +136,6 @@ public class MySqlDataAccess {
     }
 
     protected static boolean stringIsUnsafe(String dirtyString) {
-        return !dirtyString.matches("[a-zA-Z0-9]+");
+        return !dirtyString.matches("[a-zA-Z0-9-$]+");
     }
 }
