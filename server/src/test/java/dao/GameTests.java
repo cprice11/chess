@@ -34,9 +34,9 @@ public class GameTests extends DbUnitTests {
     @DisplayName("Add and get")
     public void addAndRetrieveSuccessfully() {
         try {
-            Gson GSON = new Gson();
-            String json = GSON.toJson(gameA.game(), ChessGame.class);
-            ChessGame backToGame = GSON.fromJson(json, ChessGame.class);
+            Gson gson = new Gson();
+            String json = gson.toJson(gameA.game(), ChessGame.class);
+            ChessGame backToGame = gson.fromJson(json, ChessGame.class);
             Assertions.assertNull(gameDAO.getGame(gameA.gameID()));
             gameDAO.addGame(gameA);
             Assertions.assertEquals(gameA, gameDAO.getGame(gameA.gameID()));

@@ -1,4 +1,4 @@
-package service;
+package dbService;
 
 import datamodels.AuthData;
 import datamodels.UserData;
@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import service.AlreadyTakenException;
 
 public class DbRegisterTests extends DbUnitTests {
     @Test

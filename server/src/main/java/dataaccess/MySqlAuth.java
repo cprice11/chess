@@ -88,12 +88,12 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
         }
     }
 
-    public void clearAll() {
+    public void clearAll() throws DataAccessException {
         String sql = "TRUNCATE auth";
-        try {
-            executeUpdate(sql);
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 

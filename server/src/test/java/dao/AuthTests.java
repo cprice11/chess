@@ -12,8 +12,8 @@ public class AuthTests extends DbUnitTests {
     @DisplayName("Clear all auth")
     public void clearAuth() {
         addTwoAuth();
-        authDAO.clearAll();
         try {
+            authDAO.clearAll();
             Assertions.assertNull(authDAO.getAuthByAuthToken(authA.authToken()));
         } catch (DataAccessException e) {
             Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));

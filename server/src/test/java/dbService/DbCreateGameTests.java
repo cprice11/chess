@@ -1,9 +1,10 @@
-package service;
+package dbService;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import service.UnauthorizedException;
 
 public class DbCreateGameTests extends DbUnitTests {
     @Test

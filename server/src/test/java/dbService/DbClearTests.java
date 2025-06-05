@@ -1,4 +1,4 @@
-package service;
+package dbService;
 
 import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;

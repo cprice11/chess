@@ -62,8 +62,8 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
         if (stringIsUnsafe(game.blackUsername()) || stringIsUnsafe(game.whiteUsername()) || stringIsUnsafe(game.gameName())) {
             return;
         }
-
-        try (PreparedStatement statement = conn.prepareStatement("UPDATE game SET blackUsername = ?, whiteUsername = ?, gameName = ?, game = ? WHERE gameID = ?")) {
+        String sql = "UPDATE game SET blackUsername = ?, whiteUsername = ?, gameName = ?, game = ? WHERE gameID = ?";
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setString(1, game.blackUsername());
             statement.setString(2, game.whiteUsername());
             statement.setString(3, game.gameName());

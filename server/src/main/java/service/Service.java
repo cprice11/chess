@@ -18,14 +18,14 @@ public class Service {
     }
 
     public String hashString(String unhashed) {
-        String SALT = "UE1OTiJ9aEZ6NGZ1eXk4XW17Xy9Lfm4r";
-        String SALTED = unhashed + SALT;
-        return BCrypt.hashpw(SALTED, BCrypt.gensalt());
+        String salt = "UE1OTiJ9aEZ6NGZ1eXk4XW17Xy9Lfm4r";
+        String salted = unhashed + salt;
+        return BCrypt.hashpw(salted, BCrypt.gensalt());
     }
 
     public boolean confirmHash(String hashed, String unhashed) {
-        String SALT = "UE1OTiJ9aEZ6NGZ1eXk4XW17Xy9Lfm4r";
-        String SALTED = unhashed + SALT;
-        return BCrypt.checkpw(SALTED, hashed);
+        String salt = "UE1OTiJ9aEZ6NGZ1eXk4XW17Xy9Lfm4r";
+        String salted = unhashed + salt;
+        return BCrypt.checkpw(salted, hashed);
     }
 }

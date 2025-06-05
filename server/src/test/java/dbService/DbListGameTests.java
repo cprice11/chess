@@ -1,10 +1,11 @@
-package service;
+package dbService;
 
 import datamodels.GameSummary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import service.UnauthorizedException;
 
 import java.util.ArrayList;
 import java.util.Collection;

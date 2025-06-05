@@ -1,4 +1,4 @@
-package service;
+package dbService;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

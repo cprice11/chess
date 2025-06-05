@@ -1,4 +1,4 @@
-package service;
+package dbService;
 
 import chess.ChessGame;
 import dataaccess.*;
@@ -7,6 +7,9 @@ import datamodels.GameData;
 import datamodels.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import service.DevService;
+import service.GameService;
+import service.UserService;
 
 // literally copied over from UnitTest but using the MySQL DAOs
 // There was probably a way to have junit repeat all the child tests,

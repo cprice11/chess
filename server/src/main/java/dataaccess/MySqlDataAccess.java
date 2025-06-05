@@ -10,10 +10,6 @@ import datamodels.UserData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class MySqlDataAccess {
     // I don't like that we're rolling and unrolling JSON on the
@@ -29,80 +25,6 @@ public class MySqlDataAccess {
             throw new RuntimeException(e.getMessage());
         }
     }
-
-    protected static void executeUpdate(String sqlStatement) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(sqlStatement, RETURN_GENERATED_KEYS)) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("The following statement threw an exception when trying to access the database:\n\t%s\n\t%s", sqlStatement, e.getMessage()));
-        }
-    }
-
-
-    protected static Collection<AuthData> queryAuthData(String sqlStatement) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(sqlStatement, RETURN_GENERATED_KEYS)) {
-                ResultSet result = preparedStatement.executeQuery();
-                Collection<AuthData> matches = new ArrayList<>();
-                while (result.next()) {
-                    matches.add(authFromResponse(result));
-                }
-                return matches;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("The following statement threw an exception when trying to access the database:\n\t%s\n\t%s", sqlStatement, e.getMessage()));
-        }
-    }
-
-    protected static Collection<GameData> queryGameData(String sqlStatement) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(sqlStatement, RETURN_GENERATED_KEYS)) {
-                ResultSet result = preparedStatement.executeQuery();
-                Collection<GameData> matches = new ArrayList<>();
-                while (result.next()) {
-                    matches.add(gameFromResponse(result));
-                }
-                return matches;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("The following statement threw an exception when trying to access the database:\n\t%s\n\t%s", sqlStatement, e.getMessage()));
-        }
-    }
-
-    protected static Collection<GameSummary> queryGameSummary(String sqlStatement) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(sqlStatement, RETURN_GENERATED_KEYS)) {
-                preparedStatement.executeQuery();
-                ResultSet result = preparedStatement.getGeneratedKeys();
-                Collection<GameSummary> matches = new ArrayList<>();
-                while (result.next()) {
-                    matches.add(summaryFromResponse(result));
-                }
-                return matches;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("The following statement threw an exception when trying to access the database:\n\t%s\n\t%s", sqlStatement, e.getMessage()));
-        }
-    }
-
-    protected static Collection<UserData> queryUserData(String sqlStatement) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(sqlStatement, RETURN_GENERATED_KEYS)) {
-                preparedStatement.executeQuery();
-                ResultSet result = preparedStatement.getGeneratedKeys();
-                Collection<UserData> matches = new ArrayList<>();
-                while (result.next()) {
-                    matches.add(userFromResponse(result));
-                }
-                return matches;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("The following statement threw an exception when trying to access the database:\n\t%s\n\t%s", sqlStatement, e.getMessage()));
-        }
-    }
-
 
     protected static AuthData authFromResponse(ResultSet rs) throws SQLException {
         String authToken = rs.getString("authToken");

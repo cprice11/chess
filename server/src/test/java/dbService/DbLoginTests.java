@@ -1,4 +1,4 @@
-package service;
+package dbService;
 
 import datamodels.AuthData;
 import org.junit.jupiter.api.Assertions;
