@@ -1,25 +1,38 @@
 package ui;
 
+import java.util.Scanner;
+
 public class Repl {
-    private final PetClient client;
+    private final Client preLoginClient;
+    private final Client postLoginClient;
+    private final Client gamePlayclient;
 
     public Repl(String serverUrl) {
-        client = new PetClient(serverUrl, this);
+        preLoginClient = new PreLogin(serverUrl, this);
+        postLoginClient = new PostLogin(serverUrl, this);
+        gamePlayclient = new GamePlay(serverUrl, this);
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to the pet store. Sign in to start.");
-        System.out.print(client.help());
+        Client currentClient = preLoginClient;
+        System.out.println("\uD83D\uDC36 Chess client");
+        System.out.print(preLoginClient.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
             printPrompt();
             String line = scanner.nextLine();
-
             try {
-                result = client.eval(line);
-                System.out.print(BLUE + result);
+                result = currentClient.eval(line);
+                System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result + EscapeSequences.RESET_TEXT_COLOR);
+                currentClient = switch (result) {
+                    case "preLogin" -> preLoginClient;
+                    case "postLogin" -> postLoginClient;
+                    case "gamePlay" -> gamePlayclient;
+                    default -> currentClient;
+                };
+
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -28,12 +41,7 @@ public class Repl {
         System.out.println();
     }
 
-    public void notify(Notification notification) {
-        System.out.println(RED + notification.message());
-        printPrompt();
-    }
-
     private void printPrompt() {
-        System.out.print("\n" + RESET + ">>> " + GREEN);
+        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_BLUE + ">>> " + EscapeSequences.RESET_TEXT_COLOR);
     }
 }
