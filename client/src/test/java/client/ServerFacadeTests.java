@@ -2,6 +2,7 @@ package client;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import server.Server;
 import serverfacade.ServerFacade;
@@ -25,43 +26,91 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @Order(1)
     @Test
     public void registerTest() {
         throw new RuntimeException("Not implemented yet");
     }
 
+    @Order(2)
     @Test
     public void quitTest() {
         throw new RuntimeException("Not implemented yet");
     }
 
+    @Order(3)
     @Test
     public void loginTest() {
         throw new RuntimeException("Not implemented yet");
     }
 
+    @Order(4)
+    @Test
+    public void createGameTest() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Order(5)
+    @Test
+    public void listGamesTest() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Order(6)
+    @Test
+    public void joinGameTest() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Order(7)
+    @Test
+    public void observeGameTest() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Order(8)
     @Test
     public void logoutTest() {
         throw new RuntimeException("Not implemented yet");
     }
 
     @Test
-    public void createGameTest() {
+    public void negativeRegisterTest() {
         throw new RuntimeException("Not implemented yet");
     }
 
     @Test
-    public void listGamesTest() {
+    public void negativeQuitTest() {
         throw new RuntimeException("Not implemented yet");
     }
 
     @Test
-    public void playGamesTest() {
+    public void negativeLoginTest() {
         throw new RuntimeException("Not implemented yet");
     }
 
     @Test
-    public void observeGameTest() {
+    public void negativeLogoutTest() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Test
+    public void negativeCreateGameTest() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Test
+    public void negativeListGamesTest() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Test
+    public void negativeJoinGameTest() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Test
+    public void negativeObserveGameTest() {
         throw new RuntimeException("Not implemented yet");
     }
 }
