@@ -34,19 +34,17 @@ public class DatabaseManager {
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
         try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword); var createStatement = conn.prepareStatement(statement)) {
             createStatement.executeUpdate();
-            var useStatement = conn.prepareStatement("USE chess;");
-            useStatement.executeUpdate();
             String[] tables = {
-                    "auth (authToken varchar(36) PRIMARY KEY, username varchar(255));",
-                    "game (id int PRIMARY KEY, blackUsername varchar(255), whiteUsername varchar(255), gameName varchar(255), game JSON);",
-                    "user (username varchar(255) PRIMARY KEY, password varchar(60), email varchar(255));"
+                    "chess.auth (authToken varchar(36) PRIMARY KEY, username varchar(255));",
+                    "chess.game (id int PRIMARY KEY, blackUsername varchar(255), whiteUsername varchar(255), gameName varchar(255), game JSON);",
+                    "chess.user (username varchar(255) PRIMARY KEY, password varchar(60), email varchar(255));"
             };
             for (String table : tables) {
                 conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + table).executeUpdate();
             }
             databaseInitialized = true;
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to create database", ex);
+            throw new DataAccessException("failed to create database with following exception: " + ex.getMessage());
         }
     }
 
