@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class UserTests extends DbUnitTests {
+public class UserTests extends ServiceUnitTests {
     // ClearAll
     @Test
     @DisplayName("Clear all user data")
@@ -42,32 +42,20 @@ public class UserTests extends DbUnitTests {
         } catch (DataAccessException e) {
             Assertions.fail(String.format("Test threw an exception:\n%s", e.getMessage()));
         }
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.addUser(userA);
-        });
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.addUser(new UserData(userA.username(), userC.password(), userC.email()));
-        });
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.addUser(userA));
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.addUser(
+                new UserData(userA.username(), userC.password(), userC.email())
+        ));
     }
 
     @Test
     @DisplayName("Add malformed")
     public void addMalformedUser() {
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.addUser(null);
-        });
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.addUser(new UserData(null, null, null));
-        });
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.addUser(new UserData("uname", null, "email"));
-        });
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.addUser(new UserData(null, "pass", "email"));
-        });
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.addUser(new UserData(null, null, "email"));
-        });
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.addUser(null));
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.addUser(new UserData(null, null, null)));
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.addUser(new UserData("uname", null, "email")));
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.addUser(new UserData(null, "pass", "email")));
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.addUser(new UserData(null, null, "email")));
     }
 
     // getUser
@@ -97,9 +85,7 @@ public class UserTests extends DbUnitTests {
     @Test
     @DisplayName("Malformed get call fails")
     public void malformedGetUser() {
-        Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.getUser(null);
-        });
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.getUser(null));
     }
 
     public void addTwoUsers() {

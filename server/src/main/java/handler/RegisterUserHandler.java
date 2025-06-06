@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import datamodels.AuthData;
 import datamodels.UserData;
 import service.AlreadyTakenException;
@@ -19,7 +20,7 @@ public class RegisterUserHandler extends RequestHandler {
             auth = USER_SERVICE.registerUser(user);
         } catch (AlreadyTakenException e) {
             return error(response, 403, "Error: already taken");
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             return error(response, 500, "Error: " + e.getMessage());
         }
 

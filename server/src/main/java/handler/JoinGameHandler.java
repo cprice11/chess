@@ -1,13 +1,15 @@
 package handler;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import service.AlreadyTakenException;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
 public class JoinGameHandler extends RequestHandler{
-    private record JoinGameRequestBody(ChessGame.TeamColor playerColor, int gameID){};
+    private record JoinGameRequestBody(ChessGame.TeamColor playerColor, int gameID) {
+    }
     public Object handle(Request request, Response response) {
         System.out.println("Joining game");
         String authToken = request.headers("authorization");
@@ -21,7 +23,7 @@ public class JoinGameHandler extends RequestHandler{
             return error(response, 401, "Error: unauthorized");
         } catch (AlreadyTakenException e) {
             return error(response, 403, "Error: already taken");
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             return error(response, 500, "Error: " + e.getMessage());
         }
 

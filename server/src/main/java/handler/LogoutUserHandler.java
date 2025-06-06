@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
@@ -16,7 +17,7 @@ public class LogoutUserHandler extends RequestHandler{
             USER_SERVICE.logoutUser(authToken);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: Unauthorized");
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             return error(response, 500, "Error: " + e.getMessage());
         }
 

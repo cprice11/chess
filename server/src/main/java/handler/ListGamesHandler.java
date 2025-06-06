@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import datamodels.GameSummary;
 import service.UnauthorizedException;
 import spark.Request;
@@ -22,7 +23,7 @@ public class ListGamesHandler extends RequestHandler{
             gameSummaries = GAME_SERVICE.listGames(authToken);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: unauthorized");
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             return error(response, 500, "Error: " + e.getMessage());
         }
 

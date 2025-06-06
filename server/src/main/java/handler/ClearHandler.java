@@ -10,7 +10,7 @@ public class ClearHandler extends RequestHandler {
         try {
             DEV_SERVICE.clear();
         } catch (DataAccessException e) {
-            response.status(500);
+            return error(response, 500, "Error: " + e.getMessage());
         }
         response.status(200);
         return GSON.toJson(new Object());

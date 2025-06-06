@@ -7,15 +7,13 @@ import datamodels.GameData;
 import datamodels.GameSummary;
 import datamodels.UserData;
 import org.junit.jupiter.api.BeforeEach;
-import service.DevService;
 import service.GameService;
 import service.UserService;
 
-// TODO: Write tests for each method
-public class DbUnitTests {
-    public AuthDAO authDAO = new MySqlAuth();
-    public GameDAO gameDAO = new MySqlGame();
-    public UserDAO userDAO = new MySqlUser();
+public class ServiceUnitTests {
+    public AuthDAO authDAO = new MemoryAuth();
+    public GameDAO gameDAO = new MemoryGame();
+    public UserDAO userDAO = new MemoryUser();
     public final AuthData authA = new AuthData("userA", "token-a");
     public final AuthData authB = new AuthData("userB", "token-b");
     public final AuthData authC = new AuthData("userC", "token-c");
@@ -27,13 +25,10 @@ public class DbUnitTests {
     public final UserData userC = new UserData("userC", "userCpass", "c@email.com");
     public final GameSummary summaryA = new GameSummary(gameA.gameID(), gameA.blackUsername(), gameA.whiteUsername(), gameA.gameName());
     public final GameSummary summaryB = new GameSummary(gameB.gameID(), gameB.blackUsername(), gameB.whiteUsername(), gameB.gameName());
-    public final GameSummary summaryC = new GameSummary(gameC.gameID(), gameC.blackUsername(), gameC.whiteUsername(), gameC.gameName());
 
-    public final DevService dev = new DevService(authDAO, gameDAO, userDAO);
     public final GameService game = new GameService(authDAO, gameDAO);
     public final UserService user = new UserService(authDAO, userDAO);
 
-    // I think this muddies the workflow in this case
     @BeforeEach
     public void setupDataBase() {
         try {

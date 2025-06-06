@@ -32,14 +32,14 @@ public class GameService extends Service{
     }
 
     public void joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID)
-            throws Exception {
+            throws UnauthorizedException, DataAccessException, AlreadyTakenException {
         AuthData auth = authDAO.getAuthByAuthToken(authToken);
         if (auth == null) {
             throw new UnauthorizedException();
         }
         GameData game = gameDAO.getGame(gameID);
         if (game == null) {
-            throw new Exception("Game doesn't exist");
+            throw new DataAccessException("Game doesn't exist");
         }
         if (playerColor == ChessGame.TeamColor.BLACK && game.blackUsername() == null) {
             gameDAO.updateGame(gameID, new GameData(gameID, auth.username(), game.whiteUsername(), game.gameName(), game.game()));

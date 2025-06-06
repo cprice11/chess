@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import datamodels.AuthData;
 import service.UnauthorizedException;
 import spark.Request;
@@ -19,7 +20,7 @@ public class LoginUserHandler extends RequestHandler{
             auth = USER_SERVICE.loginUser(r.username(), r.password());
         } catch (UnauthorizedException e ) {
             return error(response, 401, "Error: unauthorized");
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             return error(response, 500, "Error: " + e.getMessage());
         }
 

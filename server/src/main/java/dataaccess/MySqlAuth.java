@@ -10,6 +10,7 @@ import java.util.Collection;
 
 public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
     public void addAuth(AuthData auth) throws DataAccessException {
+        checkConnection();
         if (auth == null || auth.authToken() == null) {
             throw new DataAccessException("auth is null");
         }
@@ -29,6 +30,7 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
     }
 
     public AuthData getAuthByUsername(String username) throws DataAccessException {
+        checkConnection();
         if (username == null) {
             throw new DataAccessException("Username is null");
         }
@@ -53,6 +55,7 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
     }
 
     public AuthData getAuthByAuthToken(String authToken) throws DataAccessException {
+        checkConnection();
         if (authToken == null) {
             throw new DataAccessException("AuthToken is null");
         }
@@ -77,6 +80,7 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
     }
 
     public void deleteAuthByAuthToken(String authToken) throws DataAccessException {
+        checkConnection();
         if (authToken == null) {
             throw new DataAccessException("AuthToken is null");
         }
@@ -89,6 +93,7 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
     }
 
     public void clearAll() throws DataAccessException {
+        checkConnection();
         String sql = "TRUNCATE auth";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.executeUpdate(sql);
@@ -96,5 +101,4 @@ public class MySqlAuth extends MySqlDataAccess implements AuthDAO {
             throw new DataAccessException(e.getMessage());
         }
     }
-
 }

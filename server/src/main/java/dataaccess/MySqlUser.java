@@ -10,6 +10,7 @@ import java.util.Collection;
 
 public class MySqlUser extends MySqlDataAccess implements UserDAO {
     public void addUser(UserData user) throws DataAccessException {
+        checkConnection();
         if (user == null || user.username() == null || user.password() == null) {
             throw new DataAccessException("user is null");
         }
@@ -30,6 +31,7 @@ public class MySqlUser extends MySqlDataAccess implements UserDAO {
     }
 
     public UserData getUser(String username) throws DataAccessException {
+        checkConnection();
         if (username == null) {
             throw new DataAccessException("Username is null");
         }
@@ -57,6 +59,7 @@ public class MySqlUser extends MySqlDataAccess implements UserDAO {
     }
 
     public void clearAll() throws DataAccessException {
+        checkConnection();
         String sql = "TRUNCATE user";
         try {
             conn.prepareStatement(sql).executeUpdate();

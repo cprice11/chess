@@ -32,6 +32,10 @@ public class MySqlDataAccess {
         }
     }
 
+    public void checkConnection() throws DataAccessException {
+        DatabaseManager.getConnection();
+    }
+
     protected static AuthData authFromResponse(ResultSet rs) throws SQLException {
         String authToken = rs.getString("authToken");
         String username = rs.getString("username");

@@ -13,6 +13,7 @@ import java.util.Collection;
 public class MySqlGame extends MySqlDataAccess implements GameDAO {
 
     public void addGame(GameData game) throws DataAccessException {
+        checkConnection();
         if (game == null) {
             throw new DataAccessException("game is null");
         }
@@ -35,6 +36,7 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
+        checkConnection();
         Collection<GameData> matches = new ArrayList<>();
         try (PreparedStatement statement = conn.prepareStatement("SELECT * FROM game WHERE id = ?")) {
             statement.setInt(1, gameID);
@@ -56,6 +58,7 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
     }
 
     public void updateGame(int gameID, GameData game) throws DataAccessException {
+        checkConnection();
         if (game == null) {
             throw new DataAccessException("game is null");
         }
@@ -79,6 +82,7 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
     }
 
     public Collection<GameSummary> getGameSummaries() throws DataAccessException {
+        checkConnection();
         String sql = "SELECT id, blackUsername, whiteUsername, gameName FROM game";
         Collection<GameSummary> matches = new ArrayList<>();
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -94,6 +98,7 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
     }
 
     public void clearAll() throws DataAccessException {
+        checkConnection();
         String sql = "TRUNCATE game";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.executeUpdate(sql);

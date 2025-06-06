@@ -1,12 +1,16 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;
 
 public class CreateGameHander extends RequestHandler{
-    private record CreateGameRequestBody(String gameName){};
-    private record CreateGameResponse(int gameID){};
+    private record CreateGameRequestBody(String gameName) {
+    }
+
+    private record CreateGameResponse(int gameID) {
+    }
     public Object handle(Request request, Response response) {
         System.out.println("Logging out user");
         String authToken = request.headers("authorization");
@@ -20,7 +24,7 @@ public class CreateGameHander extends RequestHandler{
             gameID = GAME_SERVICE.createGame(authToken, requestBody.gameName);
         } catch (UnauthorizedException e) {
             return error(response, 401, "Error: unauthorized");
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             return error(response, 500, "Error: " + e.getMessage());
         }
 

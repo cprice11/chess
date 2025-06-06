@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class GameTests extends DbUnitTests {
+public class GameTests extends ServiceUnitTests {
     // ClearAll
     @Test
     @DisplayName("Clear all games")

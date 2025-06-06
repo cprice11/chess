@@ -11,6 +11,9 @@ public class MemoryGame implements GameDAO{
     HashMap<Integer, GameData> db = new HashMap<>();
 
     public void addGame(GameData game) throws DataAccessException {
+        if (null == game) {
+            throw new DataAccessException("game is null");
+        }
         if (db.get(game.gameID()) != null) {
             throw new DataAccessException("Invalid ID");
         }
