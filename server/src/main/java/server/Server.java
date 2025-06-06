@@ -5,16 +5,18 @@ import spark.Spark;
 
 public class Server {
 
-    ClearHandler clearHandler = new ClearHandler();
-    CreateGameHander createGameHander = new CreateGameHander();
-    JoinGameHandler joinGameHandler = new JoinGameHandler();
-    ListGamesHandler listGamesHandler = new ListGamesHandler();
-    LoginUserHandler loginUserHandler = new LoginUserHandler();
-    LogoutUserHandler logoutUserHandler = new LogoutUserHandler();
-    RegisterUserHandler registerUserHandler = new RegisterUserHandler();
+
 
 
     public int run(int desiredPort) {
+        ClearHandler clearHandler = new ClearHandler();
+        CreateGameHander createGameHander = new CreateGameHander();
+        JoinGameHandler joinGameHandler = new JoinGameHandler();
+        ListGamesHandler listGamesHandler = new ListGamesHandler();
+        LoginUserHandler loginUserHandler = new LoginUserHandler();
+        LogoutUserHandler logoutUserHandler = new LogoutUserHandler();
+        RegisterUserHandler registerUserHandler = new RegisterUserHandler();
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
