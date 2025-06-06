@@ -17,11 +17,6 @@ public class DatabaseManager {
      */
     static {
         loadPropertiesFromResources();
-//        try {
-//            createDatabase();
-//        } catch (DataAccessException e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
     }
 
     /**
