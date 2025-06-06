@@ -5,9 +5,28 @@ public class ServerFacade {
 
     }
 
-    public RegisterResult register() {
-
+    public RegisterResult registerUser() {
+        throw new RuntimeException("Not implemented yet");
     }
 
-    public Login
+    public LoginResult loginUser() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public LogoutResult logoutUser() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public ListGamesResult listGames() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public CreateGameResult createGame() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public JoinGameResult joinGame() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
 }
