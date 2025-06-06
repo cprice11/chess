@@ -1,6 +1,5 @@
-package dao;
+package dataaccess;
 
-import dataaccess.DataAccessException;
 import datamodels.AuthData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

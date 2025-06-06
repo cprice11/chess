@@ -1,10 +1,9 @@
-package dao;
+package dataaccess;
 
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import chess.InvalidMoveException;
-import dataaccess.DataAccessException;
 import datamodels.GameData;
 import datamodels.GameSummary;
 import org.junit.jupiter.api.Assertions;

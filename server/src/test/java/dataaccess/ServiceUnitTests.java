@@ -1,7 +1,6 @@
-package dao;
+package dataaccess;
 
 import chess.ChessGame;
-import dataaccess.*;
 import datamodels.AuthData;
 import datamodels.GameData;
 import datamodels.GameSummary;
