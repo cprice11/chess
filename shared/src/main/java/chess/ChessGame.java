@@ -20,13 +20,16 @@ public class ChessGame {
     private transient ChessPosition positionVulnerableToEnPassant = null;
     private int halfMoveClock = 0;
     private int fullMoveNumber = 1;
-    private final static Gson gson = new Gson();
+    private final static Gson GSON = new Gson();
+
     public ChessGame() {
         board.resetBoard();
 //        ConsolePrinter.printGame(this);
     }
 
-    public ChessGame(ChessBoard board, ArrayList<ChessMove> moveHistory, TeamColor turn, boolean whiteShort, boolean whiteLong, boolean blackShort, boolean blackLong, ChessPosition enPassant, int halfMoveClock, int fullMoveNumber) {
+    public ChessGame(ChessBoard board, ArrayList<ChessMove> moveHistory, TeamColor turn,
+                     boolean whiteShort, boolean whiteLong, boolean blackShort, boolean blackLong,
+                     ChessPosition enPassant, int halfMoveClock, int fullMoveNumber) {
         this.board = board;
         this.moveHistory = moveHistory;
         this.turn = turn;
@@ -428,7 +431,6 @@ public class ChessGame {
     }
 
 
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -462,7 +464,7 @@ public class ChessGame {
             var a = piecesJson.getAsJsonObject().asMap();
             for (Map.Entry<String, JsonElement> entry : a.entrySet()) {
                 ChessPosition position = new ChessPosition(entry.getKey());
-                ChessPiece piece = gson.fromJson(entry.getValue(), ChessPiece.class);
+                ChessPiece piece = GSON.fromJson(entry.getValue(), ChessPiece.class);
                 pieces.put(position, piece);
             }
             ChessBoard board = new ChessBoard();
@@ -475,9 +477,9 @@ public class ChessGame {
                 JsonElement startJson = elementObject.get("start");
                 JsonElement endJson = elementObject.get("end");
                 JsonElement promotion = elementObject.get("promotionPiece");
-                ChessPosition start = gson.fromJson(startJson, ChessPosition.class);
-                ChessPosition end = gson.fromJson(endJson, ChessPosition.class);
-                ChessPiece.PieceType promotionPiece = gson.fromJson(promotion, ChessPiece.PieceType.class);
+                ChessPosition start = GSON.fromJson(startJson, ChessPosition.class);
+                ChessPosition end = GSON.fromJson(endJson, ChessPosition.class);
+                ChessPiece.PieceType promotionPiece = GSON.fromJson(promotion, ChessPiece.PieceType.class);
                 ChessMove move = new ChessMove(start, end, promotionPiece);
                 moveHistory.add(move);
             }
@@ -488,7 +490,7 @@ public class ChessGame {
             boolean whiteLong = jObject.get("whiteCanLongCastle").getAsBoolean();
             boolean blackShort = jObject.get("blackCanShortCastle").getAsBoolean();
             boolean blackLong = jObject.get("blackCanLongCastle").getAsBoolean();
-            ChessPosition enPassantSquare = gson.fromJson(jObject.get("enPassant"), ChessPosition.class);
+            ChessPosition enPassantSquare = GSON.fromJson(jObject.get("enPassant"), ChessPosition.class);
             int halfMove = jObject.get("halfMoveClock").getAsInt();
             int fullMove = jObject.get("fullMoveNumber").getAsInt();
             return new ChessGame(board, moveHistory, turn, whiteShort, whiteLong, blackShort, blackLong, enPassantSquare, halfMove, fullMove);

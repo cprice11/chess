@@ -12,8 +12,9 @@ public class LoginTests extends UnitTests{
     @DisplayName("Positive login")
     public void loginUser() {
         try {
-            user.logoutUser(authA.authToken());
-            AuthData goodAuth = user.loginUser(userA.username(), userA.password());
+            AuthData register = user.registerUser(userC);
+            user.logoutUser(register.authToken());
+            AuthData goodAuth = user.loginUser(userC.username(), userC.password());
             Assertions.assertEquals(goodAuth, authDAO.getAuthByUsername(goodAuth.username()));
         } catch (Exception e) {
             Assertions.fail();

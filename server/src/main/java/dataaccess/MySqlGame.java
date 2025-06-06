@@ -90,9 +90,6 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
-//        if (matches.isEmpty()) {
-//            return null;
-//        }
         return matches;
     }
 

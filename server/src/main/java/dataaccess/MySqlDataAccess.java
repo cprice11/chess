@@ -67,6 +67,6 @@ public class MySqlDataAccess {
         if (dirtyString == null) {
             return false;
         }
-        return !dirtyString.matches("[a-zA-Z0-9-$ ]+");
+        return !dirtyString.matches("[a-zA-Z0-9-$!' ]+");
     }
 }

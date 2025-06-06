@@ -5,8 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import datamodels.AuthData;
 import datamodels.UserData;
-
-import java.util.Objects;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService extends Service{
     AuthDAO authDAO;
@@ -22,10 +21,10 @@ public class UserService extends Service{
         if (inDataBase != null) {
             throw new AlreadyTakenException();
         }
-
+        String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
         AuthData auth = new AuthData(user.username(), generateToken());
         authDAO.addAuth(auth);
-        userDAO.addUser(user);
+        userDAO.addUser(new UserData(user.username(), hashedPassword, user.email()));
         return auth;
     }
 
@@ -34,7 +33,7 @@ public class UserService extends Service{
         if (inDataBase == null) {
             throw new UnauthorizedException();
         }
-        if (!Objects.equals(inDataBase.password(), password)) {
+        if (!BCrypt.checkpw(password, inDataBase.password())) {
             throw new UnauthorizedException();
         }
         AuthData auth = new AuthData(username, generateToken());
