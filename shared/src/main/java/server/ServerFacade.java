@@ -64,7 +64,7 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
+//            writeHeader(request);
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
@@ -85,6 +85,10 @@ public class ServerFacade {
                 reqBody.write(reqData.getBytes());
             }
         }
+    }
+
+    private static void writeHeader(HttpURLConnection http) {
+        String header = http.getHeaderField("authorization");
     }
 
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {

@@ -59,6 +59,9 @@ public class ConsolePrinter {
 
     /**
      * Prints the game to the console
+     * It won't necessarily be square depending on zoom level, which terminal it is run in and what font is used
+     * This works right now with a nerdfont downloaded within the intellij powershell terminal.
+     * Your mileage may vary
      */
     public void print() {
         setBoardRows();
@@ -224,8 +227,8 @@ public class ConsolePrinter {
             case null -> squareColor.noHighlight();
         };
         square.append(squareColor);
-        String pieceCharacter = piece == null ? " " : pieceCharacters.get(piece);
-        square.append(" ").append(pieceCharacter).append(" ");
+        String pieceCharacter = piece == null ? "   " : " " + pieceCharacters.get(piece) + " ";
+        square.append(pieceCharacter);
         return square.toString();
     }
 }

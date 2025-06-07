@@ -9,7 +9,7 @@ public class Main {
         System.out.println("♕ 240 Chess Client: " + piece);
         ChessGame game = new ChessGame();
         ConsolePrinter printer = new ConsolePrinter(game);
-        printer.fromBlack().hideLabels();
+        printer.fromBlack();
         printer.print();
         Repl repl = new Repl("localhost:3606");
         repl.run();

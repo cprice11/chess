@@ -8,6 +8,7 @@ public class PreLogin implements Client {
     }
 
     public String eval(String input) {
+        System.out.println(input);
         throw new RuntimeException("Not implemented yet");
     }
 
