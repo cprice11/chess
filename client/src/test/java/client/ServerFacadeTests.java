@@ -1,23 +1,26 @@
 package client;
 
+import datamodels.UserData;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import server.Server;
+import server.ServerFacade;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
-    private static Server facade;
+    private static ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade(port);
+        facade = new ServerFacade("http://localhost:" + port);
+        System.out.println("running server facade");
     }
 
     @AfterAll
@@ -28,7 +31,8 @@ public class ServerFacadeTests {
     @Order(1)
     @Test
     public void registerTest() {
-        throw new RuntimeException("Not implemented yet");
+        String authToken = facade.registerUser(new UserData("username", "pass1234", "user@email"));
+        System.out.println(5);
     }
 
     @Order(2)

@@ -357,6 +357,10 @@ public class ChessGame {
         return moves.isEmpty();
     }
 
+    public boolean isInCheckmate() {
+        return isInCheckmate(TeamColor.WHITE) || isInCheckmate(TeamColor.BLACK);
+    }
+
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves but not being in check.

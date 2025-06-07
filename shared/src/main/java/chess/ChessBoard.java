@@ -279,6 +279,14 @@ public class ChessBoard {
         highlights.clear();
     }
 
+    public Hashtable<ChessPosition, ChessColor.Highlight> getHighlights() {
+        return highlights;
+    }
+
+    public ChessColor.Highlight getHighlight(ChessPosition position) {
+        return highlights.get(position);
+    }
+
     @Override
     public String toString() {
         return positionFenString();
