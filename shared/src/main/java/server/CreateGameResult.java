@@ -1,4 +1,4 @@
-package serverfacade;
+package server;
 
 public class CreateGameResult {
 }

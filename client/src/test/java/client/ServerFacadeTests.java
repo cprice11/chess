@@ -5,13 +5,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import server.Server;
-import serverfacade.ServerFacade;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
-    private static ServerFacade facade;
+    private static Server facade;
 
     @BeforeAll
     public static void init() {
