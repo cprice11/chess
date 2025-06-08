@@ -70,10 +70,11 @@ public class ConsolePrinter {
         for (String row : rows) {
             System.out.println(row);
         }
+        System.out.println("UI");
     }
 
     private void setGameStateStrings() {
-        ChessColor titleColor = theme;
+        ChessColor titleColor = theme.lightText();
         String titleText;
         if (game.isInCheckmate()) {
             titleColor.primaryHighlight();
@@ -167,7 +168,7 @@ public class ConsolePrinter {
     }
 
     private void setRows() {
-        String backgroundColor = theme.noSquare().noHighlight().toString();
+        String backgroundColor = theme.noSquare().noHighlight().lightText().toString();
         Arrays.fill(rows, backgroundColor + "   ");
         rows[1] = rows[1] + gameState + backgroundColor;
         for (int i = 0; i < 10; i++) {
@@ -198,7 +199,7 @@ public class ConsolePrinter {
             for (int file = bottomLeft; file <= 8 && file >= 1; file += fileIteration) {
                 rowString.append(getBoardSquare(rank, file));
             }
-            rowString.append(theme.noHighlight().noSquare());
+            rowString.append(theme.noHighlight().noSquare().lightText());
             rowString.append(rowLabel);
             boardRows[row + 1] = rowString.toString();
         }
@@ -224,7 +225,7 @@ public class ConsolePrinter {
             case SECONDARY -> squareColor.secondaryHighlight();
             case TERNARY -> squareColor.ternaryHighlight();
             case ERROR -> squareColor.errorHighlight();
-            case null -> squareColor.noHighlight();
+            case null -> squareColor;
         };
         square.append(squareColor);
         String pieceCharacter = piece == null ? "   " : " " + pieceCharacters.get(piece) + " ";

@@ -1,8 +1,8 @@
 package ui;
 
 import chess.ChessColor;
-import client.ResponseException;
 import datamodels.UserData;
+import server.ResponseException;
 import server.ServerFacade;
 
 import java.io.Console;
@@ -62,7 +62,7 @@ public class PreLogin implements Client {
             repl.setAuthToken(server.loginUser(username, password));
             return "postLogin";
         } catch (ResponseException e) {
-            System.out.println(color.errorText().toString() + e.StatusCode());
+            System.out.println(color.errorText().toString() + e.statusCode());
             System.out.println(color.errorText() + e.getMessage() + color.getResetString());
         }
         return "";
@@ -82,7 +82,7 @@ public class PreLogin implements Client {
             String confirmPassword = getPassword("Confirm password");
             if (!Objects.equals(confirmPassword, password)) {
                 System.out.println("Passwords do not match");
-                return null;
+                return "";
             }
             email = getLine("E-mail");
         }
@@ -91,18 +91,14 @@ public class PreLogin implements Client {
             repl.setAuthToken(authToken);
             return "postLogin";
         } catch (ResponseException e) {
-            if (e.StatusCode() == 403) {
+            if (e.statusCode() == 403) {
                 System.out.println(color.errorText() + "Username is already taken.");
             } else {
-                System.out.println(color.errorText().toString() + e.StatusCode());
+                System.out.println(color.errorText().toString() + e.statusCode());
                 System.out.println(color.errorText().toString() + e.getMessage() + color.getResetString());
             }
         }
         return "";
-    }
-
-    private void printPrompt() {
-        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_BLUE + ">>> " + EscapeSequences.RESET_TEXT_COLOR);
     }
 
     private String getPassword(String prompt) {
@@ -111,7 +107,7 @@ public class PreLogin implements Client {
         //The password should be hidden when compiled to jar.
         Scanner scanner = new Scanner(System.in);
         Console console = System.console();
-        String password = "";
+        String password;
         if (console == null) {
             password = scanner.nextLine();
         } else {

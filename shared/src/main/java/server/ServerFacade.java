@@ -1,7 +1,6 @@
 package server;
 
 import chess.ChessGame;
-import client.ResponseException;
 import com.google.gson.Gson;
 import datamodels.GameSummary;
 import datamodels.UserData;
