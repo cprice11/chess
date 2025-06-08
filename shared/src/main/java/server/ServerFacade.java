@@ -2,6 +2,7 @@ package server;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import datamodels.GameSummary;
 import datamodels.UserData;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Hashtable;
 
 public class ServerFacade {
 
@@ -20,33 +23,48 @@ public class ServerFacade {
         this.serverUrl = serverUrl;
     }
 
+    public void clear() {
+        makeRequest("DELETE", "/db", null, null, null);
+    }
+
     public String registerUser(UserData user) {
-        RegisterResult result = makeRequest("POST", "/user", user, RegisterResult.class);
+        RegisterResult result = makeRequest("POST", "/user", user, null, RegisterResult.class);
         return result.authToken();
     }
 
-    public LoginResult loginUser(String username, String password) {
+    public String loginUser(String username, String password) {
         record loginRequest(String username, String password) {
         }
-        ;
         loginRequest request = new loginRequest(username, password);
-        return makeRequest("POST", "/session", request, LoginResult.class);
+        LoginResult result = makeRequest("POST", "/session", request, null, LoginResult.class);
+        return result.authToken();
     }
 
-    public LogoutResult logoutUser(String authToken) {
-        return makeRequest("DELETE", "/session", authToken, LogoutResult.class);
+    public void logoutUser(String authToken) {
+        Hashtable<String, String> headers = new Hashtable<>();
+        headers.put("authorization", authToken);
+        makeRequest("DELETE", "/session", authToken, headers, LogoutResult.class);
     }
 
-    public ListGamesResult listGames(String authToken) {
-        return makeRequest("GET", "/game", authToken, ListGamesResult.class);
-    }
-
-    public CreateGameResult createGame(String gameName, String authToken) {
-        record CreateGameRequest(String gameName, String authToken) {
+    public Collection<GameSummary> listGames(String authToken) {
+        Hashtable<String, String> headers = new Hashtable<>();
+        headers.put("authorization", authToken);
+        record ListGamesResult(Collection<GameSummary> games) {
         }
         ;
-        CreateGameRequest request = new CreateGameRequest(gameName, authToken);
-        return makeRequest("GET", "/game", request, CreateGameResult.class);
+        ListGamesResult result = makeRequest("GET", "/game", null, headers, ListGamesResult.class);
+        Collection<GameSummary> games = result.games();
+        return games;
+    }
+
+    public int createGame(String gameName, String authToken) {
+        record CreateGameRequest(String gameName) {
+        }
+        Hashtable<String, String> headers = new Hashtable<>();
+        headers.put("authorization", authToken);
+        CreateGameRequest request = new CreateGameRequest(gameName);
+        CreateGameResult result = makeRequest("GET", "/game", request, headers, CreateGameResult.class);
+        return result.id();
     }
 
     public JoinGameResult joinGame(String authToken, int gameID, ChessGame.TeamColor color) {
@@ -54,17 +72,20 @@ public class ServerFacade {
         }
         ;
         JoinGameRequest request = new JoinGameRequest(authToken, gameID, color);
-        return makeRequest("PUT", "/game", request, JoinGameResult.class);
+        return makeRequest("PUT", "/game", request, null, JoinGameResult.class);
 
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(
+            String method, String path, Object request, Hashtable<String, String> headers, Class<T> responseClass
+    ) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-//            writeHeader(request);
+            headers = headers == null ? new Hashtable<>() : headers;
+            headers.forEach(http::setRequestProperty);
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
@@ -96,7 +117,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw new RuntimeException("Not implemented");
+                    throw new RuntimeException(respErr.toString());
 //                    throw ResponseException.fromJson(respErr);
                 }
             }

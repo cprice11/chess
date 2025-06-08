@@ -1,4 +1,4 @@
 package server;
 
-public class LoginResult {
+public record LoginResult(String authToken) {
 }

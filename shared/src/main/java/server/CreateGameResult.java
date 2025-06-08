@@ -1,4 +1,4 @@
 package server;
 
-public class CreateGameResult {
-}
+public record CreateGameResult(int id) {
+};

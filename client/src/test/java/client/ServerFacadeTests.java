@@ -1,18 +1,21 @@
 package client;
 
+import datamodels.GameSummary;
 import datamodels.UserData;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
 
+import java.util.Collection;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade facade;
+    private static String authToken;
+    private UserData user = new UserData("username", "pass1234", "user@email");
+    private static int gameId = 0;
 
     @BeforeAll
     public static void init() {
@@ -21,6 +24,7 @@ public class ServerFacadeTests {
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:" + port);
         System.out.println("running server facade");
+        facade.clear();
     }
 
     @AfterAll
@@ -28,35 +32,35 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @Test
     @Order(1)
-    @Test
     public void registerTest() {
-        String authToken = facade.registerUser(new UserData("username", "pass1234", "user@email"));
-        System.out.println(5);
+        authToken = facade.registerUser(user);
     }
 
+    @Test
     @Order(2)
-    @Test
     public void quitTest() {
-        throw new RuntimeException("Not implemented yet");
+        facade.logoutUser(authToken);
     }
 
+    @Test
     @Order(3)
-    @Test
     public void loginTest() {
-        throw new RuntimeException("Not implemented yet");
+        authToken = facade.loginUser(user.username(), user.password());
     }
 
+    @Test
     @Order(4)
-    @Test
     public void createGameTest() {
-        throw new RuntimeException("Not implemented yet");
+        gameId = facade.createGame("myGame", authToken);
     }
 
-    @Order(5)
     @Test
+    @Order(5)
     public void listGamesTest() {
-        throw new RuntimeException("Not implemented yet");
+        Collection<GameSummary> games = facade.listGames(authToken);
+        System.out.println(games);
     }
 
     @Order(6)

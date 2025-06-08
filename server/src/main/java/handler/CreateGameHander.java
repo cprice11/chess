@@ -12,7 +12,7 @@ public class CreateGameHander extends RequestHandler{
     private record CreateGameResponse(int gameID) {
     }
     public Object handle(Request request, Response response) {
-        System.out.println("Logging out user");
+        System.out.println("Creating game");
         String authToken = request.headers("authorization");
         CreateGameRequestBody requestBody = GSON.fromJson(request.body(), CreateGameRequestBody.class);
 
