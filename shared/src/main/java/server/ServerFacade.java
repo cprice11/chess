@@ -18,6 +18,40 @@ import java.util.Hashtable;
 public class ServerFacade {
 
     private final String serverUrl;
+    private Hashtable<String, String> auth = new Hashtable<>();
+
+    private record RegisterRequest(String username, String password, String email) {
+    }
+
+    private record RegisterResult(String authToken) {
+    }
+
+    private record LoginRequest(String username, String password) {
+    }
+
+    private record LoginResult(String authToken) {
+    }
+
+    private record LogoutRequest(String authToken) {
+    }
+
+    //    private record LogoutResult(String authToken){}
+//    private record ListGamesRequest(){}
+    private record ListGamesResult(Collection<GameSummary> games) {
+    }
+
+    private record CreateGameRequest(String gameName) {
+    }
+
+    private record CreateGameResult(int id) {
+    }
+
+    private record JoinGameRequest(int gameID, ChessGame.TeamColor playerColor) {
+    }
+
+    //    private record JoinGameResult(int id){}
+    private record ObserveGameRequest(int gameID) {
+    }
 
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
@@ -33,47 +67,40 @@ public class ServerFacade {
     }
 
     public String loginUser(String username, String password) {
-        record loginRequest(String username, String password) {
-        }
-        loginRequest request = new loginRequest(username, password);
+        LoginRequest request = new LoginRequest(username, password);
         LoginResult result = makeRequest("POST", "/session", request, null, LoginResult.class);
         return result.authToken();
     }
 
     public void logoutUser(String authToken) {
-        Hashtable<String, String> headers = new Hashtable<>();
-        headers.put("authorization", authToken);
-        makeRequest("DELETE", "/session", authToken, headers, LogoutResult.class);
+        auth.put("authorization", authToken);
+        makeRequest("DELETE", "/session", authToken, auth, null);
     }
 
     public Collection<GameSummary> listGames(String authToken) {
-        Hashtable<String, String> headers = new Hashtable<>();
-        headers.put("authorization", authToken);
-        record ListGamesResult(Collection<GameSummary> games) {
-        }
-        ;
-        ListGamesResult result = makeRequest("GET", "/game", null, headers, ListGamesResult.class);
-        Collection<GameSummary> games = result.games();
-        return games;
+        auth.put("authorization", authToken);
+        ListGamesResult result = makeRequest("GET", "/game", null, auth, ListGamesResult.class);
+        return result.games();
     }
 
     public int createGame(String gameName, String authToken) {
-        record CreateGameRequest(String gameName) {
-        }
-        Hashtable<String, String> headers = new Hashtable<>();
-        headers.put("authorization", authToken);
+        auth.put("authorization", authToken);
         CreateGameRequest request = new CreateGameRequest(gameName);
-        CreateGameResult result = makeRequest("GET", "/game", request, headers, CreateGameResult.class);
+        CreateGameResult result = makeRequest("GET", "/game", request, auth, CreateGameResult.class);
         return result.id();
     }
 
-    public JoinGameResult joinGame(String authToken, int gameID, ChessGame.TeamColor color) {
-        record JoinGameRequest(String authToken, int gameID, ChessGame.TeamColor color) {
-        }
-        ;
-        JoinGameRequest request = new JoinGameRequest(authToken, gameID, color);
-        return makeRequest("PUT", "/game", request, null, JoinGameResult.class);
+    public void joinGame(String authToken, int gameID, ChessGame.TeamColor color) {
+        auth.put("authorization", authToken);
+        JoinGameRequest request = new JoinGameRequest(gameID, color);
+        makeRequest("PUT", "/game", request, auth, null);
+    }
 
+    public void observeGame(String authToken, int gameID) {
+        auth.put("authorization", authToken);
+        ObserveGameRequest request = new ObserveGameRequest(gameID);
+        throw new RuntimeException("Not implemented yet");
+//        makeRequest("PUT", "/game", request, auth, null);
     }
 
     private <T> T makeRequest(

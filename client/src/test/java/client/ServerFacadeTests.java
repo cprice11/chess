@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import datamodels.GameSummary;
 import datamodels.UserData;
 import org.junit.jupiter.api.*;
@@ -13,9 +14,12 @@ public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade facade;
-    private static String authToken;
-    private UserData user = new UserData("username", "pass1234", "user@email");
+    private static String userOauthToken;
+    private static String user1authToken;
+    private UserData user0 = new UserData("username", "pass1234", "user0@email");
+    private UserData user1 = new UserData("othername", "pass1234", "user1@email");
     private static int gameId = 0;
+    private static Collection<GameSummary> games;
 
     @BeforeAll
     public static void init() {
@@ -35,49 +39,46 @@ public class ServerFacadeTests {
     @Test
     @Order(1)
     public void registerTest() {
-        authToken = facade.registerUser(user);
+        userOauthToken = facade.registerUser(user0);
+        user1authToken = facade.registerUser(user1);
     }
 
     @Test
     @Order(2)
     public void quitTest() {
-        facade.logoutUser(authToken);
+        facade.logoutUser(userOauthToken);
     }
 
     @Test
     @Order(3)
     public void loginTest() {
-        authToken = facade.loginUser(user.username(), user.password());
+        userOauthToken = facade.loginUser(user0.username(), user0.password());
     }
 
     @Test
     @Order(4)
     public void createGameTest() {
-        gameId = facade.createGame("myGame", authToken);
+        gameId = facade.createGame("zero's Game", userOauthToken);
+        gameId = facade.createGame("another Game", user1authToken);
     }
 
     @Test
     @Order(5)
     public void listGamesTest() {
-        Collection<GameSummary> games = facade.listGames(authToken);
-        System.out.println(games);
+        games = facade.listGames(userOauthToken);
     }
 
+    @Test
     @Order(6)
-    @Test
     public void joinGameTest() {
-        throw new RuntimeException("Not implemented yet");
+        int gameID = games.iterator().next().gameID();
+        facade.joinGame(userOauthToken, gameID, ChessGame.TeamColor.WHITE);
+        facade.joinGame(user1authToken, gameID, ChessGame.TeamColor.BLACK);
     }
 
+    @Test
     @Order(7)
-    @Test
     public void observeGameTest() {
-        throw new RuntimeException("Not implemented yet");
-    }
-
-    @Order(8)
-    @Test
-    public void logoutTest() {
         throw new RuntimeException("Not implemented yet");
     }
 
