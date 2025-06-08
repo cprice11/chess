@@ -2,8 +2,8 @@ package ui;
 
 import chess.ChessColor;
 import datamodels.UserData;
-import server.ResponseException;
-import server.ServerFacade;
+import serverfacade.ResponseException;
+import serverfacade.ServerFacade;
 
 import java.io.Console;
 import java.util.Arrays;
@@ -23,11 +23,6 @@ public class PreLogin implements Client {
 
     public PreLogin(String serverUrl, Repl repl) {
         server = new ServerFacade(serverUrl);
-//        try {
-//            server.clear();
-//        } catch (ResponseException e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
         this.repl = repl;
     }
 

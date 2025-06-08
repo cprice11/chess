@@ -1,4 +1,4 @@
-package server;
+package serverfacade;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
@@ -18,7 +18,7 @@ import java.util.Hashtable;
 public class ServerFacade {
 
     private final String serverUrl;
-    private Hashtable<String, String> auth = new Hashtable<>();
+    private final Hashtable<String, String> auth = new Hashtable<>();
 
     private record RegisterRequest(String username, String password, String email) {
     }
@@ -35,8 +35,6 @@ public class ServerFacade {
     private record LogoutRequest(String authToken) {
     }
 
-    //    private record LogoutResult(String authToken){}
-//    private record ListGamesRequest(){}
     private record ListGamesResult(Collection<GameSummary> games) {
     }
 
@@ -49,7 +47,6 @@ public class ServerFacade {
     private record JoinGameRequest(int gameID, ChessGame.TeamColor playerColor) {
     }
 
-    //    private record JoinGameResult(int id){}
     private record ObserveGameRequest(int gameID) {
     }
 
@@ -130,10 +127,6 @@ public class ServerFacade {
                 reqBody.write(reqData.getBytes());
             }
         }
-    }
-
-    private static void writeHeader(HttpURLConnection http) {
-        String header = http.getHeaderField("authorization");
     }
 
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {

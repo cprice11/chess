@@ -2,9 +2,9 @@ package ui;
 
 import chess.ChessColor;
 import chess.ChessGame;
-import client.ResponseException;
 import datamodels.GameSummary;
-import server.ServerFacade;
+import serverfacade.ResponseException;
+import serverfacade.ServerFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class PostLogin implements Client {
             case "j", "join" -> returnVal = join(params);
             case "o", "observe" -> returnVal = observe(params);
             default -> System.out.println(help());
-        };
+        }
         return returnVal;
     }
 
@@ -104,25 +104,22 @@ public class PostLogin implements Client {
             longestBlack = Math.max(nextBlack, longestBlack);
             longestWhite = Math.max(nextWhite, longestWhite);
         }
-        StringBuilder topRow = new StringBuilder();
         int contentWidth = longestID + longestGame + longestBlack + longestWhite + 11;
-        topRow.append(tableColor).append(" ╭");
-        topRow.append("─".repeat(Math.max(0, contentWidth)));
-        topRow.append("╮");
-        rows.add(topRow.toString());
-        StringBuilder title = new StringBuilder();
-        title.append(tableColor).append(" │");
-        title.append(tableContentsColor).append(String.format("%-" + contentWidth + "s", " Games "));
-        title.append(tableColor).append("│");
-        rows.add(title.toString());
-        StringBuilder spacerRow = new StringBuilder();
-        spacerRow.append(tableColor);
-        spacerRow.append(" ├─");
-        spacerRow.append(String.format("%-" + longestID + "s", "")).append("─┬─");
-        spacerRow.append(String.format("%-" + longestGame + "s", "")).append("─┬─");
-        spacerRow.append(String.format("%-" + longestBlack + "s", "")).append("─┬─");
-        spacerRow.append(String.format("%-" + longestWhite + "s", "")).append("─┤");
-        rows.add(spacerRow.toString());
+        String topRow = tableColor + " ╭" +
+                "─".repeat(Math.max(0, contentWidth)) +
+                "╮";
+        rows.add(topRow);
+        String title = tableColor + " │" +
+                tableContentsColor + String.format("%-" + contentWidth + "s", " Games ") +
+                tableColor + "│";
+        rows.add(title);
+        String spacerRow = tableColor +
+                " ├─" +
+                String.format("%-" + longestID + "s", "") + "─┬─" +
+                String.format("%-" + longestGame + "s", "") + "─┬─" +
+                String.format("%-" + longestBlack + "s", "") + "─┬─" +
+                String.format("%-" + longestWhite + "s", "") + "─┤";
+        rows.add(spacerRow);
         for (GameSummary game : games) {
             String id = String.valueOf(game.gameID()).formatted("%" + longestID + "s");
             String name = String.format("%-" + longestGame + "s", game.gameName());
@@ -130,15 +127,14 @@ public class PostLogin implements Client {
             String whiteName = game.whiteUsername() == null ? "-" : game.whiteUsername();
             String black = String.format("%-" + longestBlack + "s", blackName);
             String white = String.format("%-" + longestWhite + "s", whiteName);
-            StringBuilder gameRow = new StringBuilder();
-            gameRow.append(tableColor + " │ ");
-            gameRow.append(tableContentsColor + id + tableColor + " │ ");
-            gameRow.append(tableContentsColor + name + tableColor + " │ ");
-            gameRow.append(tableContentsColor + black + tableColor + " │ ");
-            gameRow.append(tableContentsColor + white + tableColor + " │ ");
-            rows.add(gameRow.toString());
+            String gameRow = tableColor + " │ " + tableContentsColor +
+                    id + tableColor + " │ " +
+                    tableContentsColor + name + tableColor + " │ " +
+                    tableContentsColor + black + tableColor + " │ " +
+                    tableContentsColor + white + tableColor + " │ ";
+            rows.add(gameRow);
         }
-        rows.forEach((String row) -> System.out.println(row));
+        rows.forEach(System.out::println);
     }
 
     private String join(String[] params) {

@@ -4,9 +4,9 @@ import chess.ChessGame;
 import datamodels.GameSummary;
 import datamodels.UserData;
 import org.junit.jupiter.api.*;
-import server.ResponseException;
 import server.Server;
-import server.ServerFacade;
+import serverfacade.ResponseException;
+import serverfacade.ServerFacade;
 
 import java.util.Collection;
 import java.util.Iterator;
