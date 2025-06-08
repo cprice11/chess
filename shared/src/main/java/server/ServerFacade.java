@@ -101,14 +101,6 @@ public class ServerFacade {
         makeRequest("PUT", "/game", request, auth, null);
     }
 
-    public void observeGame(String authToken, int gameID) throws ResponseException {
-        authToken = authToken == null ? "" : authToken;
-        auth.put("authorization", authToken);
-        ObserveGameRequest request = new ObserveGameRequest(gameID);
-        throw new RuntimeException("Not implemented yet");
-//        makeRequest("PUT", "/game", request, auth, null);
-    }
-
     private <T> T makeRequest(
             String method, String path, Object request, Hashtable<String, String> headers, Class<T> responseClass
     ) throws ResponseException {

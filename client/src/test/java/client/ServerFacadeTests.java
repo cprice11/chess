@@ -107,12 +107,6 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @Order(7)
-    public void observeGameTest() {
-        throw new RuntimeException("Not implemented yet");
-    }
-
-    @Test
     @Order(8)
     public void negativeRegisterTest() {
         Assertions.assertThrows(client.ResponseException.class, () -> facade.registerUser(null));
@@ -166,10 +160,5 @@ public class ServerFacadeTests {
         Assertions.assertThrows(client.ResponseException.class, () -> facade.joinGame(userAAuthToken, emptyGame, null));
         Assertions.assertThrows(client.ResponseException.class, () -> facade.joinGame(userCAuthToken, emptyGame, ChessGame.TeamColor.WHITE));
         Assertions.assertThrows(client.ResponseException.class, () -> facade.joinGame(userAAuthToken, fullGame, ChessGame.TeamColor.WHITE));
-    }
-
-    @Test
-    public void negativeObserveGameTest() {
-        throw new RuntimeException("Not implemented yet");
     }
 }
