@@ -82,7 +82,7 @@ public class PreLogin implements Client {
             String confirmPassword = getPassword("Confirm password");
             if (!Objects.equals(confirmPassword, password)) {
                 System.out.println("Passwords do not match");
-                return null;
+                return "";
             }
             email = getLine("E-mail");
         }

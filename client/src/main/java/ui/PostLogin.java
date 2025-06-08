@@ -36,7 +36,7 @@ public class PostLogin implements Client {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         String returnVal = "";
         switch (cmd) {
-            case "q", "quit" -> returnVal = "";
+            case "q", "quit" -> returnVal = "preLogin";
             case "c", "create" -> create(params);
             case "l", "list" -> list();
             case "j", "join" -> returnVal = join(params);

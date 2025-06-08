@@ -238,7 +238,9 @@ public class ChessColor {
             return "";
         } else if (foreground == null) {
             return "\u001B[" + backgroundString() + "m";
+        } else if (background == null) {
+            return "\u001B[" + foregroundString() + "m";
         }
-        return "\u001B[" + foregroundString() + "m";
+        return "\u001B[" + foregroundString() + ";" + backgroundString() + "m";
     }
 }
