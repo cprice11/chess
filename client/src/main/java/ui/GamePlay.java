@@ -32,6 +32,8 @@ public class GamePlay implements Client {
                 switchView();
             case "q", "quit":
                 returnVal = "l";
+            case "hide":
+                hide();
             default:
                 System.out.println(help());
         }
@@ -47,6 +49,10 @@ public class GamePlay implements Client {
             printer.fromWhite();
         }
         printer.print();
+    }
+
+    private void hide() {
+        printer.hideLabels();
     }
 
     public String help() {
