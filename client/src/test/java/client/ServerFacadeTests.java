@@ -19,9 +19,9 @@ public class ServerFacadeTests {
     private static String userAAuthToken;
     private static String userBAuthToken;
     private static String userCAuthToken;
-    private static final UserData userA = new UserData("username", "pass1234", "user0@email");
-    private static final UserData userB = new UserData("othername", "pass1234", "user1@email");
-    private static final UserData userC = new UserData("problemUser", "pass1234", "problem@email");
+    private static final UserData USER_A = new UserData("username", "pass1234", "user0@email");
+    private static final UserData USER_B = new UserData("othername", "pass1234", "user1@email");
+    private static final UserData USER_C = new UserData("problemUser", "pass1234", "problem@email");
     private static Collection<GameSummary> games;
 
     @BeforeAll
@@ -47,8 +47,8 @@ public class ServerFacadeTests {
     @Order(1)
     public void registerTest() {
         try {
-            userAAuthToken = facade.registerUser(userA);
-            userBAuthToken = facade.registerUser(userB);
+            userAAuthToken = facade.registerUser(USER_A);
+            userBAuthToken = facade.registerUser(USER_B);
         } catch (ResponseException e) {
             Assertions.fail(e.statusCode() + e.getMessage());
         }
@@ -68,7 +68,7 @@ public class ServerFacadeTests {
     @Order(3)
     public void loginTest() {
         try {
-            userAAuthToken = facade.loginUser(userA.username(), userA.password());
+            userAAuthToken = facade.loginUser(USER_A.username(), USER_A.password());
         } catch (ResponseException e) {
             Assertions.fail(e.statusCode() + e.getMessage());
         }
@@ -112,18 +112,18 @@ public class ServerFacadeTests {
     public void negativeRegisterTest() {
         Assertions.assertThrows(ResponseException.class, () -> facade.registerUser(null));
         try {
-            userCAuthToken = facade.registerUser(userC);
+            userCAuthToken = facade.registerUser(USER_C);
         } catch (ResponseException e) {
             Assertions.fail(e.statusCode() + e.getMessage());
         }
-        Assertions.assertThrows(Exception.class, () -> facade.registerUser(userC));
+        Assertions.assertThrows(Exception.class, () -> facade.registerUser(USER_C));
     }
 
     @Test
     @Order(9)
     public void negativeLoginTest() {
         Assertions.assertThrows(ResponseException.class, () -> facade.loginUser(null, null));
-        Assertions.assertThrows(ResponseException.class, () -> facade.loginUser(userC.username(), "wrongPassword"));
+        Assertions.assertThrows(ResponseException.class, () -> facade.loginUser(USER_C.username(), "wrongPassword"));
     }
 
     @Test

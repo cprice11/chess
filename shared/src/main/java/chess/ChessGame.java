@@ -62,8 +62,7 @@ public class ChessGame {
      * Enum identifying the 2 possible teams in a chess game
      */
     public enum TeamColor {
-        WHITE,
-        BLACK
+        WHITE, BLACK
     }
 
     /**
@@ -455,13 +454,10 @@ public class ChessGame {
     }
 
     public static class ChessGameDeserializer implements JsonDeserializer<ChessGame> {
-
         @Override
-        public ChessGame deserialize
-                (JsonElement jElement, Type typeOfT, JsonDeserializationContext context)
+        public ChessGame deserialize(JsonElement jElement, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
             JsonObject jObject = jElement.getAsJsonObject();
-            // Board
             JsonElement boardJson = jObject.get("board");
             JsonElement piecesJson = boardJson.getAsJsonObject().get("pieces");
             Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
@@ -473,7 +469,6 @@ public class ChessGame {
             }
             ChessBoard board = new ChessBoard();
             board.setPieces(pieces);
-            // Move History
             List<JsonElement> movesJson = jObject.get("moveHistory").getAsJsonArray().asList();
             ArrayList<ChessMove> moveHistory = new ArrayList<>();
             for (JsonElement element : movesJson) {
@@ -497,7 +492,8 @@ public class ChessGame {
             ChessPosition enPassantSquare = GSON.fromJson(jObject.get("enPassant"), ChessPosition.class);
             int halfMove = jObject.get("halfMoveClock").getAsInt();
             int fullMove = jObject.get("fullMoveNumber").getAsInt();
-            return new ChessGame(board, moveHistory, turn, whiteShort, whiteLong, blackShort, blackLong, enPassantSquare, halfMove, fullMove);
+            return new ChessGame(board, moveHistory, turn, whiteShort, whiteLong, blackShort, blackLong,
+                    enPassantSquare, halfMove, fullMove);
         }
     }
 }
