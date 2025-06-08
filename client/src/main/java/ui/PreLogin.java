@@ -36,7 +36,7 @@ public class PreLogin implements Client {
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
-            case "q", "quit" -> quit();
+            case "q", "quit" -> "quit";
             case "l", "login" -> login(params);
             case "r", "register" -> register(params);
             default -> help();
@@ -46,10 +46,6 @@ public class PreLogin implements Client {
     public String help() {
         color.secondaryText();
         return color + help + color.getResetString();
-    }
-
-    private String quit() {
-        return "quit";
     }
 
     private String login(String[] params) {
@@ -131,5 +127,4 @@ public class PreLogin implements Client {
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
     }
-
 }

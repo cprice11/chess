@@ -11,6 +11,9 @@ public class Repl {
     private String authToken;
     private ChessColor color = new ChessColor();
 
+
+    private int createdGame;
+
     public Repl(String serverUrl) {
         preLoginClient = new PreLogin(serverUrl, this);
         postLoginClient = new PostLogin(serverUrl, this);
@@ -28,7 +31,7 @@ public class Repl {
             String line = scanner.nextLine();
             try {
                 result = currentClient.eval(line);
-                System.out.print(result);
+                System.out.println(result);
                 currentClient = switch (result) {
                     case null -> currentClient;
                     case "preLogin" -> preLoginClient;
@@ -46,6 +49,18 @@ public class Repl {
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public int getCreatedGame() {
+        return createdGame;
+    }
+
+    public void setCreatedGame(int createdGame) {
+        this.createdGame = createdGame;
     }
 
     private void printPrompt() {
