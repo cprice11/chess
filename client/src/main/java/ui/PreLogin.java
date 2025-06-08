@@ -23,11 +23,6 @@ public class PreLogin implements Client {
 
     public PreLogin(String serverUrl, Repl repl) {
         server = new ServerFacade(serverUrl);
-//        try {
-//            server.clear();
-//        } catch (ResponseException e) {
-//            throw new RuntimeException(e.getMessage());
-//        }
         this.repl = repl;
     }
 
