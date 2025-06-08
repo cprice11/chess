@@ -59,12 +59,11 @@ public class PreLogin implements Client {
             password = getPassword(null);
         }
         try {
-            System.out.println("username: " + username);
-            System.out.println("password: " + password);
-            return server.loginUser(username, password);
+            repl.setAuthToken(server.loginUser(username, password));
+            return "postLogin";
         } catch (ResponseException e) {
-            System.out.println(e.StatusCode());
-            System.out.println(e.getMessage());
+            System.out.println(color.errorText().toString() + e.StatusCode());
+            System.out.println(color.errorText() + e.getMessage() + color.getResetString());
         }
         return "";
     }
@@ -108,7 +107,7 @@ public class PreLogin implements Client {
 
     private String getPassword(String prompt) {
         prompt = prompt == null ? "Password" : prompt;
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + prompt + ": " + EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print(color.ternaryText() + prompt + ": " + color.getResetString());
         //The password should be hidden when compiled to jar.
         Scanner scanner = new Scanner(System.in);
         Console console = System.console();
@@ -123,7 +122,7 @@ public class PreLogin implements Client {
 
     private String getLine(String prompt) {
         prompt = prompt == null ? "> " : prompt + ": ";
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + prompt + EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print(color.ternaryText() + prompt + color.getResetString());
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
     }

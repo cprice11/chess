@@ -10,7 +10,15 @@ public class Repl {
     private final Client gamePlayclient;
     private String authToken;
     private ChessColor color = new ChessColor();
+    private int currentGame;
 
+    public int getCurrentGame() {
+        return currentGame;
+    }
+
+    public void setCurrentGame(int currentGame) {
+        this.currentGame = currentGame;
+    }
 
     private int createdGame;
 
@@ -31,14 +39,16 @@ public class Repl {
             String line = scanner.nextLine();
             try {
                 result = currentClient.eval(line);
-                System.out.println(result);
-                currentClient = switch (result) {
-                    case null -> currentClient;
+                Client newClient = switch (result) {
                     case "preLogin" -> preLoginClient;
                     case "postLogin" -> postLoginClient;
                     case "gamePlay" -> gamePlayclient;
                     default -> currentClient;
                 };
+                if (newClient != currentClient) {
+                    currentClient = newClient;
+                    System.out.println(currentClient.help());
+                }
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
