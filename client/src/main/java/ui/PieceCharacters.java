@@ -6,7 +6,7 @@ import chess.ChessPiece;
 import java.util.Hashtable;
 
 public class PieceCharacters {
-    public static final Hashtable<ChessPiece, String> solidSymbols = new Hashtable<>() {
+    public static final Hashtable<ChessPiece, String> SOLID_SYMBOLS = new Hashtable<>() {
         {
             put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING), "\uDB82\uDC57");
             put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN), "\uDB82\uDC5A");
@@ -24,7 +24,7 @@ public class PieceCharacters {
             put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.EN_PASSANT), " ");
         }
     };
-    public static final Hashtable<ChessPiece, String> characters = new Hashtable<>() {
+    public static final Hashtable<ChessPiece, String> LETTER_SYMBOLS = new Hashtable<>() {
         {
             put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING), "K");
             put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN), "Q");

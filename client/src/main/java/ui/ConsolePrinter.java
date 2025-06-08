@@ -15,7 +15,7 @@ public class ConsolePrinter {
     private final String[] boardRows = new String[10];
     private ChessGame.TeamColor teamOrientation = ChessGame.TeamColor.WHITE;
     private ChessColor theme = new ChessColor();
-    private Hashtable<ChessPiece, String> pieceCharacters = PieceCharacters.solidSymbols;
+    private Hashtable<ChessPiece, String> pieceCharacters = PieceCharacters.SOLID_SYMBOLS;
     private boolean showLabels = true;
     private final String[] rows = new String[14];
 
