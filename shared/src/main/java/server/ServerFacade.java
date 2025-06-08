@@ -142,10 +142,9 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw ResponseException.fromJson(respErr);
+                    throw ResponseException.fromJson(status, respErr);
                 }
             }
-
             throw new ResponseException(status, "other failure: " + status);
         }
     }

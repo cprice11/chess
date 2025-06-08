@@ -1,11 +1,15 @@
 package ui;
 
+import chess.ChessColor;
+
 import java.util.Scanner;
 
 public class Repl {
     private final Client preLoginClient;
     private final Client postLoginClient;
     private final Client gamePlayclient;
+    private String authToken;
+    private ChessColor color = new ChessColor();
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLogin(serverUrl, this);
@@ -15,8 +19,7 @@ public class Repl {
 
     public void run() {
         Client currentClient = preLoginClient;
-        System.out.println("\uD83D\uDC36 Chess client");
-        System.out.print(preLoginClient.help());
+        System.out.print(currentClient.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -25,14 +28,14 @@ public class Repl {
             String line = scanner.nextLine();
             try {
                 result = currentClient.eval(line);
-                System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result + EscapeSequences.RESET_TEXT_COLOR);
+                System.out.print(result);
                 currentClient = switch (result) {
+                    case null -> currentClient;
                     case "preLogin" -> preLoginClient;
                     case "postLogin" -> postLoginClient;
                     case "gamePlay" -> gamePlayclient;
                     default -> currentClient;
                 };
-
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -41,7 +44,11 @@ public class Repl {
         System.out.println();
     }
 
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
     private void printPrompt() {
-        System.out.print("\n" + EscapeSequences.SET_TEXT_COLOR_BLUE + ">>> " + EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print(color.secondaryText() + ">>> " + color.getResetString());
     }
 }

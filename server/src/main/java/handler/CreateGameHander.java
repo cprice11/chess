@@ -16,7 +16,7 @@ public class CreateGameHander extends RequestHandler{
         String authToken = request.headers("authorization");
         CreateGameRequestBody requestBody = GSON.fromJson(request.body(), CreateGameRequestBody.class);
 
-        if (authToken == null || requestBody.gameName == null) {
+        if (authToken == null || requestBody.gameName == null || authToken.isEmpty() || requestBody.gameName.isEmpty()) {
             return error(response, 400, "Error: bad request");
         }
         int gameID;

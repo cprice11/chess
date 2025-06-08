@@ -13,7 +13,9 @@ public class RegisterUserHandler extends RequestHandler {
         UserData user = GSON.fromJson(request.body(), UserData.class);
         AuthData auth;
 
-        if (user.username() == null || user.password() == null || user.email() == null) {
+        if (user.username() == null || user.password() == null || user.email() == null ||
+                user.username().isEmpty() || user.password().isEmpty() || user.email().isEmpty()
+        ) {
             return error(response, 400, "Error: bad request");
         }
         try {

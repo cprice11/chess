@@ -15,8 +15,8 @@ public class ChessColor {
             Color.decode("#82CBBA"), Color.decode("#46A07C"),
             Color.decode("#4EB7B4"), Color.decode("#302D29"),
             Color.decode("#F73E2C"), Color.decode("#F73E2C"));
-    private Color foreground = palette.lightText;
-    private Color background = palette.surface;
+    private Color foreground = null;
+    private Color background = null;
     private Highlight highlight = Highlight.NONE;
     private SquareColor squareColor = SquareColor.NONE;
 
@@ -69,6 +69,27 @@ public class ChessColor {
         return this;
     }
 
+    public ChessColor primaryText() {
+        this.foreground = palette.lightPrimary;
+        return this;
+    }
+
+    public ChessColor secondaryText() {
+        this.foreground = palette.lightSecondary;
+        return this;
+    }
+
+    public ChessColor ternaryText() {
+        this.foreground = palette.lightTernary;
+        return this;
+    }
+
+    public ChessColor errorText() {
+        this.foreground = palette.lightError;
+        return this;
+    }
+
+
     // background modifiers
     public ChessColor lightSquare() {
         squareColor = SquareColor.LIGHT;
@@ -115,6 +136,11 @@ public class ChessColor {
     public ChessColor noHighlight() {
         highlight = Highlight.NONE;
         calculate();
+        return this;
+    }
+
+    public ChessColor noBackground() {
+        background = new Color(0);
         return this;
     }
 
@@ -208,6 +234,11 @@ public class ChessColor {
 
     @Override
     public String toString() {
-        return "\u001B[" + foregroundString() + ";" + backgroundString() + "m";
+        if (foreground == null && background == null) {
+            return "";
+        } else if (foreground == null) {
+            return "\u001B[" + backgroundString() + "m";
+        }
+        return "\u001B[" + foregroundString() + "m";
     }
 }
