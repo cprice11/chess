@@ -8,17 +8,19 @@ import server.Server;
 import server.ServerFacade;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade facade;
-    private static String userOauthToken;
-    private static String user1authToken;
-    private UserData user0 = new UserData("username", "pass1234", "user0@email");
-    private UserData user1 = new UserData("othername", "pass1234", "user1@email");
-    private static int gameId = 0;
+    private static String userAAuthToken;
+    private static String userBAuthToken;
+    private static String userCAuthToken;
+    private static final UserData userA = new UserData("username", "pass1234", "user0@email");
+    private static final UserData userB = new UserData("othername", "pass1234", "user1@email");
+    private static final UserData userC = new UserData("problemUser", "pass1234", "problem@email");
     private static Collection<GameSummary> games;
 
     @BeforeAll
@@ -28,7 +30,11 @@ public class ServerFacadeTests {
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:" + port);
         System.out.println("running server facade");
-        facade.clear();
+        try {
+            facade.clear();
+        } catch (client.ResponseException e) {
+            throw new RuntimeException(e.StatusCode() + e.getMessage());
+        }
     }
 
     @AfterAll
@@ -39,41 +45,65 @@ public class ServerFacadeTests {
     @Test
     @Order(1)
     public void registerTest() {
-        userOauthToken = facade.registerUser(user0);
-        user1authToken = facade.registerUser(user1);
+        try {
+            userAAuthToken = facade.registerUser(userA);
+            userBAuthToken = facade.registerUser(userB);
+        } catch (client.ResponseException e) {
+            Assertions.fail(e.StatusCode() + e.getMessage());
+        }
     }
 
     @Test
     @Order(2)
     public void quitTest() {
-        facade.logoutUser(userOauthToken);
+        try {
+            facade.logoutUser(userAAuthToken);
+        } catch (client.ResponseException e) {
+            Assertions.fail(e.StatusCode() + e.getMessage());
+        }
     }
 
     @Test
     @Order(3)
     public void loginTest() {
-        userOauthToken = facade.loginUser(user0.username(), user0.password());
+        try {
+            userAAuthToken = facade.loginUser(userA.username(), userA.password());
+        } catch (client.ResponseException e) {
+            Assertions.fail(e.StatusCode() + e.getMessage());
+        }
     }
 
     @Test
     @Order(4)
     public void createGameTest() {
-        gameId = facade.createGame("zero's Game", userOauthToken);
-        gameId = facade.createGame("another Game", user1authToken);
+        try {
+            facade.createGame("zero's Game", userAAuthToken);
+            facade.createGame("another Game", userBAuthToken);
+        } catch (client.ResponseException e) {
+            Assertions.fail(e.StatusCode() + e.getMessage());
+        }
     }
 
     @Test
     @Order(5)
     public void listGamesTest() {
-        games = facade.listGames(userOauthToken);
+        try {
+            games = facade.listGames(userAAuthToken);
+        } catch (client.ResponseException e) {
+            Assertions.fail(e.StatusCode() + e.getMessage());
+        }
     }
 
     @Test
     @Order(6)
     public void joinGameTest() {
+        try {
         int gameID = games.iterator().next().gameID();
-        facade.joinGame(userOauthToken, gameID, ChessGame.TeamColor.WHITE);
-        facade.joinGame(user1authToken, gameID, ChessGame.TeamColor.BLACK);
+            facade.joinGame(userAAuthToken, gameID, ChessGame.TeamColor.WHITE);
+            facade.joinGame(userBAuthToken, gameID, ChessGame.TeamColor.BLACK);
+        } catch (client.ResponseException e) {
+            Assertions.fail(e.StatusCode() + e.getMessage());
+        }
     }
 
     @Test
@@ -83,38 +113,59 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @Order(8)
     public void negativeRegisterTest() {
-        throw new RuntimeException("Not implemented yet");
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.registerUser(null));
+        try {
+            userCAuthToken = facade.registerUser(userC);
+        } catch (client.ResponseException e) {
+            Assertions.fail(e.StatusCode() + e.getMessage());
+        }
+        Assertions.assertThrows(Exception.class, () -> facade.registerUser(userC));
     }
 
     @Test
-    public void negativeQuitTest() {
-        throw new RuntimeException("Not implemented yet");
-    }
-
-    @Test
+    @Order(9)
     public void negativeLoginTest() {
-        throw new RuntimeException("Not implemented yet");
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.loginUser(null, null));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.loginUser(userC.username(), "wrongPassword"));
     }
 
     @Test
+    @Order(10)
     public void negativeLogoutTest() {
-        throw new RuntimeException("Not implemented yet");
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.logoutUser(null));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.logoutUser("badAuthToken"));
+        Assertions.assertDoesNotThrow(() -> facade.logoutUser(userCAuthToken));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.logoutUser(userCAuthToken));
     }
 
     @Test
+    @Order(11)
     public void negativeCreateGameTest() {
-        throw new RuntimeException("Not implemented yet");
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.createGame(null, userAAuthToken));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.createGame("someGame", null));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.createGame(null, "badAuth"));
     }
 
     @Test
+    @Order(11)
     public void negativeListGamesTest() {
-        throw new RuntimeException("Not implemented yet");
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.listGames(null));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.listGames(userCAuthToken));
     }
 
     @Test
+    @Order(12)
     public void negativeJoinGameTest() {
-        throw new RuntimeException("Not implemented yet");
+        Iterator<GameSummary> gameSummaries = games.iterator();
+        int fullGame = gameSummaries.next().gameID();
+        int emptyGame = gameSummaries.next().gameID();
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.joinGame(null, emptyGame, ChessGame.TeamColor.WHITE));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.joinGame(userAAuthToken, 0, ChessGame.TeamColor.WHITE));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.joinGame(userAAuthToken, emptyGame, null));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.joinGame(userCAuthToken, emptyGame, ChessGame.TeamColor.WHITE));
+        Assertions.assertThrows(client.ResponseException.class, () -> facade.joinGame(userAAuthToken, fullGame, ChessGame.TeamColor.WHITE));
     }
 
     @Test

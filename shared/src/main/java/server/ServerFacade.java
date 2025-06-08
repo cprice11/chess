@@ -1,6 +1,7 @@
 package server;
 
 import chess.ChessGame;
+import client.ResponseException;
 import com.google.gson.Gson;
 import datamodels.GameSummary;
 import datamodels.UserData;
@@ -57,46 +58,51 @@ public class ServerFacade {
         this.serverUrl = serverUrl;
     }
 
-    public void clear() {
+    public void clear() throws ResponseException {
         makeRequest("DELETE", "/db", null, null, null);
     }
 
-    public String registerUser(UserData user) {
+    public String registerUser(UserData user) throws ResponseException {
         RegisterResult result = makeRequest("POST", "/user", user, null, RegisterResult.class);
         return result.authToken();
     }
 
-    public String loginUser(String username, String password) {
+    public String loginUser(String username, String password) throws ResponseException {
         LoginRequest request = new LoginRequest(username, password);
         LoginResult result = makeRequest("POST", "/session", request, null, LoginResult.class);
         return result.authToken();
     }
 
-    public void logoutUser(String authToken) {
+    public void logoutUser(String authToken) throws ResponseException {
+        authToken = authToken == null ? "" : authToken;
         auth.put("authorization", authToken);
         makeRequest("DELETE", "/session", authToken, auth, null);
     }
 
-    public Collection<GameSummary> listGames(String authToken) {
+    public Collection<GameSummary> listGames(String authToken) throws ResponseException {
+        authToken = authToken == null ? "" : authToken;
         auth.put("authorization", authToken);
         ListGamesResult result = makeRequest("GET", "/game", null, auth, ListGamesResult.class);
         return result.games();
     }
 
-    public int createGame(String gameName, String authToken) {
+    public int createGame(String gameName, String authToken) throws ResponseException {
+        authToken = authToken == null ? "" : authToken;
         auth.put("authorization", authToken);
         CreateGameRequest request = new CreateGameRequest(gameName);
         CreateGameResult result = makeRequest("GET", "/game", request, auth, CreateGameResult.class);
         return result.id();
     }
 
-    public void joinGame(String authToken, int gameID, ChessGame.TeamColor color) {
+    public void joinGame(String authToken, int gameID, ChessGame.TeamColor color) throws ResponseException {
+        authToken = authToken == null ? "" : authToken;
         auth.put("authorization", authToken);
         JoinGameRequest request = new JoinGameRequest(gameID, color);
         makeRequest("PUT", "/game", request, auth, null);
     }
 
-    public void observeGame(String authToken, int gameID) {
+    public void observeGame(String authToken, int gameID) throws ResponseException {
+        authToken = authToken == null ? "" : authToken;
         auth.put("authorization", authToken);
         ObserveGameRequest request = new ObserveGameRequest(gameID);
         throw new RuntimeException("Not implemented yet");
@@ -144,8 +150,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw new RuntimeException(respErr.toString());
-//                    throw ResponseException.fromJson(respErr);
+                    throw ResponseException.fromJson(respErr);
                 }
             }
 
