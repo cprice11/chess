@@ -40,7 +40,8 @@ public class PreLogin implements Client {
 
     public String help() {
         color.secondaryText();
-        return color + help + color.getResetString();
+        System.out.println(color + help + color.getResetString());
+        return "";
     }
 
     private String login(String[] params) {
@@ -57,8 +58,7 @@ public class PreLogin implements Client {
             repl.setAuthToken(server.loginUser(username, password));
             return "postLogin";
         } catch (ResponseException e) {
-            System.out.println(color.errorText().toString() + e.statusCode());
-            System.out.println(color.errorText() + e.getMessage() + color.getResetString());
+            error(e.getMessage());
         }
         return "";
     }
@@ -87,10 +87,9 @@ public class PreLogin implements Client {
             return "postLogin";
         } catch (ResponseException e) {
             if (e.statusCode() == 403) {
-                System.out.println(color.errorText() + "Username is already taken.");
+                error("Username is already taken.");
             } else {
-                System.out.println(color.errorText().toString() + e.statusCode());
-                System.out.println(color.errorText().toString() + e.getMessage() + color.getResetString());
+                error(e.getMessage());
             }
         }
         return "";
@@ -109,6 +108,10 @@ public class PreLogin implements Client {
             password = new String(console.readPassword());
         }
         return password;
+    }
+
+    private void error(String message) {
+        System.out.println(color.errorText().toString() + message + color.getResetString());
     }
 
     private String getLine(String prompt) {

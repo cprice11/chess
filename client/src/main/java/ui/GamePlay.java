@@ -10,7 +10,6 @@ public class GamePlay implements Client {
     private static final String HELP = "I'm the gameplay help message.";
     ChessGame game = new ChessGame();
     ChessGame.TeamColor teamColor;
-    ConsolePrinter printer = new ConsolePrinter(game);
     ChessColor color = new ChessColor();
     private final ServerFacade server;
     private final Repl repl;
@@ -21,8 +20,8 @@ public class GamePlay implements Client {
     }
 
     public String eval(String input) {
-        printer.showLabels();
-        printer.print();
+        repl.printer.showLabels();
+        repl.printer.print();
         var tokens = input.toLowerCase().split(" ");
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -31,7 +30,7 @@ public class GamePlay implements Client {
             case "s", "switch":
                 switchView();
             case "q", "quit":
-                returnVal = "l";
+                returnVal = "postLogin";
             case "hide":
                 hide();
             default:
@@ -43,16 +42,16 @@ public class GamePlay implements Client {
     public void switchView() {
         if (teamColor == ChessGame.TeamColor.WHITE) {
             teamColor = ChessGame.TeamColor.BLACK;
-            printer.fromBlack();
+            repl.printer.fromBlack();
         } else {
             teamColor = ChessGame.TeamColor.WHITE;
-            printer.fromWhite();
+            repl.printer.fromWhite();
         }
-        printer.print();
+        repl.printer.print();
     }
 
     private void hide() {
-        printer.hideLabels();
+        repl.printer.hideLabels();
     }
 
     public String help() {

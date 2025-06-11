@@ -141,10 +141,20 @@ public class PostLogin implements Client {
         int gameIndex;
         String teamColor;
         if (params.length == 2) {
-            gameIndex = Integer.parseInt(params[0]);
+            try {
+              gameIndex = Integer.parseInt(params[0]);
+            } catch (NumberFormatException e) {
+                error("Cannot understand game number");
+                return "";
+            }
             teamColor = params[1];
         } else {
-            gameIndex = Integer.parseInt(getLine("Game number"));
+            try {
+                gameIndex = Integer.parseInt(getLine("Game number"));
+            } catch (NumberFormatException e) {
+                error("Cannot understand game number");
+                return "";
+            }
             teamColor = getLine("Team Color (w/b)");
         }
         teamColor = teamColor.toLowerCase();
@@ -154,45 +164,59 @@ public class PostLogin implements Client {
         } else if (teamColor.equals("b") || teamColor.equals("black")) {
             team = ChessGame.TeamColor.BLACK;
         } else {
-            System.out.println(color.errorText() + "Cannot parse requested team: " + teamColor);
+            error("Cannot parse requested team: " + teamColor);
             return "";
         }
         Integer gameID = gameTable.get(gameIndex);
         if (gameID == null) {
-            System.out.println(color.errorText() + "Game " + gameIndex + " does not exist");
+            error("Game " + gameIndex + " does not exist");
             return "";
         }
         try {
             server.joinGame(repl.getAuthToken(), gameID, team);
             System.out.println("Joined game");
-            repl.setCurrentGame(gameID);
+            repl.setCurrentGameID(gameID);
+            if (team == ChessGame.TeamColor.WHITE) {
+                repl.printer.fromWhite();
+            } else {
+                repl.printer.fromBlack();
+            }
             return "gamePlay";
         } catch (ResponseException e) {
-            System.out.println(color.errorText() + e.getMessage());
+            error(e.getMessage());
             return "";
         }
     }
 
     private String observe(String[] params) {
         int gameIndex;
-        if (params.length == 1) {
-            gameIndex = Integer.parseInt(params[0]);
-        } else {
-            gameIndex = Integer.parseInt(getLine("Game number"));
+        try {
+            if (params.length == 1) {
+                gameIndex = Integer.parseInt(params[0]);
+            } else {
+                gameIndex = Integer.parseInt(getLine("Game number"));
+            }
+        } catch (NumberFormatException e) {
+            error("Cannot understand game number");
+            return "";
         }
         Integer gameID = gameTable.get(gameIndex);
         if (gameID == null) {
-            System.out.println(color.errorText() + "Game " + gameIndex + " does not exist");
+            error("Game " + gameIndex + " does not exist");
             return "";
         }
         System.out.println("Observe game");
-        repl.setCurrentGame(gameID);
+        repl.setCurrentGameID(gameID);
         return "gamePlay";
     }
 
     public String help() {
         color.secondaryText();
         return color + help + color.getResetString();
+    }
+
+    private void error(String message) {
+        System.out.println(color.errorText().toString() + message + color.getResetString());
     }
 
     private String getLine(String prompt) {

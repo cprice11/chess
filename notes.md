@@ -13,3 +13,11 @@
 ## Phase 5
 
 ## Phase 6
+
+Print on entering gameplay loop
+
+don't reprint on every input
+
+handle unexpected types
+
+default orientation

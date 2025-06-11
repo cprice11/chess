@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessColor;
+import chess.ChessGame;
 
 import java.util.Scanner;
 
@@ -10,14 +11,24 @@ public class Repl {
     private final Client gamePlayclient;
     private String authToken;
     private ChessColor color = new ChessColor();
-    private int currentGame;
+    private int currentGameID;
+    ChessGame currentGame = new ChessGame();
+    ConsolePrinter printer = new ConsolePrinter(currentGame);
 
-    public int getCurrentGame() {
+    public ChessGame getCurrentGame() {
         return currentGame;
     }
 
-    public void setCurrentGame(int currentGame) {
+    public void setCurrentGame(ChessGame currentGame) {
         this.currentGame = currentGame;
+    }
+
+    public int getCurrentGameID() {
+        return currentGameID;
+    }
+
+    public void setCurrentGameID(int currentGameID) {
+        this.currentGameID = currentGameID;
     }
 
     private int createdGame;
@@ -48,6 +59,9 @@ public class Repl {
                 if (newClient != currentClient) {
                     currentClient = newClient;
                     System.out.println(currentClient.help());
+                    if (newClient == gamePlayclient) {
+                        printer.print();
+                    }
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
