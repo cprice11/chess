@@ -16,6 +16,12 @@ public class PostLogin implements Client {
     private final Repl repl;
     private final ChessColor color = new ChessColor();
     private final Hashtable<Integer, Integer> gameTable = new Hashtable<>();
+    private int longestID = 2;
+    private int longestGame = 9;
+    private int longestBlack = 14;
+    private int longestWhite = 14;
+    private final String tableColor = new ChessColor().secondaryText().toString();
+    private final String tableContentsColor = new ChessColor().lightText().toString();
     private final String help = color.secondaryText() +
             "Enter one of the following commands:\n" +
             " - " + color.lightText() + "help\n" + color.ternaryText() +
@@ -78,22 +84,16 @@ public class PostLogin implements Client {
     }
 
     private void printAsTable(ArrayList<GameSummary> games) {
-        ChessColor tableColor = new ChessColor().secondaryText();
-        ChessColor tableContentsColor = new ChessColor().lightText();
         ArrayList<String> rows = new ArrayList<>();
         if (games.isEmpty()) {
-            rows.add(color.secondaryText() + " ╭────────────────╮");
-            rows.add(color.secondaryText() + " │ " + color.lightText() + "Games          " + color.secondaryText() + "│");
-            rows.add(color.secondaryText() + " ├────────────────┤");
-            rows.add(color.secondaryText() + " │ " + color.lightText() + "No games found " + color.secondaryText() + "│");
-            rows.add(color.secondaryText() + " ╰────────────────╯" + color.getResetString());
+            rows.add(formatRow("", "╭", '─', 16, "╮", ""));
+            rows.add(formatRow("Games", "│", ' ', 16, "│", tableContentsColor));
+            rows.add(formatRow("", "│", '─', 16, "│", ""));
+            rows.add(formatRow("No games", "│", ' ', 16, "│", color.errorText().toString()));
+            rows.add(formatRow("", "╰", '─', 16, "╯" + color.getResetString(), ""));
             rows.forEach(System.out::println);
             return;
         }
-        int longestID = 1;
-        int longestGame = 1;
-        int longestBlack = 1;
-        int longestWhite = 1;
         for (GameSummary game : games) {
             int nextID = String.valueOf(game.gameID()).length();
             int nextGame = game.gameName() == null ? 0 : game.gameName().length();
@@ -105,36 +105,50 @@ public class PostLogin implements Client {
             longestWhite = Math.max(nextWhite, longestWhite);
         }
         int contentWidth = longestID + longestGame + longestBlack + longestWhite + 11;
-        String topRow = tableColor + " ╭" +
-                "─".repeat(Math.max(0, contentWidth)) +
-                "╮";
-        rows.add(topRow);
-        String title = tableColor + " │" +
-                tableContentsColor + String.format("%-" + contentWidth + "s", " Games ") +
-                tableColor + "│";
-        rows.add(title);
-        String spacerRow = tableColor +
-                " ├─" +
-                String.format("%-" + longestID + "s", "") + "─┬─" +
-                String.format("%-" + longestGame + "s", "") + "─┬─" +
-                String.format("%-" + longestBlack + "s", "") + "─┬─" +
-                String.format("%-" + longestWhite + "s", "") + "─┤";
+        rows.add(formatRow("", "", "", "", "╭", "─", "╮", '─', true));
+        rows.add(formatRow("Games", "│", ' ', contentWidth, "│", tableContentsColor));
+        String spacerRow = formatRow("", "", "", "", "├", "┬", "┤", '─', true);
         rows.add(spacerRow);
+        rows.add(formatRow("ID", "Game Name", "Black Username", "White Username"));
+        rows.add(spacerRow.replace('┬', '┼'));
         for (GameSummary game : games) {
-            String id = String.valueOf(game.gameID()).formatted("%" + longestID + "s");
-            String name = String.format("%-" + longestGame + "s", game.gameName());
-            String blackName = game.blackUsername() == null ? "-" : game.blackUsername();
-            String whiteName = game.whiteUsername() == null ? "-" : game.whiteUsername();
-            String black = String.format("%-" + longestBlack + "s", blackName);
-            String white = String.format("%-" + longestWhite + "s", whiteName);
-            String gameRow = tableColor + " │ " + tableContentsColor +
-                    id + tableColor + " │ " +
-                    tableContentsColor + name + tableColor + " │ " +
-                    tableContentsColor + black + tableColor + " │ " +
-                    tableContentsColor + white + tableColor + " │ ";
-            rows.add(gameRow);
+            rows.add(formatRow(String.valueOf(game.gameID()), game.gameName(), game.blackUsername(), game.whiteUsername()));
         }
+        rows.add(formatRow("", "", "", "", "└", "┴", "┘", '─', true));
         rows.forEach(System.out::println);
+    }
+
+    private String formatRow(String onlyEntry, String left, char fill, int width, String right, String color) {
+        onlyEntry = onlyEntry == null ? "" : " " + onlyEntry.strip() + " ";
+        return " " + tableColor + left +
+                color + String.format("%-" + width + "s", onlyEntry).replace(' ', fill) +
+                tableColor + right;
+    }
+
+    private String formatRow(String id, String name, String black, String white) {
+        return formatRow(id, name, black, white, "|", "|", "|", ' ', false);
+    }
+
+    private String formatRow(String id, String name, String black, String white,
+                             String leftBorder, String middleBorder, String rightBorder, char fillChar, boolean monoColor) {
+        String contentColor = monoColor ? tableColor : tableContentsColor;
+        id = id == null ? "" : id;
+        name = name == null ? "" : name;
+        black = black == null ? "-" : black;
+        white = white == null ? "-" : white;
+        id = " " + id.strip() + " ";
+        name = " " + name.strip() + " ";
+        black = " " + black.strip() + " ";
+        white = " " + white.strip() + " ";
+        return " " + tableColor + leftBorder + contentColor +
+                String.format("%-" + (longestID + 2) + "s", id).replace(' ', fillChar) +
+                tableColor + middleBorder + contentColor +
+                String.format("%-" + (longestGame + 2) + "s", name).replace(' ', fillChar) +
+                tableColor + middleBorder + contentColor +
+                String.format("%-" + (longestBlack + 2) + "s", black).replace(' ', fillChar) +
+                tableColor + middleBorder + contentColor +
+                String.format("%-" + (longestWhite + 2) + "s", white).replace(' ', fillChar) +
+                tableColor + rightBorder;
     }
 
     private String join(String[] params) {
