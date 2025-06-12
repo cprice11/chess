@@ -16,8 +16,8 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -25,11 +25,11 @@ public class GameService extends Service {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
     private int gameIndex;
+    private ConnectionManager connections = new ConnectionManager();
 
     private record GameSessions(Session black, Session white, HashSet<Session> observers) {
     }
 
-    private static final HashMap<Integer, GameSessions> SESSIONS = new HashMap<>();
     private static final Gson GSON = new Gson();
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
@@ -84,7 +84,7 @@ public class GameService extends Service {
 
     // Webhook methods
     public void connectToGame(Session session, String authToken, int gameID) throws IOException {
-        AuthData auth; // TODO: Let multiple sessions from the same user connect to a game, but only let one session play.
+        AuthData auth;
         GameData game;
         try {
             auth = authDAO.getAuthByAuthToken(authToken);
@@ -95,107 +95,99 @@ public class GameService extends Service {
         }
         send(session, loadGameString(game));
 
+        ArrayList<Connection> existingConnections = connections.getConnections(gameID);
+        existingConnections = existingConnections == null ? new ArrayList<>() : existingConnections;
+        Connection black = null;
+        Connection white = null;
+        for (Connection c : existingConnections) {
+            if (c.relation == Connection.Relation.BLACK) {
+                black = c;
+            } else if (c.relation == Connection.Relation.WHITE) {
+                white = c;
+            }
+        }
+
+        String whiteUsername = game.whiteUsername();
+        String blackUsername = game.blackUsername();
         String username = auth.username();
-        String white = game.whiteUsername();
-        String black = game.blackUsername();
-        GameSessions connectedSessions = SESSIONS.get(gameID);
-        if (connectedSessions == null) {
-            Session blackSession = Objects.equals(username, black) ? session : null;
-            Session whiteSession = Objects.equals(username, white) ? session : null;
-            HashSet<Session> observers = new HashSet<>();
-            if (!Objects.equals(username, black) && !Objects.equals(username, white)) {
-                observers.add(session);
-            }
-            SESSIONS.put(gameID, new GameSessions(blackSession, whiteSession, observers));
-        }
-        connectedSessions = SESSIONS.get(gameID);
 
-        HashSet<Session> observers = connectedSessions.observers;
+        Connection.Relation relation;
         String notification = "user '" + username + "' has joined as ";
-        try (Session whiteSession = connectedSessions.white;
-             Session blackSession = connectedSessions.black) {
-
-            if ((whiteSession == null) && Objects.equals(white, username)) {
-                SESSIONS.put(gameID, new GameSessions(session, blackSession, observers));
-                notification += "white";
-            } else if (Objects.equals(black, username)) {
-                SESSIONS.put(gameID, new GameSessions(whiteSession, session, observers));
-                notification += "black";
-            } else {
-                observers.add(session);
-                SESSIONS.put(gameID, new GameSessions(whiteSession, blackSession, observers));
-                notification += "observer";
-            }
+        if (black == null || Objects.equals(blackUsername, username)) {
+            relation = Connection.Relation.BLACK;
+            notification += "black";
+        } else if (white == null || Objects.equals(whiteUsername, username)) {
+            relation = Connection.Relation.WHITE;
+            notification += "white";
+        } else {
+            relation = Connection.Relation.OBSERVER;
+            notification += "observer";
         }
+        connections.add(auth, gameID, session, relation);
         notification = notificationString(notification);
-        sendToOtherConnectedSessions(gameID, notification, session);
+        connections.broadcast(gameID, auth, notification);
     }
 
     public void makeMove(Session session, String authToken, int gameID, ChessMove move) throws IOException {
         GameData gameData;
+        AuthData authData;
         try {
-            authDAO.getAuthByAuthToken(authToken);
+            authData = authDAO.getAuthByAuthToken(authToken);
             gameData = gameDAO.getGame(gameID);
         } catch (DataAccessException e) {
             send(session, errorString("Authorization is invalid"));
             return;
         }
-        GameSessions connectedSessions = SESSIONS.get(gameID);
+        ArrayList<Connection> connectedSessions = connections.getConnections(gameID);
         ChessGame game = new ChessGame(gameData.game());
-        if ((game.getTeamTurn() == ChessGame.TeamColor.WHITE && session == connectedSessions.white) ||
-                (game.getTeamTurn() == ChessGame.TeamColor.BLACK && session == connectedSessions.black)) {
-            // Correct turn and session
+        AuthData whiteAuth = null;
+        AuthData blackAuth = null;
+        for (Connection c : connectedSessions) {
+            if (c.relation == Connection.Relation.BLACK) {
+                blackAuth = c.auth;
+            }
+            if (c.relation == Connection.Relation.WHITE) {
+                whiteAuth = c.auth;
+            }
+        }
+        ChessGame.TeamColor turn = game.getTeamTurn();
+        if ((turn == ChessGame.TeamColor.WHITE && authData == whiteAuth) ||
+                (turn == ChessGame.TeamColor.BLACK && authData == blackAuth)) {
             try {
                 game.makeMove(move);
                 GameData updatedGame = new GameData(
                         gameID, gameData.blackUsername(), gameData.whiteUsername(), gameData.gameName(), game.toDense());
                 gameDAO.updateGame(gameID, updatedGame);
                 String message = loadGameString(updatedGame);
-                sendToAllConnectedSessions(gameID, message);
+                connections.broadcast(gameID, null, message);
             } catch (InvalidMoveException e) {
                 send(session, errorString("Invalid move"));
             } catch (DataAccessException e) {
                 send(session, errorString("Couldn't update game"));
             }
-        } else if (game.getTeamTurn() == ChessGame.TeamColor.WHITE && connectedSessions.black == session) {
+        } else if (game.getTeamTurn() == ChessGame.TeamColor.WHITE && authData == blackAuth) {
             send(session, errorString("It is " + gameData.whiteUsername() + "'s turn"));
-        } else if (game.getTeamTurn() == ChessGame.TeamColor.BLACK && connectedSessions.white == session) {
+        } else if (game.getTeamTurn() == ChessGame.TeamColor.BLACK && authData == whiteAuth) {
             send(session, errorString("It is " + gameData.blackUsername() + "'s turn"));
         } else {
             send(session, errorString("Observers cannot make moves"));
         }
     }
 
-    private void sendToOtherConnectedSessions(int gameID, String message, Session session) throws IOException {
-        HashSet<Session> otherConnections = getSessions(gameID);
-        for (Session s : otherConnections) {
-            if (s != session) {
-                s.getRemote().sendString(message);
-            }
+    public void leaveGame(Session session, String authToken, int gameID) throws IOException {
+        AuthData authData;
+        try {
+            authData = authDAO.getAuthByAuthToken(authToken);
+            connections.remove(gameID, authData);
+            String message = notificationString("User '" + authData.username() + "' has left");
+            connections.broadcast(gameID, null, message);
+        } catch (DataAccessException e) {
+            send(session, errorString("Authorization is invalid"));
         }
     }
 
-    private void sendToAllConnectedSessions(int gameID, String message) throws IOException {
-        HashSet<Session> otherConnections = getSessions(gameID);
-        for (Session s : otherConnections) {
-            s.getRemote().sendString(message);
-        }
-    }
-
-    private HashSet<Session> getSessions(int gameID) {
-        GameSessions connections = SESSIONS.get(gameID);
-        HashSet<Session> otherConnections = new HashSet<>();
-        if (connections == null) {
-            return otherConnections;
-        }
-        otherConnections.add(connections.white);
-        otherConnections.add(connections.black);
-        connections.observers.removeIf((Session s) -> !s.isOpen());
-        otherConnections.addAll(connections.observers);
-        otherConnections.removeIf(Objects::isNull);
-        otherConnections.removeIf((Session s) -> !s.isOpen());
-        SESSIONS.put(gameID, new GameSessions(connections.black, connections.white, connections.observers));
-        return otherConnections;
+    public void resign(Session session, String authToken, int gameID) throws IOException {
+        // TODO must lock game
     }
 
     private String errorString(String errorMessage) {
