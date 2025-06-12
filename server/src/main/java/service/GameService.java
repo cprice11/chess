@@ -201,7 +201,7 @@ public class GameService extends Service {
             authData = authDAO.getAuthByAuthToken(authToken);
             connections.remove(gameID, authData);
             String message = notificationString("User '" + authData.username() + "' has left");
-            connections.broadcast(gameID, null, message);
+            connections.broadcast(gameID, authData, message);
         } catch (DataAccessException e) {
             send(session, errorString("Authorization is invalid"));
         }
@@ -246,6 +246,7 @@ public class GameService extends Service {
             gameDAO.updateGame(gameID, new GameData(gameID, gameData.blackUsername(), gameData.whiteUsername(), gameData.gameName(), game.toDense()));
         } catch (InvalidMoveException | DataAccessException e) {
             send(session, errorString(e.getMessage()));
+            return;
         }
         String notify = notificationString(authData.username() + " resigned");
         connections.broadcast(gameID, null, notify);
