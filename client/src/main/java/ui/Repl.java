@@ -27,7 +27,6 @@ public class Repl {
         ServerFacade server;
         MessageHandler messageHandler = new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
-                System.out.println("Recieved message: " + message);
                 handleServerMessage(message);
             }
         };

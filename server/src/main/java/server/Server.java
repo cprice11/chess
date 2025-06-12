@@ -45,8 +45,7 @@ public class Server {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws Exception {
-        session.getRemote().sendString("Received: " + message);
+    public void onMessage(Session session, String message) {
         websocketHandler.handle(session, message);
     }
 

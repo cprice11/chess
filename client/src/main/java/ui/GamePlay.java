@@ -3,7 +3,6 @@ package ui;
 import chess.ChessColor;
 import chess.ChessGame;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import serverfacade.ServerFacade;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
@@ -34,29 +33,22 @@ public class GamePlay extends Client {
 
     public String eval(String input) {
         repl.printer.showLabels();
-        repl.printer.print();
         var tokens = input.toLowerCase().split(" ");
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         switch (cmd) {
-            case "s", "switch":
-                switchView();
-            case "r", "redraw":
-                redraw();
-            case "l", "leave": {
-                leave();
+            case "s", "switch" -> switchView();
+            case "r", "redraw" -> redraw();
+            case "l", "leave" -> {
                 return "postLogin";
             }
-            case "m", "move":
-                makeMove(params);
-            case "resign":
-                resign();
-            case "highlight":
-                highlight(params);
-            case "q", "quit":
+            case "m", "move" -> makeMove(params);
+            case "resign" -> resign();
+            case "highlight" -> highlight(params);
+            case "q", "quit" -> {
                 return "quit";
-            default:
-                printHelp();
+            }
+            default -> printHelp();
         }
         return "";
     }
@@ -64,14 +56,6 @@ public class GamePlay extends Client {
     public void handleServerMessage(String messageString) {
         ServerMessage message = new Gson().fromJson(messageString, ServerMessage.class);
         System.out.println("Message received in GamePlay: " + message.getServerMessageType());
-        if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-            try {
-                LoadGameMessage loadMessage = new Gson().fromJson(messageString, LoadGameMessage.class);
-                handleLoadGame(loadMessage);
-            } catch (JsonSyntaxException e) {
-                throw new RuntimeException(e);
-            }
-        }
         switch (message.getServerMessageType()) {
             case LOAD_GAME -> handleLoadGame(new Gson().fromJson(messageString, LoadGameMessage.class));
             case ERROR -> {
@@ -84,7 +68,7 @@ public class GamePlay extends Client {
     }
 
     private void handleLoadGame(LoadGameMessage message) {
-        repl.printer = new ConsolePrinter(message.getGame().game());
+        repl.printer = new ConsolePrinter(new ChessGame(message.getGame().game()));
         redraw();
     }
 
@@ -101,10 +85,6 @@ public class GamePlay extends Client {
 
     private void redraw() {
         repl.printer.print();
-    }
-
-    private void leave() {
-        throw new RuntimeException("Not implimented yet");
     }
 
     private void makeMove(String[] params) {
