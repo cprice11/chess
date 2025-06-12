@@ -22,10 +22,11 @@ public class Main {
         printer.setTheme(palette);
         printer.setPieceCharacters(PieceCharacters.LETTER_SYMBOLS);
         System.out.println("Starting ♕ 240 Chess Client " + piece.prettyString() + "...");
-        var serverUrl = "http://localhost:8765";
+        var serverUrl = "localhost:8765";
         if (args.length == 1) {
             serverUrl = args[0];
         }
+
         new Repl(serverUrl).run();
     }
 }

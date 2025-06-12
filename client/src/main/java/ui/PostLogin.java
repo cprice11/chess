@@ -4,6 +4,7 @@ import chess.ChessGame;
 import datamodels.GameSummary;
 import serverfacade.ResponseException;
 import serverfacade.ServerFacade;
+import websocket.commands.ConnectCommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,12 +149,13 @@ public class PostLogin extends Client {
             server.joinGame(repl.getAuthToken(), gameID, team);
             System.out.println("Joining game " + gameID);
             repl.setCurrentGameID(gameID);
+            server.send(new ConnectCommand(repl.getAuthToken(), gameID));
             if (team == ChessGame.TeamColor.WHITE) {
                 repl.printer.fromWhite();
             } else {
                 repl.printer.fromBlack();
             }
-        } catch (ResponseException e) {
+        } catch (Exception e) {
             error(e.getMessage());
         }
     }

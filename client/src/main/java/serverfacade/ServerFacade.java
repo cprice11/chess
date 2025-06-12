@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import datamodels.GameSummary;
 import datamodels.UserData;
 
+import javax.websocket.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,9 +16,9 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Hashtable;
 
-public class ServerFacade {
-
+public class ServerFacade extends Endpoint {
     private final String serverUrl;
+    public Session session;
     private final Hashtable<String, String> auth = new Hashtable<>();
 
     private record RegisterRequest(String username, String password, String email) {
@@ -50,8 +51,28 @@ public class ServerFacade {
     private record ObserveGameRequest(int gameID) {
     }
 
-    public ServerFacade(String serverUrl) {
-        this.serverUrl = serverUrl;
+    public ServerFacade(String serverUrl, MessageHandler messageHandler) {
+        this.serverUrl = "http://" + serverUrl;
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        try {
+            URI webhookUri = new URI("ws://" + serverUrl + "/ws");
+            session = container.connectToServer(this, webhookUri);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        messageHandler = messageHandler == null ? new MessageHandler.Whole<String>() {
+            public void onMessage(String msg) {
+                System.out.println("Received message from server: " + msg);
+            }
+        } : messageHandler;
+        session.addMessageHandler(messageHandler);
+    }
+
+    public void send(Object o) throws Exception {
+        session.getBasicRemote().sendObject(o);
+    }
+
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
     public void clear() throws ResponseException {

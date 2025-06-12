@@ -4,6 +4,7 @@ import chess.ChessColor;
 import chess.ChessGame;
 import serverfacade.ServerFacade;
 
+import javax.websocket.MessageHandler;
 import java.util.Scanner;
 
 public class Repl {
@@ -21,8 +22,13 @@ public class Repl {
 
     public Repl(String serverUrl) {
         ServerFacade server;
+        MessageHandler messageHandler = new MessageHandler.Whole<String>() {
+            public void onMessage(String message) {
+                System.out.println(message);
+            }
+        };
         try {
-            server = new ServerFacade(serverUrl, serverUrl);
+            server = new ServerFacade(serverUrl, messageHandler);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,14 +1,25 @@
 package server;
 
+import com.google.gson.Gson;
 import handler.*;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import spark.Spark;
+import websocket.commands.UserGameCommand;
 
+@WebSocket
 public class Server {
-
-
+    public Server() {
+    }
 
 
     public int run(int desiredPort) {
+        Spark.port(desiredPort);
+
+        // Websocket connection
+        Spark.webSocket("/ws", Server.class);
+
         ClearHandler clearHandler = new ClearHandler();
         CreateGameHander createGameHander = new CreateGameHander();
         JoinGameHandler joinGameHandler = new JoinGameHandler();
@@ -17,11 +28,10 @@ public class Server {
         LogoutUserHandler logoutUserHandler = new LogoutUserHandler();
         RegisterUserHandler registerUserHandler = new RegisterUserHandler();
 
-        Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
+        // Register endpoints and handle exceptions here.
         Spark.post("/user", registerUserHandler);
         Spark.post("/session", loginUserHandler);
         Spark.delete("/session", logoutUserHandler);
@@ -32,6 +42,12 @@ public class Server {
 
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    @OnWebSocketMessage
+    public void onMessage(Session session, String message) throws Exception {
+        session.getRemote().sendString("Received: " + message);
+        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
     }
 
     public void stop() {
