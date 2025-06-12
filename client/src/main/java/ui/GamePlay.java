@@ -1,11 +1,11 @@
 package ui;
 
-import chess.ChessColor;
-import chess.ChessGame;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import serverfacade.ServerFacade;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -15,8 +15,6 @@ public class GamePlay extends Client {
     ChessGame game = new ChessGame();
     ChessGame.TeamColor teamColor;
     ChessColor color = new ChessColor();
-
-    // If game == null print a different start message
 
     public GamePlay(ServerFacade server, Repl repl) {
         this.server = server;
@@ -60,17 +58,27 @@ public class GamePlay extends Client {
 
     public void handleServerMessage(String messageString) {
         ServerMessage message = new Gson().fromJson(messageString, ServerMessage.class);
-        System.out.println("Message received in GamePlay: " + message.getServerMessageType());
         switch (message.getServerMessageType()) {
             case LOAD_GAME -> handleLoadGame(new Gson().fromJson(messageString, LoadGameMessage.class));
-            case ERROR -> error(message.toString());
-            case NOTIFICATION -> warning(message.toString());
+            case ERROR -> handleError(new Gson().fromJson(messageString, ErrorMessage.class).errorMessage);
+            case NOTIFICATION ->
+                    handleNotification(new Gson().fromJson(messageString, NotificationMessage.class).message);
         }
+    }
+
+    private void handleError(String message) {
+        repl.printer.setMessageString(color.errorHighlight().lightText() + " " + message + " " + color.noSquare());
+        redraw();
+    }
+
+    private void handleNotification(String message) {
+        repl.printer.setMessageString(color.secondaryHighlight().darkSquare().lightText() + " " + message + " " + color.noSquare());
+        redraw();
     }
 
     private void handleLoadGame(LoadGameMessage message) {
         game = new ChessGame(message.getGame().game());
-        repl.printer = new ConsolePrinter(game);
+        repl.printer.setGame(game);
         redraw();
     }
 
@@ -90,7 +98,29 @@ public class GamePlay extends Client {
     }
 
     private void makeMove(String[] params) {
-        throw new RuntimeException("Not implimented yet");
+        ChessPosition start = null;
+        ChessPosition end = null;
+        ChessPiece.PieceType promotion;
+        if (params.length > 2) {
+            start = new ChessPosition(params[0]);
+            end = new ChessPosition(params[1]);
+        } else {
+            start = new ChessPosition(getLine("Start Position"));
+            end = new ChessPosition(getLine("End Position"));
+        }
+        String promotionString = params.length > 2 ? params[2] : getLine("Promotion piece");
+        promotion = switch (promotionString.toLowerCase()) {
+            case "q" -> ChessPiece.PieceType.QUEEN;
+            case "r" -> ChessPiece.PieceType.ROOK;
+            case "b" -> ChessPiece.PieceType.BISHOP;
+            case "n" -> ChessPiece.PieceType.KNIGHT;
+            default -> null;
+        };
+        try {
+            server.sendMakeMove(repl.getAuthToken(), repl.getCurrentGameID(), new ChessMove(start, end, promotion));
+        } catch (IOException e) {
+            error(e.getMessage());
+        }
     }
 
     private boolean leave() {

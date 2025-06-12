@@ -258,7 +258,7 @@ public class ChessBoard {
         }
         lineList.add(fileLabels);
         lineList.add("FEN: " + positionFenString());
-        lineList.add(color.getResetString());
+        lineList.add(ChessColor.RESET);
         return lineList;
     }
 

@@ -26,17 +26,17 @@ public abstract class Client {
 
     protected String getLine(String prompt) {
         prompt = prompt == null ? "> " : prompt + ": ";
-        System.out.print(new ChessColor().ternaryText() + prompt + new ChessColor().getResetString());
+        System.out.print(new ChessColor().ternaryText() + prompt + ChessColor.RESET);
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
     }
 
     protected void error(String message) {
-        System.out.println("\t" + color.errorText().toString() + message + color.getResetString());
+        System.out.println("\t" + color.errorText().toString() + message + ChessColor.RESET);
     }
 
     protected void warning(String message) {
-        System.out.println("\t" + color.primaryText().toString() + message + color.getResetString());
+        System.out.println("\t" + color.primaryText().toString() + message + ChessColor.RESET);
     }
 
     protected String commandString(String command, String description, String printColor) {

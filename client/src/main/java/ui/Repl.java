@@ -2,7 +2,6 @@ package ui;
 
 import chess.ChessColor;
 import chess.ChessGame;
-import com.google.gson.Gson;
 import serverfacade.ServerFacade;
 
 import javax.websocket.MessageHandler;
@@ -21,15 +20,11 @@ public class Repl {
     ChessGame currentGame = new ChessGame();
     ConsolePrinter printer = new ConsolePrinter(currentGame);
     private int createdGame;
-    private static final Gson GSON = new Gson();
 
     public Repl(String serverUrl) {
         ServerFacade server;
-        MessageHandler messageHandler = new MessageHandler.Whole<String>() {
-            public void onMessage(String message) {
-                handleServerMessage(message);
-            }
-        };
+        MessageHandler messageHandler;
+        messageHandler = (MessageHandler.Whole<String>) this::handleServerMessage;
         server = new ServerFacade(serverUrl, messageHandler);
         preLoginClient = new PreLogin(server, this);
         postLoginClient = new PostLogin(server, this);
@@ -79,14 +74,6 @@ public class Repl {
         this.username = username;
     }
 
-    public ChessGame getCurrentGame() {
-        return currentGame;
-    }
-
-    public void setCurrentGame(ChessGame currentGame) {
-        this.currentGame = currentGame;
-    }
-
     public int getCurrentGameID() {
         return currentGameID;
     }
@@ -104,15 +91,11 @@ public class Repl {
         return authToken;
     }
 
-    public int getCreatedGame() {
-        return createdGame;
-    }
-
     public void setCreatedGame(int createdGame) {
         this.createdGame = createdGame;
     }
 
-    private void printPrompt() {
-        System.out.print(color.secondaryText() + ">>> " + color.getResetString());
+    public void printPrompt() {
+        System.out.print(color.secondaryText() + ">>> " + ChessColor.RESET);
     }
 }

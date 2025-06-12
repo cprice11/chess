@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessColor;
 import chess.ChessGame;
 import datamodels.GameSummary;
 import serverfacade.ResponseException;
@@ -202,7 +203,7 @@ public class PostLogin extends Client {
             rows.add(formatRow("Games", "│", ' ', 16, "│", tableContentsColor));
             rows.add(formatRow("", "│", '─', 16, "│", ""));
             rows.add(formatRow("No games", "│", ' ', 16, "│", color.errorText().toString()));
-            rows.add(formatRow("", "╰", '─', 16, "╯" + color.getResetString(), ""));
+            rows.add(formatRow("", "╰", '─', 16, "╯" + ChessColor.RESET, ""));
             rows.forEach(System.out::println);
             return;
         }

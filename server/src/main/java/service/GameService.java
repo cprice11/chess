@@ -191,6 +191,17 @@ public class GameService extends Service {
                 (turn == ChessGame.TeamColor.BLACK && connection.relation == Connection.Relation.BLACK)) {
             try {
                 game.makeMove(move);
+                if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                    connections.broadcast(gameID, null, notificationString("White wins by checkmate"));
+                } else if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                    connections.broadcast(gameID, null, notificationString("Black wins by checkmate"));
+                } else if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                    connections.broadcast(gameID, null, notificationString("Stalemate"));
+                } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                    connections.broadcast(gameID, null, notificationString("Black is in check"));
+                } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+                    connections.broadcast(gameID, null, notificationString("White is in check"));
+                }
                 GameData updatedGame = new GameData(gameID, gameData.blackUsername(), gameData.whiteUsername(),
                         gameData.gameName(), game.toDense());
                 gameDAO.updateGame(gameID, updatedGame);

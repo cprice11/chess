@@ -8,7 +8,7 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         ChessColor useAllColors = new ChessColor();
         useAllColors.primaryText().noBackground();
-        System.out.println(useAllColors + "♕ 240 Chess Server: " + piece + useAllColors.getResetString());
+        System.out.println(useAllColors + "♕ 240 Chess Server: " + piece + ChessColor.RESET);
         Server server = new Server();
         server.run(8765);
     }

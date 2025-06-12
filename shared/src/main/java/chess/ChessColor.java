@@ -191,12 +191,9 @@ public class ChessColor {
         calculate();
     }
 
-    /**
-     * @return The ANSI escape code to reset text effects.
-     */
-    public String getResetString() {
-        return "\033[0m";
-    }
+    public static final String RESET = "\033[0m";
+
+    public static final String ERASE_SCREEN = "\u001b" + "[H" + "\u001b" + "[2J";
 
     private void calculate() {
         this.background = switch (squareColor) {

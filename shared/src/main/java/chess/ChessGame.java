@@ -131,7 +131,6 @@ public class ChessGame {
         }
         board.setHighlight(move.getStartPosition(), ChessColor.Highlight.PRIMARY);
         board.setHighlight(move.getEndPosition(), ChessColor.Highlight.PRIMARY);
-        ConsolePrinter.printGame(this);
     }
 
     /**

@@ -2,26 +2,34 @@ package ui;
 
 import chess.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 
 public class ConsolePrinter {
-    private final ChessGame game;
-    private final ChessBoard board;
+    private String messageString = "";
+    private ChessGame game;
+    private ChessBoard board;
     private ChessGame.TeamColor turn;
-    private ArrayList<ChessMove> moveList;
     private String gameState;
     private final String[] boardRows = new String[10];
     private ChessGame.TeamColor teamOrientation = ChessGame.TeamColor.WHITE;
-    private ChessColor theme = new ChessColor();
+    private final ChessColor theme = new ChessColor();
     private Hashtable<ChessPiece, String> pieceCharacters = PieceCharacters.SOLID_SYMBOLS;
-    private boolean showLabels = true;
     private final String[] rows = new String[14];
 
     public ConsolePrinter(ChessGame game) {
         this.game = game;
         board = game.getBoard();
+        board.resetHighlights();
+    }
+
+    public void setMessageString(String message) {
+        messageString = message;
+    }
+
+    public void setGame(ChessGame game) {
+        this.game = game;
+        board = this.game.getBoard();
         board.resetHighlights();
     }
 
@@ -56,10 +64,10 @@ public class ConsolePrinter {
         setBoardRows();
         setGameStateStrings();
         setRows();
+        System.out.println(ChessColor.ERASE_SCREEN);
         for (String row : rows) {
             System.out.println(row);
         }
-        System.out.println("UI");
     }
 
     private void setGameStateStrings() {
@@ -80,7 +88,7 @@ public class ConsolePrinter {
             titleText = " Draw by stalemate ";
         } else {
             titleColor.secondaryHighlight();
-            titleText = " Turn: " + game.getTeamTurn() + " ";
+            titleText = " Turn: " + turn + " ";
             if (game.isInCheck(teamOrientation)) {
                 titleColor.ternaryHighlight();
                 titleText += "IN CHECK ";
@@ -93,11 +101,11 @@ public class ConsolePrinter {
     private void setRows() {
         String backgroundColor = theme.noSquare().noHighlight().lightText().toString();
         Arrays.fill(rows, backgroundColor + "   ");
-        rows[1] = rows[1] + gameState + backgroundColor;
+        rows[1] = rows[1] + gameState + backgroundColor + "\t\t" + messageString + backgroundColor;
         for (int i = 0; i < 10; i++) {
             rows[i + 3] += boardRows[i] + backgroundColor;
         }
-        rows[rows.length - 1] += '\n' + theme.getResetString();
+        rows[rows.length - 1] += '\n' + ChessColor.RESET;
     }
 
     private void setBoardRows() {
@@ -106,18 +114,14 @@ public class ConsolePrinter {
         int rankIteration = teamOrientation == ChessGame.TeamColor.WHITE ? -1 : 1;
         int fileIteration = -rankIteration;
         String topBottomLabel;
-        if (showLabels) {
             topBottomLabel = rankIteration == -1 ?
                     "    a  b  c  d  e  f  g  h   " :
                     "    h  g  f  e  d  c  b  a   ";
-        } else {
-            topBottomLabel = "                             ";
-        }
         boardRows[0] = topBottomLabel;
         for (int row = 0; row < 8; row++) {
             int rank = topRight + (row * rankIteration);
             StringBuilder rowString = new StringBuilder();
-            String rowLabel = showLabels ? " " + rank + " " : "   ";
+            String rowLabel = " " + rank + " ";
             rowString.append(rowLabel);
             for (int file = bottomLeft; file <= 8 && file >= 1; file += fileIteration) {
                 rowString.append(getBoardSquare(rank, file));

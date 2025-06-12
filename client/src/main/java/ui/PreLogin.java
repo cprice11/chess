@@ -121,7 +121,7 @@ public class PreLogin extends Client {
         Console console = System.console();
         String password;
         prompt = prompt == null ? "Password" : prompt;
-        prompt = color.ternaryText() + prompt + ": " + color.getResetString();
+        prompt = color.ternaryText() + prompt + ": " + ChessColor.RESET;
         if (console == null) {
             System.out.println(color.primaryText() + "\tPassword will be shown when not run from jar");
             System.out.print(prompt);
