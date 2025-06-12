@@ -12,7 +12,6 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         ChessGame game = new ChessGame();
         ConsolePrinter printer = new ConsolePrinter(game);
-        ChessColor color = new ChessColor();
         ChessColor.ColorPalette palette = new ChessColor.ColorPalette(Color.decode("#FFFFFF"), Color.decode("#000000"),
                 Color.decode("#302E2B"), Color.decode("#F9F9F9"), Color.decode("#343534"),
                 Color.decode("#d8daa4"), Color.decode("#739552"), Color.decode("#F5F580"),
