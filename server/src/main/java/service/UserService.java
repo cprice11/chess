@@ -42,10 +42,14 @@ public class UserService extends Service{
     }
 
     public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException {
+        confirmAuth(authToken);
+        authDAO.deleteAuthByAuthToken(authToken);
+    }
+
+    public void confirmAuth(String authToken) throws UnauthorizedException, DataAccessException {
         AuthData auth = authDAO.getAuthByAuthToken(authToken);
         if (auth == null) {
             throw new UnauthorizedException();
         }
-        authDAO.deleteAuthByAuthToken(authToken);
     }
 }

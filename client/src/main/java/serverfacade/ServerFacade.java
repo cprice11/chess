@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import datamodels.GameSummary;
 import datamodels.UserData;
+import websocket.commands.UserGameCommand;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -53,20 +54,26 @@ public class ServerFacade extends Endpoint {
     }
 
     public ServerFacade(String serverUrl, MessageHandler messageHandler) {
-        this.serverUrl = "http://" + serverUrl;
-        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         try {
+            this.serverUrl = "http://" + serverUrl;
+            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             URI webhookUri = new URI("ws://" + serverUrl + "/ws");
             session = container.connectToServer(this, webhookUri);
+            messageHandler = messageHandler == null ? new MessageHandler.Whole<String>() {
+                public void onMessage(String msg) {
+                    System.out.println("Received message from server: " + msg);
+                }
+            } : messageHandler;
+            session.addMessageHandler(messageHandler);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Couldn't connect to server");
         }
-        messageHandler = messageHandler == null ? new MessageHandler.Whole<String>() {
-            public void onMessage(String msg) {
-                System.out.println("Received message from server: " + msg);
-            }
-        } : messageHandler;
-        session.addMessageHandler(messageHandler);
+
+    }
+
+    public void sendConnect(String authToken, int gameID) throws IOException {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+        session.getBasicRemote().sendText(GSON.toJson(command));
     }
 
     public void send(Object o) throws Exception {

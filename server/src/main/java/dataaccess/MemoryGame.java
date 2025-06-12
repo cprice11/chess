@@ -42,4 +42,15 @@ public class MemoryGame implements GameDAO{
     public void clearAll() {
         db.clear();
     }
+
+    public int getMaxGameID() {
+        Collection<Integer> keys = db.keySet();
+        int maxID = 0;
+        for (int k : keys) {
+            if (k > maxID) {
+                maxID = k;
+            }
+        }
+        return maxID;
+    }
 }

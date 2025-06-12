@@ -4,9 +4,9 @@ import chess.ChessGame;
 import datamodels.GameSummary;
 import serverfacade.ResponseException;
 import serverfacade.ServerFacade;
-import websocket.commands.ConnectCommand;
 import websocket.messages.ServerMessage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -55,12 +55,15 @@ public class PostLogin extends Client {
                 return "preLogin";
             }
             case "j", "join" -> {
-                join(params);
-                return "gamePlay";
+                if (join(params)) {
+                    return "gamePlay";
+                }
+                ;
             }
             case "o", "observe" -> {
-                observe(params);
-                return "gamePlay";
+                if (observe(params)) {
+                    return "gamePlay";
+                }
             }
             default -> printHelp();
         }
@@ -99,6 +102,7 @@ public class PostLogin extends Client {
         try {
             repl.setCreatedGame(server.createGame(gameName, repl.getAuthToken()));
             System.out.println("Created game: " + gameName);
+            list();
         } catch (ResponseException e) {
             System.out.println(color.errorText() + e.getMessage());
         }
@@ -120,7 +124,7 @@ public class PostLogin extends Client {
         }
     }
 
-    private void join(String[] params) {
+    private boolean join(String[] params) {
         int gameIndex;
         String teamColor;
         try {
@@ -133,7 +137,7 @@ public class PostLogin extends Client {
             }
         } catch (NumberFormatException e) {
             error("Cannot understand game number");
-            return;
+            return false;
         }
         teamColor = teamColor.toLowerCase();
         ChessGame.TeamColor team;
@@ -143,29 +147,31 @@ public class PostLogin extends Client {
             team = ChessGame.TeamColor.BLACK;
         } else {
             error("Cannot parse requested team: " + teamColor);
-            return;
+            return false;
         }
         Integer gameID = gameTable.get(gameIndex);
         if (gameID == null) {
             error("Game " + gameIndex + " does not exist");
-            return;
+            return false;
         }
         try {
             server.joinGame(repl.getAuthToken(), gameID, team);
             System.out.println("Joining game " + gameID);
             repl.setCurrentGameID(gameID);
-            server.send(new ConnectCommand(repl.getAuthToken(), gameID));
+            server.sendConnect(repl.getAuthToken(), gameID);
             if (team == ChessGame.TeamColor.WHITE) {
                 repl.printer.fromWhite();
             } else {
                 repl.printer.fromBlack();
             }
+            return true;
         } catch (Exception e) {
             error(e.getMessage());
+            return false;
         }
     }
 
-    private void observe(String[] params) {
+    private boolean observe(String[] params) {
         int gameIndex;
         try {
             if (params.length == 1) {
@@ -175,15 +181,21 @@ public class PostLogin extends Client {
             }
         } catch (NumberFormatException e) {
             error("Cannot understand game number");
-            return;
+            return false;
         }
         Integer gameID = gameTable.get(gameIndex);
         if (gameID == null) {
             error("Game " + gameIndex + " does not exist");
-            return;
+            return false;
         }
-        System.out.println("Observe game");
+
+        try {
+            server.sendConnect(repl.getAuthToken(), gameID);
+        } catch (IOException e) {
+            error(e.getMessage());
+        }
         repl.setCurrentGameID(gameID);
+        return true;
     }
 
     private void printAsTable(ArrayList<GameSummary> games) {

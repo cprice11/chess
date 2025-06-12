@@ -2,6 +2,7 @@ package server;
 
 import handler.*;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import spark.Spark;
@@ -46,7 +47,12 @@ public class Server {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         session.getRemote().sendString("Received: " + message);
-        session.getRemote().sendString(websocketHandler.handle(message));
+        websocketHandler.handle(session, message);
+    }
+
+    @OnWebSocketError
+    public void onError(Throwable cause) {
+        System.out.println("WEBSOCKET ERROR! " + cause.getMessage());
     }
 
     public void stop() {

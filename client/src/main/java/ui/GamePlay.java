@@ -59,7 +59,17 @@ public class GamePlay extends Client {
     }
 
     public void handleServerMessage(ServerMessage message) {
-        error("Received server message");
+        switch (message.getServerMessageType()) {
+            case LOAD_GAME -> {
+                redraw();
+            }
+            case ERROR -> {
+                System.out.println(message);
+            }
+            case NOTIFICATION -> {
+                System.out.println(message);
+            }
+        }
     }
 
     public void switchView() {

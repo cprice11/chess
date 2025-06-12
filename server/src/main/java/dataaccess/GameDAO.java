@@ -15,4 +15,6 @@ public interface GameDAO {
     Collection<GameSummary> getGameSummaries() throws DataAccessException;
 
     void clearAll() throws DataAccessException;
+
+    int getMaxGameID() throws DataAccessException;
 }
