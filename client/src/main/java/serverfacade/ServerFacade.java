@@ -97,6 +97,10 @@ public class ServerFacade {
         makeRequest("PUT", "/game", request, auth, null);
     }
 
+    public void openWebSocketConnection() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
     private <T> T makeRequest(
             String method, String path, Object request, Hashtable<String, String> headers, Class<T> responseClass
     ) throws ResponseException {
