@@ -14,6 +14,8 @@ public class GamePlay extends Client {
     ChessGame.TeamColor teamColor;
     ChessColor color = new ChessColor();
 
+    // If game == null print a different start message
+
     public GamePlay(ServerFacade server, Repl repl) {
         this.server = server;
         this.repl = repl;
@@ -68,7 +70,8 @@ public class GamePlay extends Client {
     }
 
     private void handleLoadGame(LoadGameMessage message) {
-        repl.printer = new ConsolePrinter(new ChessGame(message.getGame().game()));
+        game = new ChessGame(message.getGame().game());
+        repl.printer = new ConsolePrinter(game);
         redraw();
     }
 
