@@ -93,6 +93,10 @@ public class GameService extends Service {
             send(session, errorString("Authorization is invalid"));
             return;
         }
+        if (game == null) {
+            send(session, errorString("Game not found"));
+            return;
+        }
         send(session, loadGameString(game));
 
         ArrayList<Connection> existingConnections = connections.getConnections(gameID);
