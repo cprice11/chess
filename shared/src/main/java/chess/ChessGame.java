@@ -21,6 +21,7 @@ public class ChessGame {
     private int halfMoveClock = 0;
     private int fullMoveNumber = 1;
     private final static Gson GSON = new Gson();
+    private String gameOver = "";
 
     public ChessGame() {
         board.resetBoard();
@@ -105,6 +106,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (isGameOver()) {
+            throw new InvalidMoveException("Game is over");
+        }
         board.resetHighlights();
         validateMove(move);
         TeamColor color = board.getPiece(move.getStartPosition()).getTeamColor();
@@ -315,24 +319,12 @@ public class ChessGame {
         turn = getOtherTeam(turn);
     }
 
-    /**
-     * Determines if the given team is in check
-     *
-     * @param teamColor which team to check for check
-     * @return True if the specified team is in check, false otherwise.
-     */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingSquare = board.getKingSquare(teamColor);
         Collection<ChessPosition> threatenedPositions = board.getPositionsThreatenedByColor(getOtherTeam(teamColor));
         return threatenedPositions.contains(kingSquare);
     }
 
-    /**
-     * Determines if the given team is in checkmate
-     *
-     * @param teamColor which team to check for checkmate
-     * @return True if the specified team is in checkmate
-     */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (!isInCheck(teamColor)) {
             return false;
@@ -341,6 +333,9 @@ public class ChessGame {
         for (ChessPosition position : board.getPositionsByColor(teamColor)) {
             moves.addAll(validMoves(position));
         }
+        if (moves.isEmpty()) {
+            gameOver = teamColor == TeamColor.WHITE ? "B#" : "W#";
+        }
         return moves.isEmpty();
     }
 
@@ -348,13 +343,6 @@ public class ChessGame {
         return isInCheckmate(TeamColor.WHITE) || isInCheckmate(TeamColor.BLACK);
     }
 
-    /**
-     * Determines if the given team is in stalemate, which here is defined as having
-     * no valid moves but not being in check.
-     *
-     * @param teamColor which team to check for stalemate
-     * @return True if the specified team is in stalemate, otherwise false
-     */
     public boolean isInStalemate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
             return false;
@@ -363,7 +351,17 @@ public class ChessGame {
         for (ChessPosition position : board.getPositionsByColor(teamColor)) {
             moves.addAll(validMoves(position));
         }
+        if (moves.isEmpty()) {
+            gameOver = "-";
+        }
         return moves.isEmpty();
+    }
+
+    public void resign(TeamColor teamColor) {
+        if (isGameOver()) {
+            return;
+        }
+        gameOver = teamColor == TeamColor.WHITE ? "B-" : "W-";
     }
 
     /**
@@ -373,6 +371,10 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         this.board = board;
+    }
+
+    public boolean isGameOver() {
+        return !Objects.equals(gameOver, "");
     }
 
     /**
@@ -411,8 +413,9 @@ public class ChessGame {
         }
         fenString.append(' ');
         fenString.append(halfMoveClock).append(' ');
-        fenString.append(fullMoveNumber);
-        return fenString.toString();
+        fenString.append(fullMoveNumber).append(' ');
+        fenString.append(gameOver);
+        return fenString.toString().trim();
     }
 
     private void parseFenString(String fen) {
@@ -466,6 +469,7 @@ public class ChessGame {
         Integer full = Integer.getInteger(fenStrings[5]);
         this.halfMoveClock = half == null ? 0 : half;
         this.fullMoveNumber = full == null ? 1 : full;
+        this.gameOver = fenStrings.length > 6 ? fenStrings[6] : "";
     }
 
     @Override

@@ -97,6 +97,10 @@ public class GameService extends Service {
             send(session, errorString("Game not found"));
             return;
         }
+        if (auth == null) {
+            send(session, errorString("Authorization is invalid"));
+            return;
+        }
         send(session, loadGameString(game));
 
         ArrayList<Connection> existingConnections = connections.getConnections(gameID);
@@ -117,10 +121,10 @@ public class GameService extends Service {
 
         Connection.Relation relation;
         String notification = "user '" + username + "' has joined as ";
-        if (black == null || Objects.equals(blackUsername, username)) {
+        if (black == null && Objects.equals(blackUsername, username)) {
             relation = Connection.Relation.BLACK;
             notification += "black";
-        } else if (white == null || Objects.equals(whiteUsername, username)) {
+        } else if (white == null && Objects.equals(whiteUsername, username)) {
             relation = Connection.Relation.WHITE;
             notification += "white";
         } else {
@@ -155,15 +159,17 @@ public class GameService extends Service {
             }
         }
         ChessGame.TeamColor turn = game.getTeamTurn();
-        if ((turn == ChessGame.TeamColor.WHITE && authData == whiteAuth) ||
-                (turn == ChessGame.TeamColor.BLACK && authData == blackAuth)) {
+        if ((turn == ChessGame.TeamColor.WHITE && whiteAuth != null && Objects.equals(authData, whiteAuth)) ||
+                (turn == ChessGame.TeamColor.BLACK && blackAuth != null && Objects.equals(authData, blackAuth))) {
             try {
                 game.makeMove(move);
-                GameData updatedGame = new GameData(
-                        gameID, gameData.blackUsername(), gameData.whiteUsername(), gameData.gameName(), game.toDense());
+                GameData updatedGame = new GameData(gameID, gameData.blackUsername(), gameData.whiteUsername(),
+                        gameData.gameName(), game.toDense());
                 gameDAO.updateGame(gameID, updatedGame);
                 String message = loadGameString(updatedGame);
+                String notify = notificationString(move.toString());
                 connections.broadcast(gameID, null, message);
+                connections.broadcast(gameID, authData, notify);
             } catch (InvalidMoveException e) {
                 send(session, errorString("Invalid move"));
             } catch (DataAccessException e) {
