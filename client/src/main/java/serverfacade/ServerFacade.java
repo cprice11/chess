@@ -59,10 +59,8 @@ public class ServerFacade extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             URI webhookUri = new URI("ws://" + serverUrl + "/ws");
             session = container.connectToServer(this, webhookUri);
-            messageHandler = messageHandler == null ? new MessageHandler.Whole<String>() {
-                public void onMessage(String msg) {
-                    System.out.println("Received message from server: " + msg);
-                }
+            messageHandler = messageHandler == null ? (MessageHandler.Whole<String>) msg -> {
+                System.out.println("Received message from server: " + msg);
             } : messageHandler;
             session.addMessageHandler(messageHandler);
         } catch (Exception e) {
@@ -74,10 +72,6 @@ public class ServerFacade extends Endpoint {
     public void sendConnect(String authToken, int gameID) throws IOException {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
         session.getBasicRemote().sendText(GSON.toJson(command));
-    }
-
-    public void send(Object o) throws Exception {
-        session.getBasicRemote().sendText(GSON.toJson(o));
     }
 
     public void onOpen(Session session, EndpointConfig endpointConfig) {
@@ -124,10 +118,6 @@ public class ServerFacade extends Endpoint {
         auth.put("authorization", authToken);
         JoinGameRequest request = new JoinGameRequest(gameID, color);
         makeRequest("PUT", "/game", request, auth, null);
-    }
-
-    public void openWebSocketConnection() {
-        throw new RuntimeException("Not implemented yet");
     }
 
     private <T> T makeRequest(

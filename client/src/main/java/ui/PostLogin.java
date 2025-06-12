@@ -58,7 +58,6 @@ public class PostLogin extends Client {
                 if (join(params)) {
                     return "gamePlay";
                 }
-                ;
             }
             case "o", "observe" -> {
                 if (observe(params)) {
@@ -89,7 +88,6 @@ public class PostLogin extends Client {
             repl.setAuthToken(null);
         } catch (ResponseException ignored) {
         }
-        ;
     }
 
     private void create(String[] params) {

@@ -20,7 +20,7 @@ public class Repl {
 
     private String username = "";
     private String authToken;
-    private ChessColor color = new ChessColor();
+    private final ChessColor color = new ChessColor();
     private int currentGameID;
     ChessGame currentGame = new ChessGame();
     ConsolePrinter printer = new ConsolePrinter(currentGame);

@@ -110,10 +110,11 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
     public int getMaxGameID() throws DataAccessException {
         checkConnection();
         String sql = "SELECT MAX(id) FROM game";
+        int maxID = 10000;
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
             try (ResultSet rs = statement.executeQuery()) {
                 rs.next();
-                return rs.getInt(1);
+                return Math.max(maxID, rs.getInt(1));
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());

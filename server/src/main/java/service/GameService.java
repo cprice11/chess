@@ -24,12 +24,11 @@ import java.util.Objects;
 public class GameService extends Service {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
-    private int gameIndex = 100000;
+    private int gameIndex;
 
     private record GameSessions(Session black, Session white, HashSet<Session> observers) {
     }
 
-    ;
     private static final HashMap<Integer, GameSessions> sessions = new HashMap<>();
     private static final Gson GSON = new Gson();
 
