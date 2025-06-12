@@ -26,6 +26,8 @@ public class GameService extends Service {
     private int gameIndex;
     private static ConnectionManager connections;
     private static final Gson GSON = new Gson();
+    private AuthData authData;
+    private GameData gameData;
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -86,21 +88,16 @@ public class GameService extends Service {
     }
 
     public void connectToGame(Session session, String authToken, int gameID) throws IOException {
-        AuthData auth;
+        if (isAuthInvalid(authToken, session) || isGameInvalid(gameID, session)) {
+            return;
+        }
         GameData game;
+        AuthData auth;
         try {
-            auth = authDAO.getAuthByAuthToken(authToken);
             game = gameDAO.getGame(gameID);
+            auth = authDAO.getAuthByAuthToken(authToken);
         } catch (DataAccessException e) {
-            send(session, errorString("Authorization is invalid"));
-            return;
-        }
-        if (game == null) {
-            send(session, errorString("Game not found"));
-            return;
-        }
-        if (auth == null) {
-            send(session, errorString("Authorization is invalid"));
+            send(session, errorString("database values disappeared"));
             return;
         }
         send(session, loadGameString(game));
@@ -141,22 +138,39 @@ public class GameService extends Service {
         connections.broadcast(gameID, auth, notification);
     }
 
-    public void makeMove(Session session, String authToken, int gameID, ChessMove move) throws IOException {
-        GameData gameData;
-        AuthData authData;
+    private boolean isAuthInvalid(String authToken, Session session) throws IOException {
+        authData = null;
         try {
             authData = authDAO.getAuthByAuthToken(authToken);
-            gameData = gameDAO.getGame(gameID);
         } catch (DataAccessException e) {
             send(session, errorString("Authorization is invalid"));
-            return;
+            return true;
         }
         if (authData == null) {
             send(session, errorString("Authorization is invalid"));
-            return;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isGameInvalid(int gameID, Session session) throws IOException {
+        gameData = null;
+        try {
+            gameData = gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            send(session, errorString("Game id is invalid"));
+            return true;
         }
         if (gameData == null) {
-            send(session, errorString("Game is invalid"));
+            send(session, errorString("Game id is invalid"));
+            return true;
+        }
+        return false;
+    }
+
+
+    public void makeMove(Session session, String authToken, int gameID, ChessMove move) throws IOException {
+        if (isAuthInvalid(authToken, session) || isGameInvalid(gameID, session)) {
             return;
         }
         ChessGame game = new ChessGame(gameData.game());
