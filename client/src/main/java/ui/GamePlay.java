@@ -11,8 +11,8 @@ public class GamePlay extends Client {
     ChessGame.TeamColor teamColor;
     ChessColor color = new ChessColor();
 
-    public GamePlay(String serverUrl, Repl repl) {
-        server = new ServerFacade(serverUrl);
+    public GamePlay(ServerFacade server, Repl repl) {
+        this.server = server;
         this.repl = repl;
         help = color.secondaryText() + "The following commands are available:\n" +
                 commandString("help, h", "Prints this message\n") +

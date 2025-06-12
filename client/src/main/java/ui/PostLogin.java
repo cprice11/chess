@@ -18,8 +18,8 @@ public class PostLogin extends Client {
     private final String tableColor = color.secondaryText().toString();
     private final String tableContentsColor = color.lightText().toString();
 
-    public PostLogin(String serverUrl, Repl repl) {
-        server = new ServerFacade(serverUrl);
+    public PostLogin(ServerFacade server, Repl repl) {
+        this.server = server;
         this.repl = repl;
         help = color.secondaryText() +
                 "The following commands are available:\n" +

@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessColor;
 import chess.ChessGame;
+import serverfacade.ServerFacade;
 
 import java.util.Scanner;
 
@@ -9,7 +10,6 @@ public class Repl {
     private final Client preLoginClient;
     private final Client postLoginClient;
     private final Client gamePlayclient;
-
 
     private String username = "";
     private String authToken;
@@ -20,9 +20,15 @@ public class Repl {
     private int createdGame;
 
     public Repl(String serverUrl) {
-        preLoginClient = new PreLogin(serverUrl, this);
-        postLoginClient = new PostLogin(serverUrl, this);
-        gamePlayclient = new GamePlay(serverUrl, this);
+        ServerFacade server;
+        try {
+            server = new ServerFacade(serverUrl, serverUrl);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        preLoginClient = new PreLogin(server, this);
+        postLoginClient = new PostLogin(server, this);
+        gamePlayclient = new GamePlay(server, this);
     }
 
     public void run() {
