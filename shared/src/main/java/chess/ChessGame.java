@@ -377,10 +377,6 @@ public class ChessGame {
         return board;
     }
 
-    public ArrayList<ChessMove> moveHistory() {
-        return moveHistory;
-    }
-
     public TeamColor getOtherTeam(TeamColor color) {
         return color == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }

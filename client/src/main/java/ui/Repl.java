@@ -19,7 +19,6 @@ public class Repl {
     private int currentGameID;
     ChessGame currentGame = new ChessGame();
     ConsolePrinter printer = new ConsolePrinter(currentGame);
-    private int createdGame;
 
     public Repl(String serverUrl) {
         ServerFacade server;
@@ -89,10 +88,6 @@ public class Repl {
 
     public String getAuthToken() {
         return authToken;
-    }
-
-    public void setCreatedGame(int createdGame) {
-        this.createdGame = createdGame;
     }
 
     public void printPrompt() {

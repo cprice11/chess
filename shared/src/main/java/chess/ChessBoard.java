@@ -8,7 +8,6 @@ import java.util.*;
 public class ChessBoard {
     private Map<ChessPosition, ChessPiece> pieces = new Hashtable<>();
     private transient final Hashtable<ChessPosition, ChessColor.Highlight> highlights = new Hashtable<>();
-    private static final boolean USE_SYMBOLS = true;
 
     public static final int BOARD_SIZE = 8;
 
@@ -217,52 +216,6 @@ public class ChessBoard {
     }
 
     /**
-     * String representing a game board to be displayed in a console in color.
-     * Assumes a monospace chess font e.g. NerdFonts
-     *
-     * @return a multi-line string displaying the gameboard.
-     */
-    public List<String> prettyRows() {
-        ChessColor color = new ChessColor();
-        String fileLabels = "    a  b  c  d  e  f  g  h    ";
-        ArrayList<String> lineList = new ArrayList<>();
-        lineList.addLast(color + fileLabels);
-        for (int rank = BOARD_SIZE; rank > 0; rank--) {
-            StringBuilder row = new StringBuilder();
-            row.append(color.noHighlight().noSquare());
-            row.append(" ").append(rank).append(" ");
-            for (int file = 1; file <= BOARD_SIZE; file++) {
-                color = (rank + file) % 2 == 1 ? color.lightSquare() : color.darkSquare();
-                ChessPosition square = new ChessPosition(rank, file);
-                ChessPiece piece = pieces.get(square);
-                ChessColor.Highlight highlight = highlights.get(square);
-                color = switch (highlight) {
-                    case NONE -> color.noHighlight();
-                    case PRIMARY -> color.primaryHighlight();
-                    case SECONDARY -> color.secondaryHighlight();
-                    case TERNARY -> color.ternaryHighlight();
-                    case ERROR -> color.errorHighlight();
-                    case null -> color.noHighlight();
-                };
-                String pieceString = " ";
-                if (piece != null) {
-                    pieceString = USE_SYMBOLS ? piece.prettyString() : piece.toString();
-                    color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? color.lightPiece() : color.darkPiece();
-                }
-                row.append(color);
-                row.append(" ").append(pieceString).append(" ");
-            }
-            row.append(color.noHighlight().noSquare().lightText());
-            row.append(" ").append(rank).append(" ");
-            lineList.add(row.toString());
-        }
-        lineList.add(fileLabels);
-        lineList.add("FEN: " + positionFenString());
-        lineList.add(ChessColor.RESET);
-        return lineList;
-    }
-
-    /**
      * Changes the display color of a given position when output with prettyRows()
      *
      * @param position the position to update
@@ -277,10 +230,6 @@ public class ChessBoard {
      */
     public void resetHighlights() {
         highlights.clear();
-    }
-
-    public Hashtable<ChessPosition, ChessColor.Highlight> getHighlights() {
-        return highlights;
     }
 
     public ChessColor.Highlight getHighlight(ChessPosition position) {

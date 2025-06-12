@@ -98,8 +98,8 @@ public class GamePlay extends Client {
     }
 
     private void makeMove(String[] params) {
-        ChessPosition start = null;
-        ChessPosition end = null;
+        ChessPosition start;
+        ChessPosition end;
         ChessPiece.PieceType promotion;
         if (params.length > 2) {
             start = new ChessPosition(params[0]);
