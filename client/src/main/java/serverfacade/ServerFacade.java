@@ -20,6 +20,7 @@ public class ServerFacade extends Endpoint {
     private final String serverUrl;
     public Session session;
     private final Hashtable<String, String> auth = new Hashtable<>();
+    private static final Gson GSON = new Gson();
 
     private record RegisterRequest(String username, String password, String email) {
     }
@@ -69,7 +70,7 @@ public class ServerFacade extends Endpoint {
     }
 
     public void send(Object o) throws Exception {
-        session.getBasicRemote().sendObject(o);
+        session.getBasicRemote().sendText(GSON.toJson(o));
     }
 
     public void onOpen(Session session, EndpointConfig endpointConfig) {

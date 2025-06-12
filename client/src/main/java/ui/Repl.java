@@ -2,7 +2,9 @@ package ui;
 
 import chess.ChessColor;
 import chess.ChessGame;
+import com.google.gson.Gson;
 import serverfacade.ServerFacade;
+import websocket.messages.ServerMessage;
 
 import javax.websocket.MessageHandler;
 import java.util.Scanner;
@@ -11,6 +13,7 @@ public class Repl {
     private final Client preLoginClient;
     private final Client postLoginClient;
     private final Client gamePlayclient;
+    private Client currentClient;
 
     private String username = "";
     private String authToken;
@@ -19,12 +22,14 @@ public class Repl {
     ChessGame currentGame = new ChessGame();
     ConsolePrinter printer = new ConsolePrinter(currentGame);
     private int createdGame;
+    private static final Gson GSON = new Gson();
 
     public Repl(String serverUrl) {
         ServerFacade server;
         MessageHandler messageHandler = new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
-                System.out.println(message);
+                ServerMessage serverMessage = GSON.fromJson(message, ServerMessage.class);
+                handleServerMessage(serverMessage);
             }
         };
         try {
@@ -38,7 +43,7 @@ public class Repl {
     }
 
     public void run() {
-        Client currentClient = preLoginClient;
+        currentClient = preLoginClient;
         currentClient.printStartMessage();
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -66,6 +71,10 @@ public class Repl {
             }
         }
         System.out.println("Quitting...");
+    }
+
+    private void handleServerMessage(ServerMessage message) {
+        currentClient.handleServerMessage(message);
     }
 
     public String getUsername() {

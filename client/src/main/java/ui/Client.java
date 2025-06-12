@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessColor;
 import serverfacade.ServerFacade;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
@@ -13,6 +14,8 @@ public abstract class Client {
     String startMessage;
 
     abstract public String eval(String input);
+
+    abstract public void handleServerMessage(ServerMessage message);
 
     public void printHelp() {
         System.out.println(help);

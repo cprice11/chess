@@ -3,6 +3,7 @@ package ui;
 import chess.ChessColor;
 import chess.ChessGame;
 import serverfacade.ServerFacade;
+import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 
@@ -55,6 +56,10 @@ public class GamePlay extends Client {
                 printHelp();
         }
         return "";
+    }
+
+    public void handleServerMessage(ServerMessage message) {
+        error("Received server message");
     }
 
     public void switchView() {

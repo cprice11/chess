@@ -5,6 +5,7 @@ import datamodels.GameSummary;
 import serverfacade.ResponseException;
 import serverfacade.ServerFacade;
 import websocket.commands.ConnectCommand;
+import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,6 +65,10 @@ public class PostLogin extends Client {
             default -> printHelp();
         }
         return "";
+    }
+
+    public void handleServerMessage(ServerMessage message) {
+        error("Received server message");
     }
 
     @Override
@@ -180,7 +185,6 @@ public class PostLogin extends Client {
         System.out.println("Observe game");
         repl.setCurrentGameID(gameID);
     }
-
 
     private void printAsTable(ArrayList<GameSummary> games) {
         ArrayList<String> rows = new ArrayList<>();

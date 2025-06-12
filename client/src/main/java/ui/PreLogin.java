@@ -4,6 +4,7 @@ import chess.ChessColor;
 import datamodels.UserData;
 import serverfacade.ResponseException;
 import serverfacade.ServerFacade;
+import websocket.messages.ServerMessage;
 
 import java.io.Console;
 import java.util.Arrays;
@@ -49,6 +50,10 @@ public class PreLogin extends Client {
             return "";
         }
         return "postLogin";
+    }
+
+    public void handleServerMessage(ServerMessage message) {
+        error("Received webhook message");
     }
 
     private void login(String[] params) {
