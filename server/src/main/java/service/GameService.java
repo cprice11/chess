@@ -18,23 +18,19 @@ import websocket.messages.NotificationMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 
 public class GameService extends Service {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
     private int gameIndex;
-    private ConnectionManager connections = new ConnectionManager();
-
-    private record GameSessions(Session black, Session white, HashSet<Session> observers) {
-    }
-
+    private static ConnectionManager connections;
     private static final Gson GSON = new Gson();
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
+        this.connections = new ConnectionManager();
         try {
             gameIndex = gameDAO.getMaxGameID();
         } catch (DataAccessException e) {
@@ -83,6 +79,12 @@ public class GameService extends Service {
     }
 
     // Webhook methods
+    public void clear() {
+        System.out.println("Clearing connections");
+        connections.clear();
+        this.connections = new ConnectionManager();
+    }
+
     public void connectToGame(Session session, String authToken, int gameID) throws IOException {
         AuthData auth;
         GameData game;
@@ -108,6 +110,9 @@ public class GameService extends Service {
         Connection black = null;
         Connection white = null;
         for (Connection c : existingConnections) {
+            if (c.auth == auth) {
+                return;
+            }
             if (c.relation == Connection.Relation.BLACK) {
                 black = c;
             } else if (c.relation == Connection.Relation.WHITE) {
@@ -131,9 +136,9 @@ public class GameService extends Service {
             relation = Connection.Relation.OBSERVER;
             notification += "observer";
         }
-        connections.add(auth, gameID, session, relation);
+        this.connections.add(auth, gameID, session, relation);
         notification = notificationString(notification);
-        connections.broadcast(gameID, auth, notification);
+        this.connections.broadcast(gameID, auth, notification);
     }
 
     public void makeMove(Session session, String authToken, int gameID, ChessMove move) throws IOException {

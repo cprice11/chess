@@ -9,7 +9,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    private final ConcurrentHashMap<Integer, ArrayList<Connection>> connections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, ArrayList<Connection>> connections;
+
+    public ConnectionManager() {
+        this.connections = new ConcurrentHashMap<>();
+    }
 
     public void add(AuthData auth, int gameID, Session session, Connection.Relation relation) {
         var connection = new Connection(auth, gameID, session, relation);
@@ -46,6 +50,10 @@ public class ConnectionManager {
             entry.getValue().removeIf((Connection c) -> c.auth == auth);
             connections.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    public void clear() {
+        connections.clear();
     }
 
 

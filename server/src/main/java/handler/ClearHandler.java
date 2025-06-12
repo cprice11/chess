@@ -9,6 +9,7 @@ public class ClearHandler extends RequestHandler {
         System.out.println("Clearing database");
         try {
             DEV_SERVICE.clear();
+            GAME_SERVICE.clear();
         } catch (DataAccessException e) {
             return error(response, 500, "Error: " + e.getMessage());
         }
