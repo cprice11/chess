@@ -243,7 +243,8 @@ public class GameService extends Service {
         ChessGame game = new ChessGame(gameData.game());
         try {
             game.resign(teamColor);
-        } catch (InvalidMoveException e) {
+            gameDAO.updateGame(gameID, new GameData(gameID, gameData.blackUsername(), gameData.whiteUsername(), gameData.gameName(), game.toDense()));
+        } catch (InvalidMoveException | DataAccessException e) {
             send(session, errorString(e.getMessage()));
         }
         String notify = notificationString(authData.username() + " resigned");
