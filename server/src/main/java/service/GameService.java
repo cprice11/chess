@@ -29,7 +29,7 @@ public class GameService extends Service {
     private record GameSessions(Session black, Session white, HashSet<Session> observers) {
     }
 
-    private static final HashMap<Integer, GameSessions> sessions = new HashMap<>();
+    private static final HashMap<Integer, GameSessions> SESSIONS = new HashMap<>();
     private static final Gson GSON = new Gson();
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
@@ -98,7 +98,7 @@ public class GameService extends Service {
         String username = auth.username();
         String white = game.whiteUsername();
         String black = game.blackUsername();
-        GameSessions connectedSessions = sessions.get(gameID);
+        GameSessions connectedSessions = SESSIONS.get(gameID);
         if (connectedSessions == null) {
             Session blackSession = Objects.equals(username, black) ? session : null;
             Session whiteSession = Objects.equals(username, white) ? session : null;
@@ -106,9 +106,9 @@ public class GameService extends Service {
             if (!Objects.equals(username, black) && !Objects.equals(username, white)) {
                 observers.add(session);
             }
-            sessions.put(gameID, new GameSessions(blackSession, whiteSession, observers));
+            SESSIONS.put(gameID, new GameSessions(blackSession, whiteSession, observers));
         }
-        connectedSessions = sessions.get(gameID);
+        connectedSessions = SESSIONS.get(gameID);
 
         HashSet<Session> observers = connectedSessions.observers;
         String notification = "user '" + username + "' has joined as ";
@@ -116,14 +116,14 @@ public class GameService extends Service {
              Session blackSession = connectedSessions.black) {
 
             if ((whiteSession == null) && Objects.equals(white, username)) {
-                sessions.put(gameID, new GameSessions(session, blackSession, observers));
+                SESSIONS.put(gameID, new GameSessions(session, blackSession, observers));
                 notification += "white";
             } else if (Objects.equals(black, username)) {
-                sessions.put(gameID, new GameSessions(whiteSession, session, observers));
+                SESSIONS.put(gameID, new GameSessions(whiteSession, session, observers));
                 notification += "black";
             } else {
                 observers.add(session);
-                sessions.put(gameID, new GameSessions(whiteSession, blackSession, observers));
+                SESSIONS.put(gameID, new GameSessions(whiteSession, blackSession, observers));
                 notification += "observer";
             }
         }
@@ -140,7 +140,7 @@ public class GameService extends Service {
             send(session, errorString("Authorization is invalid"));
             return;
         }
-        GameSessions connectedSessions = sessions.get(gameID);
+        GameSessions connectedSessions = SESSIONS.get(gameID);
         ChessGame game = new ChessGame(gameData.game());
         if ((game.getTeamTurn() == ChessGame.TeamColor.WHITE && session == connectedSessions.white) ||
                 (game.getTeamTurn() == ChessGame.TeamColor.BLACK && session == connectedSessions.black)) {
@@ -183,7 +183,7 @@ public class GameService extends Service {
     }
 
     private HashSet<Session> getSessions(int gameID) {
-        GameSessions connections = sessions.get(gameID);
+        GameSessions connections = SESSIONS.get(gameID);
         HashSet<Session> otherConnections = new HashSet<>();
         if (connections == null) {
             return otherConnections;
@@ -194,7 +194,7 @@ public class GameService extends Service {
         otherConnections.addAll(connections.observers);
         otherConnections.removeIf(Objects::isNull);
         otherConnections.removeIf((Session s) -> !s.isOpen());
-        sessions.put(gameID, new GameSessions(connections.black, connections.white, connections.observers));
+        SESSIONS.put(gameID, new GameSessions(connections.black, connections.white, connections.observers));
         return otherConnections;
     }
 

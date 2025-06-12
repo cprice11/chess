@@ -31,11 +31,6 @@ public class ChessGame {
         parseFenString(game.fen());
     }
 
-    public ChessGame(String fenString, ArrayList<ChessMove> moveHistory) {
-        this.moveHistory = moveHistory;
-        parseFenString(fenString);
-    }
-
     public ChessGame(ChessBoard board, ArrayList<ChessMove> moveHistory, TeamColor turn,
                      boolean whiteShort, boolean whiteLong, boolean blackShort, boolean blackLong,
                      ChessPosition enPassant, int halfMoveClock, int fullMoveNumber) {
@@ -179,15 +174,7 @@ public class ChessGame {
         makeStandardMove(move, board);
     }
 
-    /**
-     * Implicitly confirms a move is legal or throws an InvalidMoveException if it isn't.
-     * Doesn't check for turn so moves can be checked while waiting for opponent.
-     *
-     * @param move a ChessMove to validate
-     * @throws InvalidMoveException if move is illegal.
-     */
     private void validateMove(ChessMove move) throws InvalidMoveException {
-        // TODO: Might be worth checking for checkmate.
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece piece = board.getPiece(start);
@@ -239,7 +226,6 @@ public class ChessGame {
             }
         }
         int homeRank = color == TeamColor.WHITE ? 1 : 8;
-
         Collection<ChessPosition> inBetweenPositions = new ArrayList<>(); // These must be clear in order to castle
         if (move.isShortCastle()) {
             inBetweenPositions.add(new ChessPosition(homeRank, 6));
@@ -255,7 +241,6 @@ public class ChessGame {
                 throw new InvalidMoveException("The piece at " + position + " blocks the castle");
             }
         }
-
         Collection<ChessPosition> threatenedPositions = board.getPositionsThreatenedByColor(getOtherTeam(color));
         ChessPosition safePosition = move.isShortCastle() ? new ChessPosition(homeRank, 6) : new ChessPosition(homeRank, 4);
         if (threatenedPositions.contains(safePosition)) {
@@ -294,17 +279,11 @@ public class ChessGame {
         board.addPiece(move.getEndPosition(), piece);
     }
 
-    /**
-     * Sets the games state flags following the execution of the given move.
-     *
-     * @param move the most recently executed move.
-     */
     private void updateFlags(ChessMove move) {
         moveHistory.add(move);
         ChessPiece piece = board.getPiece(move.getStartPosition());
         ChessPiece.PieceType type = piece.getPieceType();
         TeamColor color = piece.getTeamColor();
-        // Castling flags
         if (type == ChessPiece.PieceType.KING) {
             if (color == TeamColor.WHITE) {
                 whiteCanLongCastle = whiteCanShortCastle = false;
@@ -332,7 +311,6 @@ public class ChessGame {
             halfMoveClock = 0; // or captures
         }
         fullMoveNumber += color == TeamColor.BLACK ? 1 : 0; // Increment clock on black turns
-
         turn = getOtherTeam(turn);
     }
 
@@ -413,12 +391,6 @@ public class ChessGame {
         return color == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
-    /**
-     * The state of the game as expressed in
-     * <a href="https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation">Forsyth–Edwards Notation (FEN)</a>
-     *
-     * @return a FEN string
-     */
     public String fenString() {
         StringBuilder fenString = new StringBuilder(board.positionFenString());
         fenString.append(' ').append(turn == TeamColor.WHITE ? 'w' : 'b').append(' ');
@@ -444,8 +416,7 @@ public class ChessGame {
 
     private void parseFenString(String fen) {
         if (fen == null) {
-            board.resetBoard();
-            return;
+            throw new RuntimeException("Fen string is null");
         }
         String[] fenStrings = fen.split(" ");
         if (fenStrings.length < 6) {
@@ -462,9 +433,7 @@ public class ChessGame {
                 if (Character.isDigit(c)) {
                     file += (int) c - '0';
                 } else {
-                    ChessPiece piece = new ChessPiece(c);
-                    ChessPosition position = new ChessPosition(rank, file);
-                    pieces.put(position, piece);
+                    pieces.put(new ChessPosition(rank, file), new ChessPiece(c));
                     file += 1;
                 }
             }
