@@ -146,21 +146,30 @@ public class GameService extends Service {
             send(session, errorString("Authorization is invalid"));
             return;
         }
-        ArrayList<Connection> connectedSessions = connections.getConnections(gameID);
+        if (authData == null) {
+            send(session, errorString("Authorization is invalid"));
+            return;
+        }
+        if (gameData == null) {
+            send(session, errorString("Game is invalid"));
+            return;
+        }
         ChessGame game = new ChessGame(gameData.game());
-        AuthData whiteAuth = null;
-        AuthData blackAuth = null;
-        for (Connection c : connectedSessions) {
-            if (c.relation == Connection.Relation.BLACK) {
-                blackAuth = c.auth;
-            }
-            if (c.relation == Connection.Relation.WHITE) {
-                whiteAuth = c.auth;
+        Connection connection = null;
+        for (Connection c : connections.getConnections(gameID)) {
+            if (Objects.equals(authData.authToken(), c.auth.authToken())) {
+                connection = c;
+                break;
             }
         }
+        if (connection == null || connection.relation == Connection.Relation.OBSERVER) {
+            String message = errorString("Non-players cannot make moves");
+            send(session, message);
+            return;
+        }
         ChessGame.TeamColor turn = game.getTeamTurn();
-        if ((turn == ChessGame.TeamColor.WHITE && whiteAuth != null && Objects.equals(authData, whiteAuth)) ||
-                (turn == ChessGame.TeamColor.BLACK && blackAuth != null && Objects.equals(authData, blackAuth))) {
+        if ((turn == ChessGame.TeamColor.WHITE && connection.relation == Connection.Relation.WHITE) ||
+                (turn == ChessGame.TeamColor.BLACK && connection.relation == Connection.Relation.BLACK)) {
             try {
                 game.makeMove(move);
                 GameData updatedGame = new GameData(gameID, gameData.blackUsername(), gameData.whiteUsername(),
@@ -175,12 +184,9 @@ public class GameService extends Service {
             } catch (DataAccessException e) {
                 send(session, errorString("Couldn't update game"));
             }
-        } else if (game.getTeamTurn() == ChessGame.TeamColor.WHITE && authData == blackAuth) {
-            send(session, errorString("It is " + gameData.whiteUsername() + "'s turn"));
-        } else if (game.getTeamTurn() == ChessGame.TeamColor.BLACK && authData == whiteAuth) {
-            send(session, errorString("It is " + gameData.blackUsername() + "'s turn"));
         } else {
-            send(session, errorString("Observers cannot make moves"));
+            String turnUsername = turn == ChessGame.TeamColor.WHITE ? gameData.whiteUsername() : gameData.blackUsername();
+            send(session, errorString("It is " + turnUsername + "'s turn"));
         }
     }
 
@@ -197,7 +203,46 @@ public class GameService extends Service {
     }
 
     public void resign(Session session, String authToken, int gameID) throws IOException {
-        // TODO must lock game
+        AuthData authData;
+        GameData gameData;
+        try {
+            authData = authDAO.getAuthByAuthToken(authToken);
+            gameData = gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            send(session, errorString("Authorization is invalid"));
+            return;
+        }
+        if (authData == null) {
+            send(session, errorString("Authorization is invalid"));
+            return;
+        }
+        if (gameData == null) {
+            send(session, errorString("Game is invalid"));
+            return;
+        }
+        Connection connection = null;
+        for (Connection c : connections.getConnections(gameID)) {
+            if (Objects.equals(authData.authToken(), c.auth.authToken())) {
+                connection = c;
+                break;
+            }
+        }
+        System.out.println(connection);
+        if (connection == null || connection.relation == Connection.Relation.OBSERVER) {
+            String message = errorString("Non-players cannot resign");
+            send(session, message);
+            return;
+        }
+        ChessGame.TeamColor teamColor = connection.relation == Connection.Relation.WHITE ?
+                ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        ChessGame game = new ChessGame(gameData.game());
+        try {
+            game.resign(teamColor);
+        } catch (InvalidMoveException e) {
+            send(session, errorString(e.getMessage()));
+        }
+        String notify = notificationString(authData.username() + " resigned");
+        connections.broadcast(gameID, null, notify);
     }
 
     private String errorString(String errorMessage) {

@@ -357,9 +357,9 @@ public class ChessGame {
         return moves.isEmpty();
     }
 
-    public void resign(TeamColor teamColor) {
+    public void resign(TeamColor teamColor) throws InvalidMoveException {
         if (isGameOver()) {
-            return;
+            throw new InvalidMoveException("The game is already finished");
         }
         gameOver = teamColor == TeamColor.WHITE ? "B-" : "W-";
     }
