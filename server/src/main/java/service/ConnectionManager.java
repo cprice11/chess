@@ -6,13 +6,14 @@ import org.eclipse.jetty.websocket.api.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    private final ConcurrentHashMap<Integer, ArrayList<Connection>> connections;
+    private static ConcurrentHashMap<Integer, ArrayList<Connection>> connections;
 
     public ConnectionManager() {
-        this.connections = new ConcurrentHashMap<>();
+        connections = new ConcurrentHashMap<>();
     }
 
     public void add(AuthData auth, int gameID, Session session, Connection.Relation relation) {
@@ -33,15 +34,7 @@ public class ConnectionManager {
 
     public void remove(int gameID, AuthData auth) {
         var gameListeners = connections.get(gameID);
-        var removeList = new ArrayList<Connection>();
-        for (var c : gameListeners) {
-            if (c.auth == auth) {
-                removeList.add(c);
-            }
-        }
-        for (var c : removeList) {
-            gameListeners.remove(c);
-        }
+        gameListeners.removeIf((Connection c) -> Objects.equals(c.auth, auth));
         connections.put(gameID, gameListeners);
     }
 
