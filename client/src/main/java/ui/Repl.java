@@ -22,8 +22,11 @@ public class Repl {
 
     public Repl(String serverUrl) {
         ServerFacade server;
-        MessageHandler messageHandler;
-        messageHandler = (MessageHandler.Whole<String>) this::handleServerMessage;
+        MessageHandler messageHandler = new MessageHandler.Whole<String>() {
+            public void onMessage(String message) {
+                handleServerMessage(message);
+            }
+        };
         server = new ServerFacade(serverUrl, messageHandler);
         preLoginClient = new PreLogin(server, this);
         postLoginClient = new PostLogin(server, this);
