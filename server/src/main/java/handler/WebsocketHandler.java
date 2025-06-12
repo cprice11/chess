@@ -9,7 +9,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
@@ -26,8 +25,8 @@ public class WebsocketHandler {
             switch (userGameCommand.getCommandType()) {
                 case CONNECT -> handleConnect(session, userGameCommand);
                 case MAKE_MOVE -> handleMakeMove(session, GSON.fromJson(command, MakeMoveCommand.class));
-                case LEAVE -> handleLeave(userGameCommand);
-                case RESIGN -> handleResign(userGameCommand);
+                case LEAVE -> handleLeave(session, userGameCommand);
+                case RESIGN -> handleResign(session, userGameCommand);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -42,11 +41,11 @@ public class WebsocketHandler {
         GAME_SERVICE.makeMove(session, command.getAuthToken(), command.getGameID(), command.getMove());
     }
 
-    private ServerMessage handleLeave(UserGameCommand command) {
-        throw new RuntimeException();
+    private void handleLeave(Session session, UserGameCommand command) throws IOException {
+        GAME_SERVICE.leaveGame(session, command.getAuthToken(), command.getGameID());
     }
 
-    private ServerMessage handleResign(UserGameCommand command) {
-        throw new RuntimeException();
+    private void handleResign(Session session, UserGameCommand command) throws IOException {
+        GAME_SERVICE.resign(session, command.getAuthToken(), command.getGameID());
     }
 }
