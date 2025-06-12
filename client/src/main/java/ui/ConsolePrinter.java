@@ -9,7 +9,6 @@ public class ConsolePrinter {
     private String messageString = "";
     private ChessGame game;
     private ChessBoard board;
-    private ChessGame.TeamColor turn;
     private String gameState;
     private final String[] boardRows = new String[10];
     private ChessGame.TeamColor teamOrientation = ChessGame.TeamColor.WHITE;
@@ -87,8 +86,8 @@ public class ConsolePrinter {
             titleColor.errorHighlight();
             titleText = " Draw by stalemate ";
         } else {
-            titleColor.secondaryHighlight();
-            titleText = " Turn: " + turn + " ";
+            titleColor.darkText().secondaryHighlight().lightSquare();
+            titleText = " Turn: " + game.getTeamTurn() + " ";
             if (game.isInCheck(teamOrientation)) {
                 titleColor.ternaryHighlight();
                 titleText += "IN CHECK ";

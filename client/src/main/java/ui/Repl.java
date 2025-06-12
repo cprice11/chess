@@ -19,12 +19,14 @@ public class Repl {
     private int currentGameID;
     ChessGame currentGame = new ChessGame();
     ConsolePrinter printer = new ConsolePrinter(currentGame);
-    private int createdGame;
 
     public Repl(String serverUrl) {
         ServerFacade server;
-        MessageHandler messageHandler;
-        messageHandler = (MessageHandler.Whole<String>) this::handleServerMessage;
+        MessageHandler messageHandler = new MessageHandler.Whole<String>() {
+            public void onMessage(String message) {
+                handleServerMessage(message);
+            }
+        };
         server = new ServerFacade(serverUrl, messageHandler);
         preLoginClient = new PreLogin(server, this);
         postLoginClient = new PostLogin(server, this);
@@ -89,10 +91,6 @@ public class Repl {
 
     public String getAuthToken() {
         return authToken;
-    }
-
-    public void setCreatedGame(int createdGame) {
-        this.createdGame = createdGame;
     }
 
     public void printPrompt() {

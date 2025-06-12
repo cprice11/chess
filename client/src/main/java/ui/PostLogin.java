@@ -98,7 +98,7 @@ public class PostLogin extends Client {
             gameName = getLine("Game name");
         }
         try {
-            repl.setCreatedGame(server.createGame(gameName, repl.getAuthToken()));
+            server.createGame(gameName, repl.getAuthToken());
             System.out.println("Created game: " + gameName);
             list();
         } catch (ResponseException e) {
