@@ -6,17 +6,15 @@ import serverfacade.ServerFacade;
 
 import java.util.Arrays;
 
-public class GamePlay implements Client {
-    private static final String HELP = "I'm the gameplay help message.";
+public class GamePlay extends Client {
     ChessGame game = new ChessGame();
     ChessGame.TeamColor teamColor;
     ChessColor color = new ChessColor();
-    private final ServerFacade server;
-    private final Repl repl;
 
     public GamePlay(String serverUrl, Repl repl) {
         server = new ServerFacade(serverUrl);
         this.repl = repl;
+        help = "I'm the gameplay help message.";
     }
 
     public String eval(String input) {
@@ -34,7 +32,7 @@ public class GamePlay implements Client {
             case "hide":
                 hide();
             default:
-                System.out.println(help());
+                printHelp();
         }
         return returnVal;
     }
@@ -52,10 +50,5 @@ public class GamePlay implements Client {
 
     private void hide() {
         repl.printer.hideLabels();
-    }
-
-    public String help() {
-        color.secondaryText();
-        return color + HELP + color.getResetString();
     }
 }

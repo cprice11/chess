@@ -1,6 +1,5 @@
 package ui;
 
-import chess.ChessColor;
 import chess.ChessGame;
 import datamodels.GameSummary;
 import serverfacade.ResponseException;
@@ -9,47 +8,79 @@ import serverfacade.ServerFacade;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Scanner;
 
-public class PostLogin implements Client {
-    private final ServerFacade server;
-    private final Repl repl;
-    private final ChessColor color = new ChessColor();
+public class PostLogin extends Client {
     private final Hashtable<Integer, Integer> gameTable = new Hashtable<>();
     private int longestID = 2;
     private int longestGame = 9;
     private int longestBlack = 14;
     private int longestWhite = 14;
-    private final String tableColor = new ChessColor().secondaryText().toString();
-    private final String tableContentsColor = new ChessColor().lightText().toString();
-    private final String help = color.secondaryText() +
-            "Enter one of the following commands:\n" +
-            " - " + color.lightText() + "help\n" + color.ternaryText() +
-            " - " + color.lightText() + "list\n" + color.ternaryText() +
-            " - " + color.lightText() + "create\n" + color.ternaryText() +
-            " - " + color.lightText() + "join\n" + color.ternaryText() +
-            " - " + color.lightText() + "observe\n" + color.ternaryText() +
-            " - " + color.errorText() + "quit\n" + color.ternaryText();
+    private final String tableColor = color.secondaryText().toString();
+    private final String tableContentsColor = color.lightText().toString();
 
     public PostLogin(String serverUrl, Repl repl) {
         server = new ServerFacade(serverUrl);
         this.repl = repl;
+        help = color.secondaryText() +
+                "The following commands are available:\n" +
+                commandString("help, h", "Show this help message\n") +
+                commandString("list, l", "List games on the server\n") +
+                commandString("create, c", new String[]{"Create a new game",
+                        "optionally takes " + color.secondaryText() + "<gameName>\n"}) +
+                commandString("join", new String[]{"Join a game",
+                        "optionally takes " + color.secondaryText() + "<gameID>" + color.lightText() + " and " +
+                                color.secondaryText() + "<preferredColor>" + color.lightText() + " (white/black)\n"}) +
+                commandString("observe", new String[]{"Join a game as an observer",
+                        "optionally takes " + color.secondaryText() + "<gameID>\n"}) +
+                commandString("logout", "Logout from the current session\n") +
+                commandString("quit", "Quit the program", color.errorText().toString());
+        startMessage = color.secondaryText() + "C S 240 Chess client";
     }
 
     public String eval(String input) {
         var tokens = input.toLowerCase().split(" ");
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-        String returnVal = "";
         switch (cmd) {
-            case "q", "quit" -> returnVal = "preLogin";
+            case "q", "quit", "exit" -> {
+                logout();
+                return "quit";
+            }
             case "c", "create" -> create(params);
-            case "l", "list" -> list();
-            case "j", "join" -> returnVal = join(params);
-            case "o", "observe" -> returnVal = observe(params);
-            default -> System.out.println(help());
+            case "l", "list", "games" -> list();
+            case "logout" -> {
+                logout();
+                return "preLogin";
+            }
+            case "j", "join" -> {
+                join(params);
+                return "gamePlay";
+            }
+            case "o", "observe" -> {
+                observe(params);
+                return "gamePlay";
+            }
+            default -> printHelp();
         }
-        return returnVal;
+        return "";
+    }
+
+    @Override
+    public void printStartMessage() {
+        list();
+        System.out.println(startMessage);
+        System.out.println("User: " + color.primaryText() + this.repl.getUsername() +
+                color.lightText() + "\n\tPlease enter a command");
+    }
+
+    private void logout() {
+        try {
+            server.logoutUser(repl.getAuthToken());
+            System.out.println("Logging out");
+            repl.setAuthToken(null);
+        } catch (ResponseException ignored) {
+        }
+        ;
     }
 
     private void create(String[] params) {
@@ -82,6 +113,72 @@ public class PostLogin implements Client {
             System.out.println(color.errorText() + e.getMessage());
         }
     }
+
+    private void join(String[] params) {
+        int gameIndex;
+        String teamColor;
+        try {
+            if (params.length == 2) {
+                gameIndex = Integer.parseInt(params[0]);
+                teamColor = params[1];
+            } else {
+                gameIndex = Integer.parseInt(getLine("Game number"));
+                teamColor = getLine("Team Color (w/b)");
+            }
+        } catch (NumberFormatException e) {
+            error("Cannot understand game number");
+            return;
+        }
+        teamColor = teamColor.toLowerCase();
+        ChessGame.TeamColor team;
+        if (teamColor.equals("w") || teamColor.equals("white")) {
+            team = ChessGame.TeamColor.WHITE;
+        } else if (teamColor.equals("b") || teamColor.equals("black")) {
+            team = ChessGame.TeamColor.BLACK;
+        } else {
+            error("Cannot parse requested team: " + teamColor);
+            return;
+        }
+        Integer gameID = gameTable.get(gameIndex);
+        if (gameID == null) {
+            error("Game " + gameIndex + " does not exist");
+            return;
+        }
+        try {
+            server.joinGame(repl.getAuthToken(), gameID, team);
+            System.out.println("Joining game " + gameID);
+            repl.setCurrentGameID(gameID);
+            if (team == ChessGame.TeamColor.WHITE) {
+                repl.printer.fromWhite();
+            } else {
+                repl.printer.fromBlack();
+            }
+        } catch (ResponseException e) {
+            error(e.getMessage());
+        }
+    }
+
+    private void observe(String[] params) {
+        int gameIndex;
+        try {
+            if (params.length == 1) {
+                gameIndex = Integer.parseInt(params[0]);
+            } else {
+                gameIndex = Integer.parseInt(getLine("Game number"));
+            }
+        } catch (NumberFormatException e) {
+            error("Cannot understand game number");
+            return;
+        }
+        Integer gameID = gameTable.get(gameIndex);
+        if (gameID == null) {
+            error("Game " + gameIndex + " does not exist");
+            return;
+        }
+        System.out.println("Observe game");
+        repl.setCurrentGameID(gameID);
+    }
+
 
     private void printAsTable(ArrayList<GameSummary> games) {
         ArrayList<String> rows = new ArrayList<>();
@@ -132,14 +229,10 @@ public class PostLogin implements Client {
     private String formatRow(String id, String name, String black, String white,
                              String leftBorder, String middleBorder, String rightBorder, char fillChar, boolean monoColor) {
         String contentColor = monoColor ? tableColor : tableContentsColor;
-        id = id == null ? "" : id;
-        name = name == null ? "" : name;
-        black = black == null ? "-" : black;
-        white = white == null ? "-" : white;
-        id = " " + id.strip() + " ";
-        name = " " + name.strip() + " ";
-        black = " " + black.strip() + " ";
-        white = " " + white.strip() + " ";
+        id = id == null ? "" : " " + id.strip() + " ";
+        name = name == null ? "" : " " + name.strip() + " ";
+        black = black == null ? " - " : " " + black.strip() + " ";
+        white = white == null ? " - " : " " + white.strip() + " ";
         return " " + tableColor + leftBorder + contentColor +
                 String.format("%-" + (longestID + 2) + "s", id).replace(' ', fillChar) +
                 tableColor + middleBorder + contentColor +
@@ -149,94 +242,5 @@ public class PostLogin implements Client {
                 tableColor + middleBorder + contentColor +
                 String.format("%-" + (longestWhite + 2) + "s", white).replace(' ', fillChar) +
                 tableColor + rightBorder;
-    }
-
-    private String join(String[] params) {
-        int gameIndex;
-        String teamColor;
-        if (params.length == 2) {
-            try {
-              gameIndex = Integer.parseInt(params[0]);
-            } catch (NumberFormatException e) {
-                error("Cannot understand game number");
-                return "";
-            }
-            teamColor = params[1];
-        } else {
-            try {
-                gameIndex = Integer.parseInt(getLine("Game number"));
-            } catch (NumberFormatException e) {
-                error("Cannot understand game number");
-                return "";
-            }
-            teamColor = getLine("Team Color (w/b)");
-        }
-        teamColor = teamColor.toLowerCase();
-        ChessGame.TeamColor team;
-        if (teamColor.equals("w") || teamColor.equals("white")) {
-            team = ChessGame.TeamColor.WHITE;
-        } else if (teamColor.equals("b") || teamColor.equals("black")) {
-            team = ChessGame.TeamColor.BLACK;
-        } else {
-            error("Cannot parse requested team: " + teamColor);
-            return "";
-        }
-        Integer gameID = gameTable.get(gameIndex);
-        if (gameID == null) {
-            error("Game " + gameIndex + " does not exist");
-            return "";
-        }
-        try {
-            server.joinGame(repl.getAuthToken(), gameID, team);
-            System.out.println("Joined game");
-            repl.setCurrentGameID(gameID);
-            if (team == ChessGame.TeamColor.WHITE) {
-                repl.printer.fromWhite();
-            } else {
-                repl.printer.fromBlack();
-            }
-            return "gamePlay";
-        } catch (ResponseException e) {
-            error(e.getMessage());
-            return "";
-        }
-    }
-
-    private String observe(String[] params) {
-        int gameIndex;
-        try {
-            if (params.length == 1) {
-                gameIndex = Integer.parseInt(params[0]);
-            } else {
-                gameIndex = Integer.parseInt(getLine("Game number"));
-            }
-        } catch (NumberFormatException e) {
-            error("Cannot understand game number");
-            return "";
-        }
-        Integer gameID = gameTable.get(gameIndex);
-        if (gameID == null) {
-            error("Game " + gameIndex + " does not exist");
-            return "";
-        }
-        System.out.println("Observe game");
-        repl.setCurrentGameID(gameID);
-        return "gamePlay";
-    }
-
-    public String help() {
-        color.secondaryText();
-        return color + help + color.getResetString();
-    }
-
-    private void error(String message) {
-        System.out.println(color.errorText().toString() + message + color.getResetString());
-    }
-
-    private String getLine(String prompt) {
-        prompt = prompt == null ? "> " : prompt + ": ";
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + prompt + EscapeSequences.RESET_TEXT_COLOR);
-        Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine();
     }
 }
