@@ -86,7 +86,7 @@ public class ConsolePrinter {
             titleColor.errorHighlight();
             titleText = " Draw by stalemate ";
         } else {
-            titleColor.secondaryHighlight();
+            titleColor.secondaryHighlight().lightSquare().darkText();
             titleText = " Turn: " + game.getTeamTurn() + " ";
             if (game.isInCheck(teamOrientation)) {
                 titleColor.ternaryHighlight();
