@@ -48,7 +48,7 @@ public class GameService extends Service {
             throw new UnauthorizedException();
         }
         gameIndex = gameDAO.getMaxGameID() + 1;
-        GameData newGame = new GameData(gameIndex, null, null, gameName, new ChessGame());
+        GameData newGame = new GameData(gameIndex, null, null, gameName, new ChessGame().toDense());
         gameDAO.addGame(newGame);
         return gameIndex;
     }
@@ -141,14 +141,14 @@ public class GameService extends Service {
             return;
         }
         GameSessions connectedSessions = sessions.get(gameID);
-        ChessGame game = gameData.game();
+        ChessGame game = new ChessGame(gameData.game());
         if ((game.getTeamTurn() == ChessGame.TeamColor.WHITE && session == connectedSessions.white) ||
                 (game.getTeamTurn() == ChessGame.TeamColor.BLACK && session == connectedSessions.black)) {
             // Correct turn and session
             try {
                 game.makeMove(move);
                 GameData updatedGame = new GameData(
-                        gameID, gameData.blackUsername(), gameData.whiteUsername(), gameData.gameName(), game);
+                        gameID, gameData.blackUsername(), gameData.whiteUsername(), gameData.gameName(), game.toDense());
                 gameDAO.updateGame(gameID, updatedGame);
                 String message = loadGameString(updatedGame);
                 sendToAllConnectedSessions(gameID, message);

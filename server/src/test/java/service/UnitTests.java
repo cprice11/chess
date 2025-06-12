@@ -15,8 +15,8 @@ public class UnitTests {
     public final AuthData authA = new AuthData("userA", "token-a");
     public final AuthData authB = new AuthData("userB", "token-b");
     public final AuthData authC = new AuthData("userC", "token-c");
-    public final GameData gameA = new GameData(1, "userA", "userB", "gameA", new ChessGame());
-    public final GameData gameB = new GameData(2, "userB", "userC", "gameB", new ChessGame());
+    public final GameData gameA = new GameData(1, "userA", "userB", "gameA", new ChessGame().toDense());
+    public final GameData gameB = new GameData(2, "userB", "userC", "gameB", new ChessGame().toDense());
     public final UserData userA = new UserData("userA", "userApass", "a@email.com");
     public final UserData userB = new UserData("userB", "userBpass", "b@email.com");
     public final UserData userC = new UserData("userC", "userCpass", "c@email.com");

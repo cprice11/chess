@@ -98,9 +98,10 @@ public class GameTests extends ServiceUnitTests {
         try {
             for (ChessMove move : moves) {
                 data = gameDAO.getGame(gameA.gameID());
-                game = data.game();
+                game = new ChessGame(data.game());
                 game.makeMove(move);
-                GameData updated = new GameData(data.gameID(), data.whiteUsername(), data.blackUsername(), data.gameName(), game);
+                var a = game.toDense().fen();
+                GameData updated = new GameData(data.gameID(), data.whiteUsername(), data.blackUsername(), data.gameName(), game.toDense());
                 gameDAO.updateGame(data.gameID(), updated);
             }
         } catch (InvalidMoveException e) {

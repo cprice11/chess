@@ -26,61 +26,14 @@ public class ChessGame {
         board.resetBoard();
     }
 
+    public ChessGame(DenseGame game) {
+        this.moveHistory = game.history();
+        parseFenString(game.fen());
+    }
+
     public ChessGame(String fenString, ArrayList<ChessMove> moveHistory) {
         this.moveHistory = moveHistory;
-        if (fenString == null) {
-            board.resetBoard();
-            return;
-        }
-        String[] fenStrings = fenString.split(" ");
-        if (fenStrings.length < 6) {
-            throw new RuntimeException("Too few fen sections");
-        }
-        String boardString = fenStrings[0];
-        String[] rows = boardString.split("/");
-        HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
-        for (int i = 0; i < rows.length; i++) {
-            String rowString = rows[i];
-            int file = 1;
-            int rank = 8 - i;
-            for (char c : rowString.toCharArray()) {
-                if (Character.isDigit(c)) {
-                    file += c;
-                } else {
-                    ChessPiece piece = new ChessPiece(c);
-                    ChessPosition position = new ChessPosition(rank, file);
-                    pieces.put(position, piece);
-                    file += 1;
-                }
-            }
-        }
-        board.setPieces(pieces);
-        this.turn = Objects.equals(fenStrings[1], "w") ? TeamColor.WHITE : TeamColor.BLACK;
-        String castling = fenStrings[2];
-        this.whiteCanShortCastle = false;
-        this.whiteCanLongCastle = false;
-        this.blackCanShortCastle = false;
-        this.blackCanLongCastle = false;
-        if (castling.contains("K")) {
-            this.whiteCanShortCastle = true;
-        }
-        if (castling.contains("Q")) {
-            this.whiteCanLongCastle = true;
-        }
-        if (castling.contains("k")) {
-            this.blackCanShortCastle = true;
-        }
-        if (castling.contains("q")) {
-            this.blackCanLongCastle = true;
-        }
-        String enPassant = fenStrings[3];
-        if (!Objects.equals(enPassant, "-")) {
-            this.enPassant = new ChessPosition(enPassant);
-        }
-        Integer half = Integer.getInteger(fenStrings[4]);
-        Integer full = Integer.getInteger(fenStrings[5]);
-        this.halfMoveClock = half == null ? 0 : half;
-        this.fullMoveNumber = full == null ? 1 : full;
+        parseFenString(fenString);
     }
 
     public ChessGame(ChessBoard board, ArrayList<ChessMove> moveHistory, TeamColor turn,
@@ -489,6 +442,61 @@ public class ChessGame {
         return fenString.toString();
     }
 
+    private void parseFenString(String fen) {
+        if (fen == null) {
+            board.resetBoard();
+            return;
+        }
+        String[] fenStrings = fen.split(" ");
+        if (fenStrings.length < 6) {
+            throw new RuntimeException("Too few fen sections");
+        }
+        String boardString = fenStrings[0];
+        String[] rows = boardString.split("/");
+        HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
+        for (int i = 0; i < rows.length; i++) {
+            String rowString = rows[i];
+            int file = 1;
+            int rank = 8 - i;
+            for (char c : rowString.toCharArray()) {
+                if (Character.isDigit(c)) {
+                    file += (int) c - '0';
+                } else {
+                    ChessPiece piece = new ChessPiece(c);
+                    ChessPosition position = new ChessPosition(rank, file);
+                    pieces.put(position, piece);
+                    file += 1;
+                }
+            }
+        }
+        board.setPieces(pieces);
+        this.turn = Objects.equals(fenStrings[1], "w") ? TeamColor.WHITE : TeamColor.BLACK;
+        String castling = fenStrings[2];
+        this.whiteCanShortCastle = false;
+        this.whiteCanLongCastle = false;
+        this.blackCanShortCastle = false;
+        this.blackCanLongCastle = false;
+        if (castling.contains("K")) {
+            this.whiteCanShortCastle = true;
+        }
+        if (castling.contains("Q")) {
+            this.whiteCanLongCastle = true;
+        }
+        if (castling.contains("k")) {
+            this.blackCanShortCastle = true;
+        }
+        if (castling.contains("q")) {
+            this.blackCanLongCastle = true;
+        }
+        String enPassant = fenStrings[3];
+        if (!Objects.equals(enPassant, "-")) {
+            this.enPassant = new ChessPosition(enPassant);
+        }
+        Integer half = Integer.getInteger(fenStrings[4]);
+        Integer full = Integer.getInteger(fenStrings[5]);
+        this.halfMoveClock = half == null ? 0 : half;
+        this.fullMoveNumber = full == null ? 1 : full;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -505,7 +513,11 @@ public class ChessGame {
     }
 
     public String toJson() {
-        return GSON.toJson(new DenseGame(fenString(), this.moveHistory), DenseGame.class);
+        return GSON.toJson(toDense(), DenseGame.class);
+    }
+
+    public DenseGame toDense() {
+        return new DenseGame(fenString(), this.moveHistory);
     }
 
     @Override

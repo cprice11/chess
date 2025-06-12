@@ -1,6 +1,5 @@
 package dataaccess;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import datamodels.*;
@@ -44,8 +43,7 @@ public class MySqlDataAccess {
         String name = rs.getString("gameName");
         String gameJson = rs.getString("game");
         DenseGame dense = GSON.fromJson(gameJson, DenseGame.class);
-        ChessGame game = new ChessGame(dense.fen(), dense.history());
-        return new GameData(gameID, black, white, name, game);
+        return new GameData(gameID, black, white, name, dense);
     }
 
     protected static GameSummary summaryFromResponse(ResultSet rs) throws SQLException {
