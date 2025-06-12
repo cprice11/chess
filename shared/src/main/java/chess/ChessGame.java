@@ -1,8 +1,8 @@
 package chess;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import datamodels.DenseGame;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -24,7 +24,63 @@ public class ChessGame {
 
     public ChessGame() {
         board.resetBoard();
-//        ConsolePrinter.printGame(this);
+    }
+
+    public ChessGame(String fenString, ArrayList<ChessMove> moveHistory) {
+        this.moveHistory = moveHistory;
+        if (fenString == null) {
+            board.resetBoard();
+            return;
+        }
+        String[] fenStrings = fenString.split(" ");
+        if (fenStrings.length < 6) {
+            throw new RuntimeException("Too few fen sections");
+        }
+        String boardString = fenStrings[0];
+        String[] rows = boardString.split("/");
+        HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
+        for (int i = 0; i < rows.length; i++) {
+            String rowString = rows[i];
+            int file = 1;
+            int rank = 8 - i;
+            for (char c : rowString.toCharArray()) {
+                if (Character.isDigit(c)) {
+                    file += c;
+                } else {
+                    ChessPiece piece = new ChessPiece(c);
+                    ChessPosition position = new ChessPosition(rank, file);
+                    pieces.put(position, piece);
+                    file += 1;
+                }
+            }
+        }
+        board.setPieces(pieces);
+        this.turn = Objects.equals(fenStrings[1], "w") ? TeamColor.WHITE : TeamColor.BLACK;
+        String castling = fenStrings[2];
+        this.whiteCanShortCastle = false;
+        this.whiteCanLongCastle = false;
+        this.blackCanShortCastle = false;
+        this.blackCanLongCastle = false;
+        if (castling.contains("K")) {
+            this.whiteCanShortCastle = true;
+        }
+        if (castling.contains("Q")) {
+            this.whiteCanLongCastle = true;
+        }
+        if (castling.contains("k")) {
+            this.blackCanShortCastle = true;
+        }
+        if (castling.contains("q")) {
+            this.blackCanLongCastle = true;
+        }
+        String enPassant = fenStrings[3];
+        if (!Objects.equals(enPassant, "-")) {
+            this.enPassant = new ChessPosition(enPassant);
+        }
+        Integer half = Integer.getInteger(fenStrings[4]);
+        Integer full = Integer.getInteger(fenStrings[5]);
+        this.halfMoveClock = half == null ? 0 : half;
+        this.fullMoveNumber = full == null ? 1 : full;
     }
 
     public ChessGame(ChessBoard board, ArrayList<ChessMove> moveHistory, TeamColor turn,
@@ -448,52 +504,12 @@ public class ChessGame {
         return Objects.hash(turn, getBoard());
     }
 
+    public String toJson() {
+        return GSON.toJson(new DenseGame(fenString(), this.moveHistory), DenseGame.class);
+    }
+
     @Override
     public String toString() {
         return fenString();
-    }
-
-    public static class ChessGameDeserializer implements JsonDeserializer<ChessGame> {
-        @Override
-        public ChessGame deserialize(JsonElement jElement, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            JsonObject jObject = jElement.getAsJsonObject();
-            JsonElement boardJson = jObject.get("board");
-            JsonElement piecesJson = boardJson.getAsJsonObject().get("pieces");
-            Hashtable<ChessPosition, ChessPiece> pieces = new Hashtable<>();
-            var a = piecesJson.getAsJsonObject().asMap();
-            for (Map.Entry<String, JsonElement> entry : a.entrySet()) {
-                ChessPosition position = new ChessPosition(entry.getKey());
-                ChessPiece piece = GSON.fromJson(entry.getValue(), ChessPiece.class);
-                pieces.put(position, piece);
-            }
-            ChessBoard board = new ChessBoard();
-            board.setPieces(pieces);
-            List<JsonElement> movesJson = jObject.get("moveHistory").getAsJsonArray().asList();
-            ArrayList<ChessMove> moveHistory = new ArrayList<>();
-            for (JsonElement element : movesJson) {
-                JsonObject elementObject = element.getAsJsonObject();
-                JsonElement startJson = elementObject.get("start");
-                JsonElement endJson = elementObject.get("end");
-                JsonElement promotion = elementObject.get("promotionPiece");
-                ChessPosition start = GSON.fromJson(startJson, ChessPosition.class);
-                ChessPosition end = GSON.fromJson(endJson, ChessPosition.class);
-                ChessPiece.PieceType promotionPiece = GSON.fromJson(promotion, ChessPiece.PieceType.class);
-                ChessMove move = new ChessMove(start, end, promotionPiece);
-                moveHistory.add(move);
-            }
-            String turnString = jObject.get("turn").getAsString();
-            ChessGame.TeamColor turn = Objects.equals(turnString, "WHITE") ?
-                    ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-            boolean whiteShort = jObject.get("whiteCanShortCastle").getAsBoolean();
-            boolean whiteLong = jObject.get("whiteCanLongCastle").getAsBoolean();
-            boolean blackShort = jObject.get("blackCanShortCastle").getAsBoolean();
-            boolean blackLong = jObject.get("blackCanLongCastle").getAsBoolean();
-            ChessPosition enPassantSquare = GSON.fromJson(jObject.get("enPassant"), ChessPosition.class);
-            int halfMove = jObject.get("halfMoveClock").getAsInt();
-            int fullMove = jObject.get("fullMoveNumber").getAsInt();
-            return new ChessGame(board, moveHistory, turn, whiteShort, whiteLong, blackShort, blackLong,
-                    enPassantSquare, halfMove, fullMove);
-        }
     }
 }

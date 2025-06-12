@@ -3,10 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import datamodels.AuthData;
-import datamodels.GameData;
-import datamodels.GameSummary;
-import datamodels.UserData;
+import datamodels.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -22,8 +19,6 @@ public class MySqlDataAccess {
 
 
     public MySqlDataAccess() {
-        gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(ChessGame.class, new ChessGame.ChessGameDeserializer());
         try {
             DatabaseManager.createDatabase();
             conn = DatabaseManager.getConnection();
@@ -48,7 +43,8 @@ public class MySqlDataAccess {
         String white = rs.getString("whiteUsername");
         String name = rs.getString("gameName");
         String gameJson = rs.getString("game");
-        ChessGame game = gsonBuilder.create().fromJson(gameJson, ChessGame.class);
+        DenseGame dense = GSON.fromJson(gameJson, DenseGame.class);
+        ChessGame game = new ChessGame(dense.fen(), dense.history());
         return new GameData(gameID, black, white, name, game);
     }
 

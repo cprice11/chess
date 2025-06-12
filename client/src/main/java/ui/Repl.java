@@ -4,10 +4,6 @@ import chess.ChessColor;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import serverfacade.ServerFacade;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
 
 import javax.websocket.MessageHandler;
 import java.util.Scanner;
@@ -31,13 +27,8 @@ public class Repl {
         ServerFacade server;
         MessageHandler messageHandler = new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
-                ServerMessage serverMessage = GSON.fromJson(message, ServerMessage.class);
-                serverMessage = switch (serverMessage.getServerMessageType()) {
-                    case LOAD_GAME -> GSON.fromJson(message, LoadGameMessage.class);
-                    case ERROR -> GSON.fromJson(message, ErrorMessage.class);
-                    case NOTIFICATION -> GSON.fromJson(message, NotificationMessage.class);
-                };
-                handleServerMessage(serverMessage);
+                System.out.println("Recieved message: " + message);
+                handleServerMessage(message);
             }
         };
         server = new ServerFacade(serverUrl, messageHandler);
@@ -77,7 +68,7 @@ public class Repl {
         System.out.println("Quitting...");
     }
 
-    private void handleServerMessage(ServerMessage message) {
+    private void handleServerMessage(String message) {
         currentClient.handleServerMessage(message);
     }
 

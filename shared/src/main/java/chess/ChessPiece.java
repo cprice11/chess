@@ -17,6 +17,20 @@ public class ChessPiece {
         this.type = type;
     }
 
+    public ChessPiece(char letterSymbol) {
+        this.color = Character.isUpperCase(letterSymbol) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        char letter = Character.toLowerCase(letterSymbol);
+        this.type = switch (letter) {
+            case 'k' -> PieceType.KING;
+            case 'q' -> PieceType.QUEEN;
+            case 'b' -> PieceType.BISHOP;
+            case 'n' -> PieceType.KNIGHT;
+            case 'r' -> PieceType.ROOK;
+            case 'p' -> PieceType.PAWN;
+            default -> throw new RuntimeException("Piece cannot be null");
+        };
+    }
+
     /**
      * The various different chess piece options
      */

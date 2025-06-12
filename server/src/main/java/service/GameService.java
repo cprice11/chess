@@ -47,7 +47,7 @@ public class GameService extends Service {
         if (auth == null) {
             throw new UnauthorizedException();
         }
-        gameIndex += 1;
+        gameIndex = gameDAO.getMaxGameID() + 1;
         GameData newGame = new GameData(gameIndex, null, null, gameName, new ChessGame());
         gameDAO.addGame(newGame);
         return gameIndex;
@@ -84,7 +84,6 @@ public class GameService extends Service {
 
     // Webhook methods
     public void connectToGame(Session session, String authToken, int gameID) throws IOException {
-        GameSessions connectedSessions = sessions.get(gameID);
         AuthData auth; // TODO: Let multiple sessions from the same user connect to a game, but only let one session play.
         GameData game;
         try {
@@ -99,6 +98,18 @@ public class GameService extends Service {
         String username = auth.username();
         String white = game.whiteUsername();
         String black = game.blackUsername();
+        GameSessions connectedSessions = sessions.get(gameID);
+        if (connectedSessions == null) {
+            Session blackSession = Objects.equals(username, black) ? session : null;
+            Session whiteSession = Objects.equals(username, white) ? session : null;
+            HashSet<Session> observers = new HashSet<>();
+            if (!Objects.equals(username, black) && !Objects.equals(username, white)) {
+                observers.add(session);
+            }
+            sessions.put(gameID, new GameSessions(blackSession, whiteSession, observers));
+        }
+        connectedSessions = sessions.get(gameID);
+
         HashSet<Session> observers = connectedSessions.observers;
         String notification = "user '" + username + "' has joined as ";
         try (Session whiteSession = connectedSessions.white;
@@ -181,6 +192,7 @@ public class GameService extends Service {
         otherConnections.add(connections.black);
         connections.observers.removeIf((Session s) -> !s.isOpen());
         otherConnections.addAll(connections.observers);
+        otherConnections.removeIf(Objects::isNull);
         otherConnections.removeIf((Session s) -> !s.isOpen());
         sessions.put(gameID, new GameSessions(connections.black, connections.white, connections.observers));
         return otherConnections;

@@ -1,6 +1,5 @@
 package dataaccess;
 
-import chess.ChessGame;
 import datamodels.GameData;
 import datamodels.GameSummary;
 
@@ -28,7 +27,7 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
             statement.setString(2, game.blackUsername());
             statement.setString(3, game.whiteUsername());
             statement.setString(4, game.gameName());
-            statement.setString(5, GSON.toJson(game.game(), ChessGame.class));
+            statement.setString(5, game.game().toJson());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -73,7 +72,7 @@ public class MySqlGame extends MySqlDataAccess implements GameDAO {
             statement.setString(1, game.blackUsername());
             statement.setString(2, game.whiteUsername());
             statement.setString(3, game.gameName());
-            statement.setString(4, GSON.toJson(game.game(), ChessGame.class));
+            statement.setString(4, game.game().toJson());
             statement.setInt(5, gameID);
             statement.executeUpdate();
         } catch (SQLException e) {

@@ -2,7 +2,10 @@ package ui;
 
 import chess.ChessColor;
 import chess.ChessGame;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import serverfacade.ServerFacade;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
@@ -58,18 +61,31 @@ public class GamePlay extends Client {
         return "";
     }
 
-    public void handleServerMessage(ServerMessage message) {
-        switch (message.getServerMessageType()) {
-            case LOAD_GAME -> {
-                redraw();
-            }
-            case ERROR -> {
-                System.out.println(message);
-            }
-            case NOTIFICATION -> {
-                System.out.println(message);
+    public void handleServerMessage(String messageString) {
+        ServerMessage message = new Gson().fromJson(messageString, ServerMessage.class);
+        System.out.println("Message received in GamePlay: " + message.getServerMessageType());
+        if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+            try {
+                LoadGameMessage loadMessage = new Gson().fromJson(messageString, LoadGameMessage.class);
+                handleLoadGame(loadMessage);
+            } catch (JsonSyntaxException e) {
+                throw new RuntimeException(e);
             }
         }
+        switch (message.getServerMessageType()) {
+            case LOAD_GAME -> handleLoadGame(new Gson().fromJson(messageString, LoadGameMessage.class));
+            case ERROR -> {
+                error(message.toString());
+            }
+            case NOTIFICATION -> {
+                warning(message.toString());
+            }
+        }
+    }
+
+    private void handleLoadGame(LoadGameMessage message) {
+        repl.printer = new ConsolePrinter(message.getGame().game());
+        redraw();
     }
 
     public void switchView() {

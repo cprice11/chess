@@ -4,7 +4,6 @@ import chess.ChessGame;
 import datamodels.GameSummary;
 import serverfacade.ResponseException;
 import serverfacade.ServerFacade;
-import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class PostLogin extends Client {
         return "";
     }
 
-    public void handleServerMessage(ServerMessage message) {
+    public void handleServerMessage(String message) {
         error("Received server message");
     }
 
