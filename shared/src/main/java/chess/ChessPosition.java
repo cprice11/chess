@@ -27,7 +27,7 @@ public class ChessPosition {
             case 'h' -> 8;
             default -> 0;
         };
-        this.rank = code.charAt(1) - '0'; // Why does this work?
+        this.rank = code.charAt(1) - '0';
     }
 
     /**

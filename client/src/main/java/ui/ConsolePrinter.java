@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Hashtable;
 
 public class ConsolePrinter {
-    private ChessGame game;
-    private ChessBoard board;
+    private final ChessGame game;
+    private final ChessBoard board;
     private ChessGame.TeamColor turn;
     private ArrayList<ChessMove> moveList;
     private String gameState;
@@ -22,11 +22,10 @@ public class ConsolePrinter {
     public ConsolePrinter(ChessGame game) {
         this.game = game;
         board = game.getBoard();
+        board.resetHighlights();
     }
 
-    /*
-     * Customization methods
-     */
+    //Customization methods
     public ConsolePrinter setTheme(ChessColor.ColorPalette palette) {
         this.theme.setColorPalette(palette);
         return this;
@@ -44,16 +43,6 @@ public class ConsolePrinter {
 
     public ConsolePrinter setPieceCharacters(Hashtable<ChessPiece, String> characterMap) {
         this.pieceCharacters = characterMap;
-        return this;
-    }
-
-    public ConsolePrinter showLabels() {
-        showLabels = true;
-        return this;
-    }
-
-    public ConsolePrinter hideLabels() {
-        showLabels = false;
         return this;
     }
 
@@ -97,6 +86,7 @@ public class ConsolePrinter {
                 titleText += "IN CHECK ";
             }
         }
+        game.getBoard().resetHighlights();
         gameState = titleColor + titleText;
     }
 

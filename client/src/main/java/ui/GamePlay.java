@@ -2,11 +2,13 @@ package ui;
 
 import chess.ChessColor;
 import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import serverfacade.ServerFacade;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public class GamePlay extends Client {
@@ -23,10 +25,10 @@ public class GamePlay extends Client {
                 commandString("help, h", "Prints this message\n") +
                 commandString("switch, s", "Switch the orientation of the board\n") +
                 commandString("redraw, r", "Redraw the chess board\n") +
-                commandString("leave, l", "Removes the user from the game (whether they are playing or observing the game). The client transitions back to the Post-Login UI.\n") +
-                commandString("move, m", "Allow the user to input what move they want to make. The board is updated to reflect the result of the move, and the board automatically updates on all clients involved in the game.\n") +
-                commandString("resign", "Prompts the user to confirm they want to resign. If they do, the user forfeits the game and the game is over. Does not cause the user to leave the game.\n") +
-                commandString("highlight", "Allows the user to input the piece for which they want to highlight legal moves. The selected piece’s current square and all squares it can legally move to are highlighted. This is a local operation and has no effect on remote users’ screens.\n") +
+                commandString("leave, l", "Removes the user from the game\n") +
+                commandString("move, m", "Make a move in the game\n") +
+                commandString("resign", "Forfeit the game\n") +
+                commandString("highlight", "Show legal moves available to a piece\n") +
                 commandString("quit, q", "Quit the program", color.errorText().toString());
         startMessage = color.secondaryText() +
                 "Welcome to the C S 240 Chess client\n" +
@@ -34,7 +36,6 @@ public class GamePlay extends Client {
     }
 
     public String eval(String input) {
-        repl.printer.showLabels();
         var tokens = input.toLowerCase().split(" ");
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -42,7 +43,9 @@ public class GamePlay extends Client {
             case "s", "switch" -> switchView();
             case "r", "redraw" -> redraw();
             case "l", "leave" -> {
-                return "postLogin";
+                if (leave()) {
+                    return "postLogin";
+                }
             }
             case "m", "move" -> makeMove(params);
             case "resign" -> resign();
@@ -94,11 +97,42 @@ public class GamePlay extends Client {
         throw new RuntimeException("Not implimented yet");
     }
 
-    private void resign() {
-        throw new RuntimeException("Not implimented yet");
+    private boolean leave() {
+        try {
+            server.sendLeave(repl.getAuthToken(), repl.getCurrentGameID());
+            return true;
+        } catch (IOException e) {
+            error("Failed to leave: " + e.getMessage());
+        }
+        return false;
+    }
+
+    private boolean resign() {
+        String resignString = getLine("Are you sure you want to resign (y/N)");
+        if (resignString.equalsIgnoreCase("y")) {
+            try {
+                server.sendResign(repl.getAuthToken(), repl.getCurrentGameID());
+                return true;
+            } catch (IOException e) {
+                error("Failed to resign: " + e.getMessage());
+            }
+        }
+        return false;
     }
 
     private void highlight(String[] params) {
-        throw new RuntimeException("Not implimented yet");
+        String positionString;
+        if (params.length == 1 && params[0].length() == 2) {
+            positionString = params[0];
+        } else {
+            positionString = getLine("Start Position");
+        }
+        ChessPosition start = new ChessPosition(positionString);
+        if (start.getFile() == 0 || start.getRank() > 8 || start.getRank() < 0) {
+            warning("Cannot interpret position '" + positionString + "'");
+        } else {
+            game.validMoves(start);
+            redraw();
+        }
     }
 }

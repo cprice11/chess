@@ -78,6 +78,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         board.resetHighlights();
+        board.setHighlight(startPosition, ChessColor.Highlight.SECONDARY);
         ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) {
             return null;
