@@ -30,7 +30,7 @@ public class GameService extends Service {
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
-        this.connections = new ConnectionManager();
+        connections = new ConnectionManager();
         try {
             gameIndex = gameDAO.getMaxGameID();
         } catch (DataAccessException e) {
@@ -82,7 +82,7 @@ public class GameService extends Service {
     public void clear() {
         System.out.println("Clearing connections");
         connections.clear();
-        this.connections = new ConnectionManager();
+        connections = new ConnectionManager();
     }
 
     public void connectToGame(Session session, String authToken, int gameID) throws IOException {
@@ -136,9 +136,9 @@ public class GameService extends Service {
             relation = Connection.Relation.OBSERVER;
             notification += "observer";
         }
-        this.connections.add(auth, gameID, session, relation);
+        connections.add(auth, gameID, session, relation);
         notification = notificationString(notification);
-        this.connections.broadcast(gameID, auth, notification);
+        connections.broadcast(gameID, auth, notification);
     }
 
     public void makeMove(Session session, String authToken, int gameID, ChessMove move) throws IOException {
@@ -197,8 +197,14 @@ public class GameService extends Service {
 
     public void leaveGame(Session session, String authToken, int gameID) throws IOException {
         AuthData authData;
+        GameData gameData;
         try {
             authData = authDAO.getAuthByAuthToken(authToken);
+            gameData = gameDAO.getGame(gameID);
+            String username = authData.username();
+            String white = Objects.equals(gameData.whiteUsername(), username) ? null : gameData.whiteUsername();
+            String black = Objects.equals(gameData.blackUsername(), username) ? null : gameData.blackUsername();
+            gameDAO.updateGame(gameID, new GameData(gameID, black, white, gameData.gameName(), gameData.game()));
             connections.remove(gameID, authData);
             String message = notificationString("User '" + authData.username() + "' has left");
             connections.broadcast(gameID, authData, message);
