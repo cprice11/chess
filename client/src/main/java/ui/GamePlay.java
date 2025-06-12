@@ -63,12 +63,8 @@ public class GamePlay extends Client {
         System.out.println("Message received in GamePlay: " + message.getServerMessageType());
         switch (message.getServerMessageType()) {
             case LOAD_GAME -> handleLoadGame(new Gson().fromJson(messageString, LoadGameMessage.class));
-            case ERROR -> {
-                error(message.toString());
-            }
-            case NOTIFICATION -> {
-                warning(message.toString());
-            }
+            case ERROR -> error(message.toString());
+            case NOTIFICATION -> warning(message.toString());
         }
     }
 
@@ -107,17 +103,15 @@ public class GamePlay extends Client {
         return false;
     }
 
-    private boolean resign() {
+    private void resign() {
         String resignString = getLine("Are you sure you want to resign (y/N)");
         if (resignString.equalsIgnoreCase("y")) {
             try {
                 server.sendResign(repl.getAuthToken(), repl.getCurrentGameID());
-                return true;
             } catch (IOException e) {
                 error("Failed to resign: " + e.getMessage());
             }
         }
-        return false;
     }
 
     private void highlight(String[] params) {

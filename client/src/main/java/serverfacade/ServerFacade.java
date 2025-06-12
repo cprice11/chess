@@ -25,9 +25,6 @@ public class ServerFacade extends Endpoint {
     private final Hashtable<String, String> auth = new Hashtable<>();
     private static final Gson GSON = new Gson();
 
-    private record RegisterRequest(String username, String password, String email) {
-    }
-
     private record RegisterResult(String authToken) {
     }
 
@@ -35,9 +32,6 @@ public class ServerFacade extends Endpoint {
     }
 
     private record LoginResult(String authToken) {
-    }
-
-    private record LogoutRequest(String authToken) {
     }
 
     private record ListGamesResult(Collection<GameSummary> games) {
@@ -52,18 +46,14 @@ public class ServerFacade extends Endpoint {
     private record JoinGameRequest(int gameID, ChessGame.TeamColor playerColor) {
     }
 
-    private record ObserveGameRequest(int gameID) {
-    }
-
     public ServerFacade(String serverUrl, MessageHandler messageHandler) {
         try {
             this.serverUrl = "http://" + serverUrl;
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             URI webhookUri = new URI("ws://" + serverUrl + "/ws");
             session = container.connectToServer(this, webhookUri);
-            messageHandler = messageHandler == null ? (MessageHandler.Whole<String>) msg -> {
-                System.out.println("Received message from server: " + msg);
-            } : messageHandler;
+            messageHandler = messageHandler == null ? (MessageHandler.Whole<String>) msg ->
+                    System.out.println("Received message from server: " + msg) : messageHandler;
             session.addMessageHandler(messageHandler);
         } catch (Exception e) {
             throw new RuntimeException("Couldn't connect to server");
