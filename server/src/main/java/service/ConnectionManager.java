@@ -14,6 +14,7 @@ public class ConnectionManager {
     public void add(AuthData auth, int gameID, Session session, Connection.Relation relation) {
         var connection = new Connection(auth, gameID, session, relation);
         var gameListeners = connections.get(gameID);
+        gameListeners = gameListeners == null ? new ArrayList<>() : gameListeners;
         gameListeners.add(connection);
         connections.put(gameID, gameListeners);
     }
@@ -55,9 +56,9 @@ public class ConnectionManager {
             if (c.session.isOpen()) {
                 if (!c.auth.equals(excludeMessageRoot)) {
                     c.send(message);
-                } else {
-                    removeList.add(c);
                 }
+            } else {
+                removeList.add(c);
             }
         }
         // Clean up any connections that were left open.
