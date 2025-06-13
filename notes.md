@@ -14,10 +14,8 @@
 
 ## Phase 6
 
-Print on entering gameplay loop
-
-don't reprint on every input
-
-handle unexpected types
-
-default orientation
+- Give username with move notification~~
+- spaces in move input~~
+- notification reset on move~~
+- Username on all state messages~~
+- Legibility~~
