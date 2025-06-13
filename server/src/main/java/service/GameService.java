@@ -191,24 +191,28 @@ public class GameService extends Service {
                 (turn == ChessGame.TeamColor.BLACK && connection.relation == Connection.Relation.BLACK)) {
             try {
                 game.makeMove(move);
+                String notify = null;
                 if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                    connections.broadcast(gameID, null, notificationString("White wins by checkmate"));
+                    notify = notificationString(gameData.whiteUsername() + " wins by checkmate");
                 } else if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                    connections.broadcast(gameID, null, notificationString("Black wins by checkmate"));
+                    notify = notificationString(gameData.blackUsername() + " wins by checkmate");
                 } else if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-                    connections.broadcast(gameID, null, notificationString("Stalemate"));
+                    notify = notificationString("Stalemate");
                 } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                    connections.broadcast(gameID, null, notificationString("Black is in check"));
+                    notify = notificationString(gameData.blackUsername() + " is in check");
                 } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                    connections.broadcast(gameID, null, notificationString("White is in check"));
+                    notify = notificationString(gameData.whiteUsername() + " is in check");
                 }
                 GameData updatedGame = new GameData(gameID, gameData.blackUsername(), gameData.whiteUsername(),
                         gameData.gameName(), game.toDense());
                 gameDAO.updateGame(gameID, updatedGame);
                 String message = loadGameString(updatedGame);
-                String notify = notificationString(move.toString());
                 connections.broadcast(gameID, null, message);
-                connections.broadcast(gameID, authData, notify);
+                if (notify == null) {
+                    connections.broadcast(gameID, authData, notificationString(authData.username() + " " + move.toString()));
+                } else {
+                    connections.broadcast(gameID, null, notify);
+                }
             } catch (InvalidMoveException e) {
                 send(session, errorString("Invalid move"));
             } catch (DataAccessException e) {

@@ -70,7 +70,7 @@ public class ConsolePrinter {
     }
 
     private void setGameStateStrings() {
-        ChessColor titleColor = theme.lightText();
+        ChessColor titleColor = theme.darkText().lightSquare();
         String titleText;
         if (game.isInCheckmate()) {
             titleColor.primaryHighlight();
@@ -85,6 +85,8 @@ public class ConsolePrinter {
         } else if (game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
             titleColor.errorHighlight();
             titleText = " Draw by stalemate ";
+        } else if (game.isGameOver()) {
+            titleText = " Resignation ";
         } else {
             titleColor.darkText().secondaryHighlight().lightSquare();
             titleText = " Turn: " + game.getTeamTurn() + " ";

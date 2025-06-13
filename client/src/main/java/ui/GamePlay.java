@@ -77,6 +77,7 @@ public class GamePlay extends Client {
     }
 
     private void handleLoadGame(LoadGameMessage message) {
+        repl.printer.setMessageString("");
         game = new ChessGame(message.getGame().game());
         repl.printer.setGame(game);
         redraw();
@@ -100,22 +101,27 @@ public class GamePlay extends Client {
     private void makeMove(String[] params) {
         ChessPosition start;
         ChessPosition end;
-        ChessPiece.PieceType promotion;
-        if (params.length > 2) {
-            start = new ChessPosition(params[0]);
-            end = new ChessPosition(params[1]);
-        } else {
-            start = new ChessPosition(getLine("Start Position"));
-            end = new ChessPosition(getLine("End Position"));
+        ChessPiece.PieceType promotion = null;
+        try {
+            if (params.length == 2) {
+                start = new ChessPosition(params[0]);
+                end = new ChessPosition(params[1]);
+            } else {
+                start = new ChessPosition(getLine("Start Position"));
+                end = new ChessPosition(getLine("End Position"));
+                String promotionString = params.length > 2 ? params[2] : getLine("Promotion piece");
+                promotion = switch (promotionString.toLowerCase()) {
+                    case "q" -> ChessPiece.PieceType.QUEEN;
+                    case "r" -> ChessPiece.PieceType.ROOK;
+                    case "b" -> ChessPiece.PieceType.BISHOP;
+                    case "n" -> ChessPiece.PieceType.KNIGHT;
+                    default -> null;
+                };
+            }
+        } catch (Exception e) {
+            System.out.println("Couldn't parse position");
+            return;
         }
-        String promotionString = params.length > 2 ? params[2] : getLine("Promotion piece");
-        promotion = switch (promotionString.toLowerCase()) {
-            case "q" -> ChessPiece.PieceType.QUEEN;
-            case "r" -> ChessPiece.PieceType.ROOK;
-            case "b" -> ChessPiece.PieceType.BISHOP;
-            case "n" -> ChessPiece.PieceType.KNIGHT;
-            default -> null;
-        };
         try {
             server.sendMakeMove(repl.getAuthToken(), repl.getCurrentGameID(), new ChessMove(start, end, promotion));
         } catch (IOException e) {
